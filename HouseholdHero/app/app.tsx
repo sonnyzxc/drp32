@@ -3,10 +3,13 @@ import ToDoItem from '@/components/ToDoItem';
 import { NavigationContainer } from '@react-navigation/native';
 import BottomTabNavigator from '@/navigation/BottomTabNavigation';
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
+import { PointsProvider } from '@/context/PointsContext';
 
 const App: React.FC = () => {
   return (
+    <PointsProvider>
     <BottomTabNavigator />
+    </PointsProvider>
   );
 };
 

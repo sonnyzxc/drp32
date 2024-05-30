@@ -3,40 +3,37 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import CustomCheckbox from '@/components/CustomCheckBox';
 
 interface ToDoItemProps {
-  item: { id: number; text: string; emoji?: string };
+  item: { id: number; text: string; emoji?: string; points: number; completed: boolean };
+  onToggle: () => void;
 }
 
-const ToDoItem: React.FC<ToDoItemProps> = ({ item }) => {
-const [isChecked, setIsChecked] = useState(false);
+const ToDoItem: React.FC<ToDoItemProps> = ({ item, onToggle }) => {
 
 return (
-  <TouchableOpacity
-    onPress={() => setIsChecked(!isChecked)}
-    style={styles.container}
-  >
-    <View style={[styles.checkbox, isChecked && styles.checkedCheckbox]}>
-      {isChecked && <View style={styles.checkboxTick} />}
-    </View>
-    <Text style={styles.emoji}>{item.emoji || "😊"}</Text>
-    <Text style={[styles.text, isChecked && styles.completedText]}>
-      {item.text}
-    </Text>
+    <TouchableOpacity onPress={onToggle} style={styles.container}>
+      <View style={[styles.checkbox, item.completed && styles.checkedCheckbox]}>
+        {item.completed && <View style={styles.checkboxTick} />}
+      </View>
+      <Text style={styles.emoji}>{item.emoji || '😊'}</Text>
+      <Text style={[styles.text, item.completed && styles.completedText]}>
+        {item.text}
+      </Text>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
     container: {
-      flexDirection: "row",
-      alignItems: "center",
-      padding: 10,
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 15,
       borderBottomWidth: 1,
-      borderColor: "#eee",
-      backgroundColor: "#fff",
+      borderColor: '#eee',
+      backgroundColor: '#fff',
       marginHorizontal: 10,
-      marginVertical: 3,
+      marginVertical: 5,
       borderRadius: 10,
-      shadowColor: "#000",
+      shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.2,
       shadowRadius: 2,
@@ -45,20 +42,20 @@ const styles = StyleSheet.create({
     checkbox: {
       width: 18,
       height: 18,
-      borderWidth: 1.5, // Adjust border width accordingly
-      borderColor: "#007AFF",
-      borderRadius: 3, // Adjust border radius
-      justifyContent: "center",
-      alignItems: "center",
+      borderWidth: 1.5,
+      borderColor: '#007AFF',
+      borderRadius: 3,
+      justifyContent: 'center',
+      alignItems: 'center',
       marginRight: 10,
     },
     checkedCheckbox: {
-      backgroundColor: "#007AFF",
+      backgroundColor: '#007AFF',
     },
     checkboxTick: {
-      width: 10, // Smaller tick width
-      height: 10, // Smaller tick height
-      backgroundColor: "#fff",
+      width: 10,
+      height: 10,
+      backgroundColor: '#fff',
       borderRadius: 2,
     },
     emoji: {
@@ -67,11 +64,11 @@ const styles = StyleSheet.create({
     },
     text: {
       fontSize: 18,
-      color: "#333",
+      color: '#333',
     },
     completedText: {
-      textDecorationLine: "line-through",
-      color: "gray",
+      textDecorationLine: 'line-through',
+      color: 'gray',
     },
   });
 
