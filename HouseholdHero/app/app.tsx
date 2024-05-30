@@ -1,7 +1,18 @@
-import ToDoItem from '@/components/ToDoItem';
 import React from 'react';
+import ToDoItem from '@/components/ToDoItem';
+import { NavigationContainer } from '@react-navigation/native';
+import BottomTabNavigator from '@/navigation/BottomTabNavigation';
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 
+const App: React.FC = () => {
+  return (
+    <BottomTabNavigator />
+  );
+};
+
+export default App;
+
+/*
 const App = () => {
   const todoList = [
     { id: 1, text: 'Buy groceries' },
@@ -28,3 +39,4 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+*/
