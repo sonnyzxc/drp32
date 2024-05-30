@@ -38,26 +38,26 @@ jobs:
           java-version: '17'
 
       - name: Install Dependencies
-        run: cd drp32 && npm ci
+        run: cd HouseholdHero && npm ci
 
       - name: Run Tests
-        run: cd drp32 && npm test -- --watchAll=false
+        run: cd HouseholdHero && npm test -- --watchAll=false
 
       - name: Prebuild Expo
         # if: contains('ci', github.ref)
-        run: cd drp32 && npx expo prebuild
+        run: cd HouseholdHero && npx expo prebuild
 
       - name: Build Android
         # if: contains('ci', github.ref)
-        run: cd drp32/android && ./gradlew assembleRelease
+        run: cd HouseholdHero/android && ./gradlew assembleRelease
 
       - name: Check files
         # if: contains('ci', github.ref)
-        run: ls drp32/android/app/build/outputs/apk/release
+        run: ls HouseholdHero/android/app/build/outputs/apk/release
 
       - name: Upload APK
         # if: contains('ci', github.ref)
         uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: drp32/android/app/build/outputs/apk/release/app-release.apk
+          path: HouseholdHero/android/app/build/outputs/apk/release/app-release.apk
