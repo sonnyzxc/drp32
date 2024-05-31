@@ -23,7 +23,7 @@ jobs:
       - name: Build Docker image
         env:
           HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
-        run: docker build -f be_drp32/build/local.go.Dockerfile -t registry.heroku.com/$HEROKU_APP_NAME/web be_drp32/
+        run: docker build -f be_drp32/build/heroku.go.Dockerfile -t registry.heroku.com/$HEROKU_APP_NAME/web be_drp32/
 
       - name: Push Docker image to Heroku
         env:
