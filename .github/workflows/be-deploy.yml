@@ -21,13 +21,18 @@ jobs:
         run: echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com
 
       - name: Build Docker image
-        run: docker build -f be-drp32/build/local.go.Dockerfile -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web be-drp32/
+        env:
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+        run: docker build -f be-drp32/build/local.go.Dockerfile -t registry.heroku.com/$HEROKU_APP_NAME/web be-drp32/
 
       - name: Push Docker image to Heroku
-        run: docker push registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
+        env:
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+        run: docker push registry.heroku.com/$secrets.HEROKU_APP_NAME/web
 
       - name: Release the app on Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
         run: |
-          heroku container:release web -a ${{ secrets.HEROKU_APP_NAME }}
+          heroku container:release web -a $HEROKU_APP_NAME
