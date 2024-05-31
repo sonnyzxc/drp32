@@ -23,12 +23,12 @@ jobs:
       - name: Build Docker image
         env:
           HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
-        run: docker build -f be-drp32/build/local.go.Dockerfile -t registry.heroku.com/$HEROKU_APP_NAME/web be-drp32/
+        run: docker build -f be_drp32/build/local.go.Dockerfile -t registry.heroku.com/$HEROKU_APP_NAME/web be_drp32/
 
       - name: Push Docker image to Heroku
         env:
           HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
-        run: docker push registry.heroku.com/$secrets.HEROKU_APP_NAME/web
+        run: docker push registry.heroku.com/$HEROKU_APP_NAME/web
 
       - name: Release the app on Heroku
         env:
