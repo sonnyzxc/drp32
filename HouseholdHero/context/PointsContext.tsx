@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
 interface Task {
   id: number;
@@ -52,24 +52,46 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   };
 
   const [points, setPoints] = useState<{ [userId: number]: number[] }>(initialPoints);
-
-  const [tasks, setTasks] = useState<Task[]>([
-    { id: 1, text: 'Buy groceries', emoji: '🛒', points: 5, completed: true, assignedTo: 1, dueDate: new Date() },
-    { id: 2, text: 'Walk the dog', emoji: '🐕', points: 3, completed: true, assignedTo: 2, dueDate: new Date() },
-    { id: 3, text: 'Do laundry', emoji: '🧺', points: 4, completed: true, assignedTo: 1, dueDate: new Date() },
-    { id: 4, text: 'Clean the kitchen', emoji: '🍽️', points: 10, completed: false, assignedTo: 2, dueDate: new Date() },
-    { id: 5, text: 'Water the plants', emoji: '🌿', points: 5, completed: true, assignedTo: 2, dueDate: new Date() },
-    { id: 6, text: 'Take out the trash', emoji: '🗑️', points: 2, completed: true, assignedTo: 1, dueDate: new Date() },
-    { id: 7, text: 'Vacuum the house', emoji: '🧹', points: 8, completed: false, assignedTo: 1, dueDate: new Date() },
-    { id: 8, text: 'Wash the car', emoji: '🚗', points: 7, completed: true, assignedTo: 2, dueDate: new Date() },
-    { id: 9, text: 'Organize the garage', emoji: '🔧', points: 10, completed: true, assignedTo: 2, dueDate: new Date() },
-  ]);
-
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [users, setUsers] = useState<User[]>([
     { id: 1, name: 'John Doe', isAdmin: true },
     { id: 2, name: 'Jane Doe', isAdmin: false },
   ]);
   const [currentUser, setCurrentUser] = useState<User>(users[0]);
+
+  const formatTaskFromApi = (task: any): Task => {
+    return {
+      id: task.chore_id,
+      text: task.description, // Assuming the API returns `description` instead of `text`
+      emoji: "",
+      points: task.points, // Assuming the API returns `reward_points` instead of `points`
+      completed: task.completed, // Assuming the API returns `is_done` instead of `completed`
+      assignedTo: task.assigned_to, // Assuming the API returns `user_id` instead of `assignedTo`
+      dueDate: new Date(task.due_date), // Assuming the API returns `due_date` instead of `dueDate`
+    };
+  };
+
+  useEffect(() => {
+    // Fetch tasks from the API
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch('https://be-drp32-5ac34b8c912e.herokuapp.com/get/chores?familyID=1', {
+          method: 'GET',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        const data = await response.json();
+        setTasks(data.chores.map(formatTaskFromApi));
+        console.log(data);
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+      }
+    };
+
+    fetchTasks();
+  }, []);
 
   const addPoints = (userId: number, index: number, newPoints: number) => {
     setPoints(prevPoints => {
@@ -82,21 +104,57 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     });
   };
 
-  const addTask = (task: Task) => {
-    setTasks(prevTasks => [...prevTasks, task]);
+  const formatTaskForApi = (task: Task) => {
+    return {
+      "description": task.text,
+      "points": task.points,
+      "assigned-to": task.assignedTo,
+      "due-date": task.dueDate.toISOString().substring(0, 10), // Convert Date to ISO string
+    };
   };
 
-  const toggleTaskCompletion = (taskId: number) => {
+  const addTask = async (task: Task) => {
+    try {
+      const response = await fetch('https://be-drp32-5ac34b8c912e.herokuapp.com/create/chore', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formatTaskForApi(task)),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error adding task");
+      }
+
+      setTasks(prevTasks => [...prevTasks, task]);
+    } catch (error) {
+      console.error('Error adding task:', error);
+    }
+  };
+
+  const toggleTaskCompletion = async (taskId: number) => {
     const currentDayIndex = new Date().getDay();
     console.log('Current day index:', currentDayIndex);
-    setTasks(tasks.map(task => {
-      if (task.id === taskId) {
-        const updatedTask = { ...task, completed: !task.completed };
-        addPoints(task.assignedTo, currentDayIndex, updatedTask.completed ? task.points : -task.points);
-        return updatedTask;
-      }
-      return task;
-    }));
+
+    const taskToUpdate = tasks.find(task => task.id === taskId);
+    if (!taskToUpdate) return;
+
+    const updatedTask = { ...taskToUpdate, completed: !taskToUpdate.completed };
+    try {
+      await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedTask),
+      });
+      setTasks(tasks.map(task => task.id === taskId ? updatedTask : task));
+      addPoints(taskToUpdate.assignedTo, currentDayIndex, updatedTask.completed ? taskToUpdate.points : -taskToUpdate.points);
+    } catch (error) {
+      console.error('Error updating task:', error);
+    }
   };
 
   const changeUser = (userId: number) => {
