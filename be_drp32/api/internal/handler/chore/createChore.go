@@ -19,14 +19,15 @@ func (h Handler) CreateChore() http.HandlerFunc {
 
 		dueDate, err := time.Parse("2006-01-02", request.DueDate)
 
-		if err != nil || dueDate.Before(time.Now()) {
-			return errors.New("bad request"), http.StatusBadRequest
-		}
+		//if err != nil || dueDate.Before(time.Now()) {
+		//	return errors.New("bad request"), http.StatusBadRequest
+		//}
 
 		if err = h.ctrl.CreateChore(r.Context(), request.Description, request.Points, request.AssignedTo, dueDate); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 
+		handler.EnableCors(&w)
 		if err = render.Render(w, r, basic_success.New(http.StatusCreated)); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}

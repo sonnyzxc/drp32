@@ -7,21 +7,27 @@ import (
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/request/familyID"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/choresList"
 	"net/http"
+	"strconv"
 )
 
 func (h Handler) GetFamilyChores() http.HandlerFunc {
 	return handler.ErrorHandler(func(w http.ResponseWriter, r *http.Request) (error, int) {
 		var request familyID.Request
+		var err error
 
-		if err := render.Bind(r, &request); err != nil {
-			return errors.New("bad request"), http.StatusBadRequest
+		request.FamilyID, err = strconv.ParseInt(r.URL.Query().Get("familyID"), 10, 64)
+
+		if err != nil {
+			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
+
 		chores, err := h.ctrl.GetFamilyChores(r.Context(), request.FamilyID)
 		if err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 
-		if err := render.Render(w, r, choresList.New(chores, http.StatusOK)); err != nil {
+		handler.EnableCors(&w)
+		if err = render.Render(w, r, choresList.New(chores, http.StatusOK)); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 
