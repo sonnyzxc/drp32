@@ -1,0 +1,12 @@
+# Refer to https://github.com/volatiletech/sqlboiler#configuration
+output = "./internal/repository/orm"
+pkgname = "orm"
+no-tests = true
+[psql]
+dbname = "be_drp32"
+host = "pg"
+port = 5432
+user = "be_drp32"
+pass = ""
+sslmode = "disable"
+blacklist = "schema_migrations"
