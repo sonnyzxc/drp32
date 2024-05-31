@@ -7,7 +7,7 @@ const BarGraph: React.FC<{ data: { label: string; value: number }[] }> = ({ data
   const barWidth = 35;
   const chartHeight = 200;
   const maxValue = Math.max(...data.map(d => d.value));
-  const scale = chartHeight / maxValue;
+  const scale = chartHeight / (maxValue || 1); // Ensure scale is not NaN
 
   return (
     <View style={styles.container}>
@@ -25,7 +25,7 @@ const BarGraph: React.FC<{ data: { label: string; value: number }[] }> = ({ data
                 x={index * (barWidth + 10)}
                 y={chartHeight - item.value * scale}
                 width={barWidth}
-                height={item.value * scale}
+                height={item.value * scale || 0} // Ensure height is not NaN
                 fill="url(#grad)"
                 rx="5"
               />

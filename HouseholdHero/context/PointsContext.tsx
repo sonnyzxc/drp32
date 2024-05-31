@@ -34,12 +34,16 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const today = new Date().getDay();
   const defaultPoints = [0, 0, 0, 0, 0, 0, 0];
 
+  const rotateArray = (arr: number[], rotateBy: number) => {
+    return arr.slice(rotateBy).concat(arr.slice(0, rotateBy));
+  };
+
   const initializePoints = () => {
     const userPoints = [...defaultPoints];
     for (let i = 0; i < 7; i++) {
-      userPoints[(today + i) % 7] = Math.floor(Math.random() * 15) + 1;
+      userPoints[i] = Math.floor(Math.random() * 15) + 1;
     }
-    return userPoints;
+    return rotateArray(userPoints, today + 1);
   };
 
   const initialPoints = {
@@ -70,7 +74,10 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const addPoints = (userId: number, index: number, newPoints: number) => {
     setPoints(prevPoints => {
       const userPoints = prevPoints[userId] ? [...prevPoints[userId]] : [0, 0, 0, 0, 0, 0, 0];
-      userPoints[index] += newPoints;
+      const rotatedIndex = (index + userPoints.length - (today + 1)) % userPoints.length;
+      userPoints[rotatedIndex] += newPoints;
+      console.log(`Adding ${newPoints} points to user ${userId} on rotated index ${rotatedIndex}`);
+      console.log('Updated points:', userPoints);
       return { ...prevPoints, [userId]: userPoints };
     });
   };
@@ -80,10 +87,12 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   };
 
   const toggleTaskCompletion = (taskId: number) => {
+    const currentDayIndex = new Date().getDay();
+    console.log('Current day index:', currentDayIndex);
     setTasks(tasks.map(task => {
       if (task.id === taskId) {
         const updatedTask = { ...task, completed: !task.completed };
-        addPoints(task.assignedTo, new Date().getDay(), updatedTask.completed ? task.points : -task.points);
+        addPoints(task.assignedTo, currentDayIndex, updatedTask.completed ? task.points : -task.points);
         return updatedTask;
       }
       return task;
@@ -104,7 +113,7 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       isAdmin,
     };
     setUsers(prevUsers => [...prevUsers, newUser]);
-    setPoints(prevPoints => ({ ...prevPoints, [newUser.id]: [0, 0, 0, 0, 0, 0, 0] }));
+    setPoints(prevPoints => ({ ...prevPoints, [newUser.id]: rotateArray([0, 0, 0, 0, 0, 0, 0], today + 1) })); // Initialize points
   };
 
   return (
