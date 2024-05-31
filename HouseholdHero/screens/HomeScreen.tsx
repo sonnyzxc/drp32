@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity, TextInput, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import BarGraph from '../components/BarGraph';
 import ConfirmationModal from '../components/ConfirmationModal';
 import { usePoints } from '../context/PointsContext';
+import styles from '../styles/HomeScreenStyles'; // Import the styles
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -13,12 +15,13 @@ const HomeScreen: React.FC = () => {
   const [newTaskEmoji, setNewTaskEmoji] = useState('');
   const [newTaskPoints, setNewTaskPoints] = useState(0);
   const [assignedUserId, setAssignedUserId] = useState(users[0].id);
+  const [newTaskDueDate, setNewTaskDueDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [isAddTaskVisible, setIsAddTaskVisible] = useState(false);
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
 
   const incompleteTasks = tasks.filter(task => !task.completed);
 
-  // Weekly labels
   const getLast7Days = () => {
     const today = new Date();
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -43,13 +46,31 @@ const HomeScreen: React.FC = () => {
       points: newTaskPoints,
       completed: false,
       assignedTo: assignedUserId,
+      dueDate: newTaskDueDate,
     };
     addTask(newTask);
     setNewTaskText('');
     setNewTaskEmoji('');
     setNewTaskPoints(0);
+    setNewTaskDueDate(new Date());
     setIsAddTaskVisible(false);
     setIsConfirmVisible(false);
+  };
+
+  const handleDateChange = (event: any, selectedDate: Date | undefined) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false); // Hide the picker on Android after selection
+    }
+    if (selectedDate) {
+      setNewTaskDueDate(selectedDate);
+    }
+  };
+
+  const calculateDaysDifference = (dueDate: Date) => {
+    const today = new Date();
+    const timeDiff = dueDate.getTime() - today.getTime();
+    const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)); // Convert milliseconds to days
+    return dayDiff;
   };
 
   return (
@@ -62,11 +83,20 @@ const HomeScreen: React.FC = () => {
         <Text style={styles.totalPointsText}>Total Points: {userPoints.reduce((a, b) => a + b, 0)}</Text>
 
         <Text style={styles.subHeaderText}>Incomplete Tasks</Text>
-        {incompleteTasks.map(task => (
-          <View key={task.id} style={styles.taskContainer}>
-            <Text style={styles.taskText}>{task.emoji} {task.text} - Assigned to {users.find(user => user.id === task.assignedTo)?.name}</Text>
-          </View>
-        ))}
+        {incompleteTasks.map(task => {
+          const daysDiff = calculateDaysDifference(new Date(task.dueDate));
+          return (
+            <View key={task.id} style={styles.taskContainer}>
+              <Text style={styles.taskText}>
+                {task.emoji} {task.text} - Assigned to {users.find(user => user.id === task.assignedTo)?.name}
+              </Text>
+              <Text style={styles.dueDateText}>Due: {new Date(task.dueDate).toLocaleDateString()}</Text>
+              <Text style={styles.dueDateText}>
+                {daysDiff >= 0 ? `${daysDiff} days left` : `${Math.abs(daysDiff)} days overdue`}
+              </Text>
+            </View>
+          );
+        })}
 
         {currentUser.isAdmin && (
           <>
@@ -95,6 +125,18 @@ const HomeScreen: React.FC = () => {
                   onChangeText={(text) => setNewTaskPoints(parseInt(text) || 0)}
                   keyboardType="numeric"
                 />
+                <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.datePickerButton}>
+                  <Text style={styles.datePickerButtonText}>Select Due Date</Text>
+                </TouchableOpacity>
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={newTaskDueDate}
+                    mode="date"
+                    display="default"
+                    onChange={handleDateChange}
+                  />
+                )}
+                <Text style={styles.selectedDateText}>Selected Date: {newTaskDueDate.toLocaleDateString()}</Text>
                 <Text style={styles.inputLabel}>Assign To:</Text>
                 <View style={styles.userPicker}>
                   {users.map(user => (
@@ -122,124 +164,6 @@ const HomeScreen: React.FC = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f8f8',
-  },
-  scrollView: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-  },
-  headerText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 20,
-  },
-  chartContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  totalPointsText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 10,
-  },
-  subHeaderText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginVertical: 10,
-  },
-  taskContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 15,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    marginVertical: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  taskText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  adminContainer: {
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-  },
-  inputLabel: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  userPicker: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 10,
-  },
-  userOption: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#007AFF',
-    borderRadius: 5,
-    marginRight: 10,
-    marginBottom: 10,
-  },
-  selectedUser: {
-    backgroundColor: '#007AFF',
-    color: '#fff',
-  },
-  addButton: {
-    backgroundColor: '#007AFF',
-    padding: 10,
-    borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    width: 50,
-    height: 50,
-    zIndex: 10,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  submitButton: {
-    backgroundColor: '#007AFF',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  submitButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-});
 
 export default HomeScreen;
 

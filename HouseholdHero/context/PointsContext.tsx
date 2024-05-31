@@ -7,6 +7,7 @@ interface Task {
   points: number;
   completed: boolean;
   assignedTo: number; // User ID of the assigned user
+  dueDate: Date;
 }
 
 interface User {
@@ -32,20 +33,8 @@ const PointsContext = createContext<PointsContextProps | undefined>(undefined);
 export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const today = new Date().getDay();
   const defaultPoints = [0, 0, 0, 0, 0, 0, 0];
-  const [points, setPoints] = useState<{ [userId: number]: number[] }>({
-    1: [...defaultPoints], // Points for user 1
-    2: [...defaultPoints], // Points for user 2
-  });
 
-  // Generate past 6 days' dummy data
-  const generatePastDaysData = (daysBack: number[]) => {
-    return daysBack.map(day => {
-      const randomPoints = Math.floor(Math.random() * 15) + 1; // Random points between 1 and 15
-      return randomPoints;
-    });
-  };
-
-  const generatePointsForUser = (userId: number) => {
+  const initializePoints = () => {
     const userPoints = [...defaultPoints];
     for (let i = 0; i < 7; i++) {
       userPoints[(today + i) % 7] = Math.floor(Math.random() * 15) + 1;
@@ -53,19 +42,23 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     return userPoints;
   };
 
-  points[1] = generatePointsForUser(1);
-  points[2] = generatePointsForUser(2);
+  const initialPoints = {
+    1: initializePoints(),
+    2: initializePoints(),
+  };
+
+  const [points, setPoints] = useState<{ [userId: number]: number[] }>(initialPoints);
 
   const [tasks, setTasks] = useState<Task[]>([
-    { id: 1, text: 'Buy groceries', emoji: '🛒', points: 5, completed: true, assignedTo: 1 },
-    { id: 2, text: 'Walk the dog', emoji: '🐕', points: 3, completed: true, assignedTo: 2 },
-    { id: 3, text: 'Do laundry', emoji: '🧺', points: 4, completed: true, assignedTo: 1 },
-    { id: 4, text: 'Clean the kitchen', emoji: '🍽️', points: 10, completed: false, assignedTo: 2 },
-    { id: 5, text: 'Water the plants', emoji: '🌿', points: 5, completed: true, assignedTo: 2 },
-    { id: 6, text: 'Take out the trash', emoji: '🗑️', points: 2, completed: true, assignedTo: 1 },
-    { id: 7, text: 'Vacuum the house', emoji: '🧹', points: 8, completed: false, assignedTo: 1 },
-    { id: 8, text: 'Wash the car', emoji: '🚗', points: 7, completed: true, assignedTo: 2 },
-    { id: 9, text: 'Organize the garage', emoji: '🔧', points: 10, completed: true, assignedTo: 2 },
+    { id: 1, text: 'Buy groceries', emoji: '🛒', points: 5, completed: true, assignedTo: 1, dueDate: new Date() },
+    { id: 2, text: 'Walk the dog', emoji: '🐕', points: 3, completed: true, assignedTo: 2, dueDate: new Date() },
+    { id: 3, text: 'Do laundry', emoji: '🧺', points: 4, completed: true, assignedTo: 1, dueDate: new Date() },
+    { id: 4, text: 'Clean the kitchen', emoji: '🍽️', points: 10, completed: false, assignedTo: 2, dueDate: new Date() },
+    { id: 5, text: 'Water the plants', emoji: '🌿', points: 5, completed: true, assignedTo: 2, dueDate: new Date() },
+    { id: 6, text: 'Take out the trash', emoji: '🗑️', points: 2, completed: true, assignedTo: 1, dueDate: new Date() },
+    { id: 7, text: 'Vacuum the house', emoji: '🧹', points: 8, completed: false, assignedTo: 1, dueDate: new Date() },
+    { id: 8, text: 'Wash the car', emoji: '🚗', points: 7, completed: true, assignedTo: 2, dueDate: new Date() },
+    { id: 9, text: 'Organize the garage', emoji: '🔧', points: 10, completed: true, assignedTo: 2, dueDate: new Date() },
   ]);
 
   const [users, setUsers] = useState<User[]>([

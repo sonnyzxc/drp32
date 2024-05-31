@@ -3,6 +3,7 @@ import { SafeAreaView, ScrollView, StyleSheet, StatusBar, View, Text } from 'rea
 import ToDoItem from '../components/ToDoItem';
 import ConfirmationModal from '../components/ConfirmationModal';
 import { usePoints } from '../context/PointsContext';
+import styles from '../styles/TasksScreenStyles'; // Import the styles
 
 const TasksScreen: React.FC = () => {
   const { tasks, currentUser, toggleTaskCompletion } = usePoints();
@@ -34,7 +35,10 @@ const TasksScreen: React.FC = () => {
       <ScrollView contentContainerStyle={styles.scrollView}>
         {userTasks.length > 0 ? (
           userTasks.map(task => (
-            <ToDoItem key={task.id} item={task} onToggle={() => handleToggleTask(task.id)} />
+            <View key={task.id} style={styles.taskContainer}>
+              <ToDoItem item={task} onToggle={() => handleToggleTask(task.id)} />
+              <Text style={styles.dueDateText}>Due: {new Date(task.dueDate).toLocaleDateString()}</Text>
+            </View>
           ))
         ) : (
           <Text style={styles.noTasksText}>No tasks assigned to you.</Text>
@@ -49,31 +53,5 @@ const TasksScreen: React.FC = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f8f8',
-  },
-  header: {
-    backgroundColor: '#007AFF',
-    padding: 20,
-  },
-  headerText: {
-    fontSize: 24,
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  scrollView: {
-    paddingVertical: 10,
-  },
-  noTasksText: {
-    textAlign: 'center',
-    fontSize: 18,
-    color: 'gray',
-    marginTop: 20,
-  },
-});
 
 export default TasksScreen;
