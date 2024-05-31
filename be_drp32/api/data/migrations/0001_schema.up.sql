@@ -35,3 +35,42 @@ CREATE TABLE IF NOT EXISTS redeemed (
   FOREIGN KEY ( reward_id ) REFERENCES rewards ( reward_id ),
   FOREIGN KEY ( user_id ) REFERENCES users ( user_id )
 );
+
+-- insert into families (family_name) values ('McGinn');
+-- insert into families (family_name) values ('Murr');
+-- insert into families (family_name) values ('Corradini');
+-- insert into families (family_name) values ('Hambidge');
+-- insert into families (family_name) values ('Nobles');
+-- insert into families (family_name) values ('Iapico');
+-- insert into families (family_name) values ('Oxenham');
+-- insert into families (family_name) values ('Yurocjkin');
+-- insert into families (family_name) values ('Outhwaite');
+-- insert into families (family_name) values ( 'Daldry');
+--
+-- insert into users ( user_email, user_name, family_id) values ( 'jmadgwich0@europa.eu', 'Jimmie', 9);
+-- insert into users ( user_email, user_name, family_id) values ( 'hhuggins1@fda.gov', 'Henrieta', 9);
+-- insert into users ( user_email, user_name, family_id) values ( 'bheineke2@mlb.com', 'Bethena', 4);
+-- insert into users ( user_email, user_name, family_id) values ( 'rwigelsworth3@freewebs.com', 'Rochelle', 6);
+-- insert into users ( user_email, user_name, family_id) values ( 'vswinnerton4@slideshare.net', 'Valdemar', 4);
+-- insert into users ( user_email, user_name, family_id) values ( 'clovejoy5@shop-pro.jp', 'Carlen', 3);
+-- insert into users ( user_email, user_name, family_id) values ( 'gpawson6@bluehost.com', 'Gerrie', 7);
+-- insert into users ( user_email, user_name, family_id) values ( 'iguildford7@creativecommons.org', 'Ilsa', 1);
+-- insert into users ( user_email, user_name, family_id) values ( 'rstallon8@photobucket.com', 'Renee', 6);
+-- insert into users ( user_email, user_name, family_id) values ( 'csansam9@freewebs.com', 'Chilton', 4);
+--
+-- insert into chores (description, points, completed, assigned_to, due_date) values ('Geranium sylvaticum L.', 31, true, 6, '08/08/2024');
+--
+-- insert into rewards (description, points) values ( 'Polygala palmeri S. Watson', 17);
+-- insert into rewards (description, points) values ( 'Petrorhagia nanteuilii (Burnat) P.W. Ball & Heywood', 34);
+-- insert into rewards (description, points) values ( 'Caloplaca saxifragarum Poelt', 13);
+-- insert into rewards (description, points) values ( 'Euphorbia stricta L.', 46);
+-- insert into rewards (description, points) values ( 'Clermontia grandiflora Gaudich.', 27);
+-- insert into rewards (description, points) values ( 'Petrophytum caespitosum (Nutt.) Rydb. var. elatius (S. Watson) Tidestr.', 15);
+-- insert into rewards (description, points) values ( 'Echinocereus coccineus Engelm. var. gurneyi (L.D. Benson) K.D. Heil & Brack', 6);
+-- insert into rewards (description, points) values ( 'Rhexia aristosa Britton', 33);
+--
+-- insert into redeemed (reward_id, user_id) values (9, 6);
+-- insert into redeemed (reward_id, user_id) values (3, 1);
+-- insert into redeemed (reward_id, user_id) values (6, 3);
+-- insert into redeemed (reward_id, user_id) values (1, 1);
+-- insert into redeemed (reward_id, user_id) values (6, 1);

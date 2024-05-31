@@ -8,6 +8,7 @@ import (
 
 type Repository interface {
 	CreateChore(ctx context.Context, chore model.Chore) error
+	GetFamilyChores(ctx context.Context, familyID int64) (model.Chores, error)
 }
 
 type impl struct {
