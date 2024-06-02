@@ -25,6 +25,7 @@ import (
 type Chore struct {
 	ChoreID     int64     `boil:"chore_id" json:"chore_id" toml:"chore_id" yaml:"chore_id"`
 	Description string    `boil:"description" json:"description" toml:"description" yaml:"description"`
+	Emoji       string    `boil:"emoji" json:"emoji" toml:"emoji" yaml:"emoji"`
 	Points      int       `boil:"points" json:"points" toml:"points" yaml:"points"`
 	Completed   bool      `boil:"completed" json:"completed" toml:"completed" yaml:"completed"`
 	AssignedTo  int64     `boil:"assigned_to" json:"assigned_to" toml:"assigned_to" yaml:"assigned_to"`
@@ -37,6 +38,7 @@ type Chore struct {
 var ChoreColumns = struct {
 	ChoreID     string
 	Description string
+	Emoji       string
 	Points      string
 	Completed   string
 	AssignedTo  string
@@ -44,6 +46,7 @@ var ChoreColumns = struct {
 }{
 	ChoreID:     "chore_id",
 	Description: "description",
+	Emoji:       "emoji",
 	Points:      "points",
 	Completed:   "completed",
 	AssignedTo:  "assigned_to",
@@ -53,6 +56,7 @@ var ChoreColumns = struct {
 var ChoreTableColumns = struct {
 	ChoreID     string
 	Description string
+	Emoji       string
 	Points      string
 	Completed   string
 	AssignedTo  string
@@ -60,6 +64,7 @@ var ChoreTableColumns = struct {
 }{
 	ChoreID:     "chores.chore_id",
 	Description: "chores.description",
+	Emoji:       "chores.emoji",
 	Points:      "chores.points",
 	Completed:   "chores.completed",
 	AssignedTo:  "chores.assigned_to",
@@ -174,6 +179,7 @@ func (w whereHelpertime_Time) GTE(x time.Time) qm.QueryMod {
 var ChoreWhere = struct {
 	ChoreID     whereHelperint64
 	Description whereHelperstring
+	Emoji       whereHelperstring
 	Points      whereHelperint
 	Completed   whereHelperbool
 	AssignedTo  whereHelperint64
@@ -181,6 +187,7 @@ var ChoreWhere = struct {
 }{
 	ChoreID:     whereHelperint64{field: "\"chores\".\"chore_id\""},
 	Description: whereHelperstring{field: "\"chores\".\"description\""},
+	Emoji:       whereHelperstring{field: "\"chores\".\"emoji\""},
 	Points:      whereHelperint{field: "\"chores\".\"points\""},
 	Completed:   whereHelperbool{field: "\"chores\".\"completed\""},
 	AssignedTo:  whereHelperint64{field: "\"chores\".\"assigned_to\""},
@@ -215,8 +222,8 @@ func (r *choreR) GetAssignedToUser() *User {
 type choreL struct{}
 
 var (
-	choreAllColumns            = []string{"chore_id", "description", "points", "completed", "assigned_to", "due_date"}
-	choreColumnsWithoutDefault = []string{"description", "points", "completed", "assigned_to", "due_date"}
+	choreAllColumns            = []string{"chore_id", "description", "emoji", "points", "completed", "assigned_to", "due_date"}
+	choreColumnsWithoutDefault = []string{"description", "emoji", "points", "completed", "assigned_to", "due_date"}
 	choreColumnsWithDefault    = []string{"chore_id"}
 	chorePrimaryKeyColumns     = []string{"chore_id"}
 	choreGeneratedColumns      = []string{}

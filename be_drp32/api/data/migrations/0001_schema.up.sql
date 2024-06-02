@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     user_email TEXT UNIQUE NOT NULL,
     user_name TEXT NOT NULL,
     family_id BIGINT NOT NULL,
+    admin BOOLEAN NOT NULL,
     FOREIGN KEY ( family_id ) REFERENCES families ( family_id )
 
 );
@@ -15,6 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS chores (
   chore_id BIGSERIAL PRIMARY KEY,
   description TEXT NOT NULL,
+  emoji TEXT NOT NULL,
   points INT NOT NULL,
   completed BOOLEAN NOT NULL,
   assigned_to BIGINT NOT NULL,
@@ -47,18 +49,18 @@ CREATE TABLE IF NOT EXISTS redeemed (
 -- insert into families (family_name) values ('Outhwaite');
 -- insert into families (family_name) values ( 'Daldry');
 --
--- insert into users ( user_email, user_name, family_id) values ( 'jmadgwich0@europa.eu', 'Jimmie', 9);
--- insert into users ( user_email, user_name, family_id) values ( 'hhuggins1@fda.gov', 'Henrieta', 9);
--- insert into users ( user_email, user_name, family_id) values ( 'bheineke2@mlb.com', 'Bethena', 4);
--- insert into users ( user_email, user_name, family_id) values ( 'rwigelsworth3@freewebs.com', 'Rochelle', 6);
--- insert into users ( user_email, user_name, family_id) values ( 'vswinnerton4@slideshare.net', 'Valdemar', 4);
--- insert into users ( user_email, user_name, family_id) values ( 'clovejoy5@shop-pro.jp', 'Carlen', 3);
--- insert into users ( user_email, user_name, family_id) values ( 'gpawson6@bluehost.com', 'Gerrie', 7);
--- insert into users ( user_email, user_name, family_id) values ( 'iguildford7@creativecommons.org', 'Ilsa', 1);
--- insert into users ( user_email, user_name, family_id) values ( 'rstallon8@photobucket.com', 'Renee', 6);
--- insert into users ( user_email, user_name, family_id) values ( 'csansam9@freewebs.com', 'Chilton', 4);
+-- insert into users ( user_email, user_name, family_id, admin) values ( 'jmadgwich0@europa.eu', 'Jimmie', 9, false);
+-- insert into users ( user_email, user_name, family_id, admin) values ( 'hhuggins1@fda.gov', 'Henrieta', 9, true);
+-- insert into users ( user_email, user_name, family_id, admin) values ( 'bheineke2@mlb.com', 'Bethena', 4, false);
+-- insert into users ( user_email, user_name, family_id, admin) values ( 'rwigelsworth3@freewebs.com', 'Rochelle', 6, true);
+-- insert into users ( user_email, user_name, family_id, admin) values ( 'vswinnerton4@slideshare.net', 'Valdemar', 4, false);
+-- insert into users ( user_email, user_name, family_id, admin) values ( 'clovejoy5@shop-pro.jp', 'Carlen', 3, true);
+-- insert into users ( user_email, user_name, family_id, admin) values ( 'gpawson6@bluehost.com', 'Gerrie', 7, false);
+-- insert into users ( user_email, user_name, family_id, admin) values ( 'iguildford7@creativecommons.org', 'Ilsa', 1, true);
+-- insert into users ( user_email, user_name, family_id, admin) values ( 'rstallon8@photobucket.com', 'Renee', 6, false);
+-- insert into users ( user_email, user_name, family_id, admin) values ( 'csansam9@freewebs.com', 'Chilton', 4, true);
 --
--- insert into chores (description, points, completed, assigned_to, due_date) values ('Geranium sylvaticum L.', 31, true, 6, '08/08/2024');
+-- insert into chores (description, emoji, points, completed, assigned_to, due_date) values ('Geranium sylvaticum L.', 'test', 31, false, 6, '08/08/2024');
 --
 -- insert into rewards (description, points) values ( 'Polygala palmeri S. Watson', 17);
 -- insert into rewards (description, points) values ( 'Petrorhagia nanteuilii (Burnat) P.W. Ball & Heywood', 34);
@@ -69,7 +71,7 @@ CREATE TABLE IF NOT EXISTS redeemed (
 -- insert into rewards (description, points) values ( 'Echinocereus coccineus Engelm. var. gurneyi (L.D. Benson) K.D. Heil & Brack', 6);
 -- insert into rewards (description, points) values ( 'Rhexia aristosa Britton', 33);
 --
--- insert into redeemed (reward_id, user_id) values (9, 6);
+-- insert into redeemed (reward_id, user_id) values (8, 6);
 -- insert into redeemed (reward_id, user_id) values (3, 1);
 -- insert into redeemed (reward_id, user_id) values (6, 3);
 -- insert into redeemed (reward_id, user_id) values (1, 1);
