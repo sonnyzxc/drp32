@@ -26,7 +26,6 @@ func (h Handler) GetFamilyChores() http.HandlerFunc {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 
-		handler.EnableCors(&w)
 		if err = render.Render(w, r, choresList.New(chores, http.StatusOK)); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}

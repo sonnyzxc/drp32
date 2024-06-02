@@ -20,7 +20,6 @@ func (h Handler) CreateFamily() http.HandlerFunc {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 
-		handler.EnableCors(&w)
 		if err := render.Render(w, r, basic_success.New(http.StatusCreated)); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}

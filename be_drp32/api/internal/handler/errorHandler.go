@@ -8,6 +8,7 @@ import (
 
 func ErrorHandler(f func(w http.ResponseWriter, r *http.Request) (error, int)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		err, status := f(w, r)
 
 		if err != nil {
