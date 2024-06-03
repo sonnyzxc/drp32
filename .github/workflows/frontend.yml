@@ -30,7 +30,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          # cache: npm
+          cache: npm
 
       - name: Install Java
         uses: actions/setup-java@v4
@@ -47,22 +47,15 @@ jobs:
         run: npm test -- --watchAll=false
 
       - name: Prebuild Expo
-        # if: contains('ci', github.ref)
         working-directory: ./HouseholdHero
         run: npx expo prebuild --platform android
 
       - name: Build Android
-        # if: contains('ci', github.ref)
         working-directory: ./HouseholdHero/android
         run: ./gradlew assembleRelease
 
       - name: Upload APK
-        # if: contains('ci', github.ref)
         uses: actions/upload-artifact@v4
         with:
           name: app-release
           path: HouseholdHero/android/app/build/outputs/apk/release/app-release.apk
-
-# todo:
-# - only run if changes to frontend
-# - only run (for BE) if changes made to backend
