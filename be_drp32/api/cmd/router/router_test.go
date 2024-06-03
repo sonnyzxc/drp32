@@ -28,6 +28,7 @@ func TestRouter_Handler(t *testing.T) {
 		"POST /create/user",
 		"POST /create/chore",
 		"POST /get/chores",
+		"PUT /completeChore",
 	}
 	sort.Strings(expectedRoutes)
 	var routesFound []string

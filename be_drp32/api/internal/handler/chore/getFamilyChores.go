@@ -1,6 +1,7 @@
 package chore
 
 import (
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/pkg/errors"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler"
@@ -15,7 +16,7 @@ func (h Handler) GetFamilyChores() http.HandlerFunc {
 		var request familyID.Request
 		var err error
 
-		request.FamilyID, err = strconv.ParseInt(r.URL.Query().Get("familyID"), 10, 64)
+		request.FamilyID, err = strconv.ParseInt(chi.URLParam(r, "familyID"), 10, 64)
 
 		if err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError

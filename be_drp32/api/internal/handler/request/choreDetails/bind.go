@@ -6,8 +6,8 @@ import (
 )
 
 func (req *Request) Bind(r *http.Request) error {
-	if req.Description == "" {
-		return errors.New("chore needs a description")
+	if req.Description == "" || req.Emoji == "" {
+		return errors.New("missing fields")
 	}
 	return nil
 }

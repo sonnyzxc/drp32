@@ -38,7 +38,8 @@ func (rtr Router) Handler() http.Handler {
 	r.Post("/create/family", rtr.familyRESTHandler.CreateFamily())
 	r.Post("/create/user", rtr.userRESTHandler.CreateUser())
 	r.Post("/create/chore", rtr.choreRESTHandler.CreateChore())
-	r.Get("/get/chores", rtr.choreRESTHandler.GetFamilyChores())
+	r.Get("/get/chores/{familyID}", rtr.choreRESTHandler.GetFamilyChores())
+	r.Put("/completeChore/{choreID}", rtr.choreRESTHandler.CompleteChore())
 
 	return r
 }

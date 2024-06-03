@@ -6,7 +6,7 @@ import (
 )
 
 type Controller interface {
-	CreateUser(ctx context.Context, email string, name string, familyID int64) error
+	CreateUser(ctx context.Context, email string, name string, familyID int64, admin bool) error
 }
 
 type impl struct {

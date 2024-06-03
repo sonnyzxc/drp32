@@ -11,7 +11,7 @@ import (
 	"log"
 )
 
-func (i impl) CreateUser(ctx context.Context, email string, name string, familyID int64) error {
+func (i impl) CreateUser(ctx context.Context, email string, name string, familyID int64, admin bool) error {
 	_, err := i.repo.User().GetUserByEmail(context.Background(), email)
 
 	if err == nil {
@@ -40,6 +40,7 @@ func (i impl) CreateUser(ctx context.Context, email string, name string, familyI
 			UserEmail: email,
 			UserName:  name,
 			FamilyID:  familyID,
+			Admin:     admin,
 		})
 	}, nil)
 }
