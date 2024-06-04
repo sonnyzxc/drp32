@@ -174,6 +174,28 @@ const styles = StyleSheet.create({
   pointText: {
     color: '#333',
   },
+  historyButton: {
+    marginVertical: 10,
+    padding: 10,
+    backgroundColor: '#007AFF',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  historyButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  historyContainer: {
+    marginVertical: 10,
+    padding: 15,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
+  },
 });
 
 export default styles;

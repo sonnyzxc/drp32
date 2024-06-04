@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import TasksScreen from '../screens/TasksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import InsightScreen from '../screens/InsightScreen';
 import { Ionicons } from '@expo/vector-icons'; 
 
 const Tab = createBottomTabNavigator();
@@ -21,6 +22,8 @@ const BottomTabNavigator: React.FC = () => {
             iconName = 'checkmark-circle';
           } else if (route.name === 'Settings') {
             iconName = 'settings';
+          } else if (route.name === 'Insight') {
+            iconName = 'analytics';
           }
 
           return <Ionicons key={iconName} size={size} color={color} />;
@@ -29,6 +32,7 @@ const BottomTabNavigator: React.FC = () => {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Tasks" component={TasksScreen} />
+      <Tab.Screen name="Insight" component={InsightScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );
