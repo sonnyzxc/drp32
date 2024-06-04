@@ -80,6 +80,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 5,
   },
+  hintText: {
+    fontSize: 14,
+    color: 'gray',
+    marginBottom: 10,
+  },
   userPicker: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -138,6 +143,36 @@ const styles = StyleSheet.create({
   selectedDateText: {
     fontSize: 16,
     marginBottom: 10,
+  },
+  pointsLabelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+  },
+  pointsLabelText: {
+    fontSize: 14,
+    color: 'gray',
+  },
+  pointsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  pointBox: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#007AFF',
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  selectedPointBox: {
+    backgroundColor: '#007AFF',
+  },
+  pointText: {
+    color: '#333',
   },
 });
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity, TextInput, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity, TextInput, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import BarGraph from '../components/BarGraph';
@@ -13,7 +13,7 @@ const HomeScreen: React.FC = () => {
   const { points, tasks, currentUser, users, addTask } = usePoints();
   const [newTaskText, setNewTaskText] = useState('');
   const [newTaskEmoji, setNewTaskEmoji] = useState('');
-  const [newTaskPoints, setNewTaskPoints] = useState(0);
+  const [newTaskPoints, setNewTaskPoints] = useState(3); // Default selected points
   const [assignedUserId, setAssignedUserId] = useState(users[0].id);
   const [newTaskDueDate, setNewTaskDueDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -44,7 +44,7 @@ const HomeScreen: React.FC = () => {
     const newTask = {
       id: tasks.length + 1,
       text: newTaskText,
-      emoji: newTaskEmoji,
+      emoji: newTaskEmoji || '😊',
       points: newTaskPoints,
       completed: false,
       assignedTo: assignedUserId,
@@ -53,7 +53,7 @@ const HomeScreen: React.FC = () => {
     addTask(newTask);
     setNewTaskText('');
     setNewTaskEmoji('');
-    setNewTaskPoints(0);
+    setNewTaskPoints(3); // Reset to default selected points
     setNewTaskDueDate(new Date());
     setIsAddTaskVisible(false);
     setIsConfirmVisible(false);
@@ -85,6 +85,10 @@ const HomeScreen: React.FC = () => {
         }
       }, 300);
     }
+  };
+
+  const selectPoints = (points: number) => {
+    setNewTaskPoints(points);
   };
 
   return (
@@ -123,19 +127,22 @@ const HomeScreen: React.FC = () => {
               value={newTaskText}
               onChangeText={setNewTaskText}
             />
-            <TextInput
-              style={styles.input}
-              placeholder="Emoji"
-              value={newTaskEmoji}
-              onChangeText={setNewTaskEmoji}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Points"
-              value={newTaskPoints.toString()}
-              onChangeText={(text) => setNewTaskPoints(parseInt(text) || 0)}
-              keyboardType="numeric"
-            />
+            <Text style={styles.inputLabel}>Points (optional):</Text>
+            <View style={styles.pointsLabelContainer}>
+              <Text style={styles.pointsLabelText}>Easy</Text>
+              <Text style={styles.pointsLabelText}>Hard</Text>
+            </View>
+            <View style={styles.pointsContainer}>
+              {[1, 2, 3, 4, 5].map(point => (
+                <TouchableOpacity
+                  key={point}
+                  style={[styles.pointBox, newTaskPoints === point && styles.selectedPointBox]}
+                  onPress={() => selectPoints(point)}
+                >
+                  <Text style={styles.pointText}>{point}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
             <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.datePickerButton}>
               <Text style={styles.datePickerButtonText}>Select Due Date</Text>
             </TouchableOpacity>
@@ -158,6 +165,12 @@ const HomeScreen: React.FC = () => {
                 </TouchableOpacity>
               ))}
             </View>
+            <TextInput
+              style={styles.input}
+              placeholder="Emoji (optional, e.g., 😊)"
+              value={newTaskEmoji}
+              onChangeText={setNewTaskEmoji}
+            />
             <TouchableOpacity style={styles.submitButton} onPress={() => setIsConfirmVisible(true)}>
               <Text style={styles.submitButtonText}>Add Task</Text>
             </TouchableOpacity>
