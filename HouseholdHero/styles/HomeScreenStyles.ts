@@ -25,8 +25,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 10,
   },
+  historyButton: {
+    backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  historyButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
   subHeaderText: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     marginVertical: 10,
   },
@@ -47,18 +58,37 @@ const styles = StyleSheet.create({
   taskTextContainer: {
     flex: 1,
     flexDirection: 'column',
+    flexWrap: 'wrap',
   },
   taskText: {
     fontSize: 16,
     color: '#333',
-    flexWrap: 'wrap',
+    flexShrink: 1,
   },
   dueDateText: {
     fontSize: 14,
     color: 'gray',
   },
+  addButton: {
+    backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    width: 50,
+    height: 50,
+    zIndex: 10,
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
   adminContainer: {
-    marginTop: 20,
+    marginVertical: 20,
     padding: 15,
     backgroundColor: '#fff',
     borderRadius: 10,
@@ -80,9 +110,47 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 5,
   },
-  hintText: {
+  pointsLabelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  pointsLabelText: {
     fontSize: 14,
-    color: 'gray',
+  },
+  pointsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  pointBox: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+  },
+  selectedPointBox: {
+    backgroundColor: '#007AFF',
+  },
+  pointText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  datePickerButton: {
+    backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  datePickerButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  selectedDateText: {
+    fontSize: 16,
     marginBottom: 10,
   },
   userPicker: {
@@ -102,24 +170,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#007AFF',
     color: '#fff',
   },
-  addButton: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    backgroundColor: '#007AFF',
-    padding: 10,
-    borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 50,
-    height: 50,
-    zIndex: 10,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
   submitButton: {
     backgroundColor: '#007AFF',
     padding: 10,
@@ -129,72 +179,6 @@ const styles = StyleSheet.create({
   submitButtonText: {
     color: '#fff',
     fontWeight: 'bold',
-  },
-  datePickerButton: {
-    backgroundColor: '#007AFF',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  datePickerButtonText: {
-    color: '#fff',
-  },
-  selectedDateText: {
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  pointsLabelContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 5,
-  },
-  pointsLabelText: {
-    fontSize: 14,
-    color: 'gray',
-  },
-  pointsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  pointBox: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#007AFF',
-    borderRadius: 5,
-    marginHorizontal: 5,
-  },
-  selectedPointBox: {
-    backgroundColor: '#007AFF',
-  },
-  pointText: {
-    color: '#333',
-  },
-  historyButton: {
-    marginVertical: 10,
-    padding: 10,
-    backgroundColor: '#007AFF',
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  historyButtonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  historyContainer: {
-    marginVertical: 10,
-    padding: 15,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 1,
   },
 });
 

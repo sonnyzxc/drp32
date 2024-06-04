@@ -4,13 +4,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import BarGraph from '../components/BarGraph';
 import ConfirmationModal from '../components/ConfirmationModal';
-import { usePoints } from '../context/PointsContext';
+import TaskBreakdownModal from '../components/TaskBreakdownModal';
+import { usePoints, Task } from '../context/PointsContext'; // Import Task interface and usePoints
+import IncompleteTasks from '../components/IncompleteTasks'; // Import IncompleteTasks component
+import CompletedTasks from '../components/CompletedTasks'; // Import CompletedTasks component
+import AddTask from '../components/AddTask'; // Import AddTask component
 import styles from '../styles/HomeScreenStyles'; // Import the styles
 
 const screenWidth = Dimensions.get('window').width;
 
 const HomeScreen: React.FC = () => {
-  const { points, tasks, currentUser, users, addTask } = usePoints();
+  const { points, tasks, currentUser, users, addTask, toggleTaskCompletion } = usePoints();
   const [newTaskText, setNewTaskText] = useState('');
   const [newTaskEmoji, setNewTaskEmoji] = useState('');
   const [newTaskPoints, setNewTaskPoints] = useState(3); // Default selected points
@@ -20,6 +24,7 @@ const HomeScreen: React.FC = () => {
   const [isAddTaskVisible, setIsAddTaskVisible] = useState(false);
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
   const [isHistoryVisible, setIsHistoryVisible] = useState(false);
+  const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
 
   const scrollViewRef = useRef<ScrollView>(null); // Reference to the ScrollView
 
@@ -53,7 +58,7 @@ const HomeScreen: React.FC = () => {
   const chartData = labels.map((label, index) => ({ label, value: combinedPoints[index] }));
 
   const handleAddTask = () => {
-    const newTask = {
+    const newTask: Task = {
       id: tasks.length + 1,
       text: newTaskText,
       emoji: newTaskEmoji || '😊',
@@ -107,6 +112,19 @@ const HomeScreen: React.FC = () => {
     setIsHistoryVisible(!isHistoryVisible);
   };
 
+  const confirmTaskCompletion = (taskId: number) => {
+    setSelectedTaskId(taskId);
+    setIsConfirmVisible(true);
+  };
+
+  const handleConfirmCompletion = () => {
+    if (selectedTaskId !== null) {
+      toggleTaskCompletion(selectedTaskId);
+      setSelectedTaskId(null);
+    }
+    setIsConfirmVisible(false);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollView}>
@@ -120,95 +138,30 @@ const HomeScreen: React.FC = () => {
           <Text style={styles.historyButtonText}>{isHistoryVisible ? 'Hide History' : 'Show History'}</Text>
         </TouchableOpacity>
 
-        {isHistoryVisible && (
-          <View style={styles.historyContainer}>
-            <Text style={styles.subHeaderText}>Chore History</Text>
-            {completedTasks.map(task => (
-              <View key={task.id} style={styles.taskContainer}>
-                <Text style={styles.taskText}>
-                  {task.emoji} {task.text} - Assigned to {users.find(user => user.id === task.assignedTo)?.name}
-                </Text>
-                <Text style={styles.dueDateText}>Completed on: {new Date(task.dueDate).toLocaleDateString()}</Text>
-              </View>
-            ))}
-          </View>
-        )}
+        {isHistoryVisible && <CompletedTasks tasks={completedTasks} users={users} />}
 
-        <Text style={styles.subHeaderText}>Incomplete Tasks</Text>
-        {incompleteTasks.map(task => {
-          const daysDiff = calculateDaysDifference(new Date(task.dueDate));
-          return (
-            <View key={task.id} style={styles.taskContainer}>
-              <View style={styles.taskTextContainer}>
-                <Text style={styles.taskText}>
-                  {task.emoji} {task.text} - Assigned to {users.find(user => user.id === task.assignedTo)?.name}
-                </Text>
-                <Text style={styles.dueDateText}>Due: {new Date(task.dueDate).toLocaleDateString()}</Text>
-                <Text style={styles.dueDateText}>
-                  {daysDiff >= 0 ? `${daysDiff} days left` : `${Math.abs(daysDiff)} days overdue`}
-                </Text>
-              </View>
-            </View>
-          );
-        })}
+        <IncompleteTasks tasks={incompleteTasks} users={users} currentUser={currentUser} calculateDaysDifference={calculateDaysDifference} confirmTaskCompletion={confirmTaskCompletion} />
 
         {isAddTaskVisible && (
-          <View style={styles.adminContainer}>
-            <Text style={styles.subHeaderText}>Add New Task</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Task Name"
-              value={newTaskText}
-              onChangeText={setNewTaskText}
-            />
-            <Text style={styles.inputLabel}>Points (difficulty):</Text>
-            <View style={styles.pointsLabelContainer}>
-              <Text style={styles.pointsLabelText}>Easy</Text>
-              <Text style={styles.pointsLabelText}>Hard</Text>
-            </View>
-            <View style={styles.pointsContainer}>
-              {[1, 2, 3, 4, 5].map(point => (
-                <TouchableOpacity
-                  key={point}
-                  style={[styles.pointBox, newTaskPoints === point && styles.selectedPointBox]}
-                  onPress={() => selectPoints(point)}
-                >
-                  <Text style={styles.pointText}>{point}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.datePickerButton}>
-              <Text style={styles.datePickerButtonText}>Select Due Date</Text>
-            </TouchableOpacity>
-            {showDatePicker && (
-              <DateTimePicker
-                value={newTaskDueDate}
-                mode="date"
-                display="default"
-                onChange={handleDateChange}
-              />
-            )}
-            <Text style={styles.selectedDateText}>Selected Date: {newTaskDueDate.toLocaleDateString()}</Text>
-            <Text style={styles.inputLabel}>Assign To:</Text>
-            <View style={styles.userPicker}>
-              {users.map(user => (
-                <TouchableOpacity key={user.id} onPress={() => setAssignedUserId(user.id)}>
-                  <Text style={[styles.userOption, assignedUserId === user.id && styles.selectedUser]}>
-                    {user.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <TextInput
-              style={styles.input}
-              placeholder="Emoji (optional, e.g., 😊)"
-              value={newTaskEmoji}
-              onChangeText={setNewTaskEmoji}
-            />
-            <TouchableOpacity style={styles.submitButton} onPress={() => setIsConfirmVisible(true)}>
-              <Text style={styles.submitButtonText}>Add Task</Text>
-            </TouchableOpacity>
-          </View>
+          <AddTask
+            newTaskText={newTaskText}
+            setNewTaskText={setNewTaskText}
+            newTaskEmoji={newTaskEmoji}
+            setNewTaskEmoji={setNewTaskEmoji}
+            newTaskPoints={newTaskPoints}
+            setNewTaskPoints={setNewTaskPoints}
+            assignedUserId={assignedUserId}
+            setAssignedUserId={setAssignedUserId}
+            newTaskDueDate={newTaskDueDate}
+            setNewTaskDueDate={setNewTaskDueDate}
+            showDatePicker={showDatePicker}
+            setShowDatePicker={setShowDatePicker}
+            handleDateChange={handleDateChange}
+            selectPoints={selectPoints}
+            users={users}
+            handleAddTask={handleAddTask}
+            setIsConfirmVisible={setIsConfirmVisible}
+          />
         )}
       </ScrollView>
 
@@ -220,9 +173,9 @@ const HomeScreen: React.FC = () => {
 
       <ConfirmationModal
         visible={isConfirmVisible}
-        onConfirm={handleAddTask}
+        onConfirm={handleConfirmCompletion}
         onCancel={() => setIsConfirmVisible(false)}
-        message="Are you sure you want to add this task?"
+        message="Are you sure you want to mark this task as complete?"
       />
     </SafeAreaView>
   );

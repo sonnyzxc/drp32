@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
-interface Task {
+export interface Task {
   id: number;
   text: string;
   emoji?: string;
