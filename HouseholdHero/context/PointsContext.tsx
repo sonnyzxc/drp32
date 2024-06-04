@@ -75,7 +75,7 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     // Fetch tasks from the API
     const fetchTasks = async () => {
       try {
-        const response = await fetch('https://be-drp32-5ac34b8c912e.herokuapp.com/get/chores?familyID=1', {
+        const response = await fetch('https://be-drp32-5ac34b8c912e.herokuapp.com/chores?familyID=1&completed=false', {
           method: 'GET',
           mode: 'no-cors',
           headers: {
@@ -115,7 +115,7 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   const addTask = async (task: Task) => {
     try {
-      const response = await fetch('https://be-drp32-5ac34b8c912e.herokuapp.com/create/chore', {
+      const response = await fetch('https://be-drp32-5ac34b8c912e.herokuapp.com/chore', {
         method: 'POST',
         mode: 'no-cors',
         headers: {
@@ -143,12 +143,11 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
     const updatedTask = { ...taskToUpdate, completed: !taskToUpdate.completed };
     try {
-      await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/tasks/${taskId}`, {
+      await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/chore/complete/${taskId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updatedTask),
       });
       setTasks(tasks.map(task => task.id === taskId ? updatedTask : task));
       addPoints(taskToUpdate.assignedTo, currentDayIndex, updatedTask.completed ? taskToUpdate.points : -taskToUpdate.points);
