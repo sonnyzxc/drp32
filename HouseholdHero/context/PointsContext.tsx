@@ -63,7 +63,7 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     return {
       id: task.chore_id,
       text: task.description, // Assuming the API returns `description` instead of `text`
-      emoji: "",
+      emoji: task.emoji,
       points: task.points, // Assuming the API returns `reward_points` instead of `points`
       completed: task.completed, // Assuming the API returns `is_done` instead of `completed`
       assignedTo: task.assigned_to, // Assuming the API returns `user_id` instead of `assignedTo`
