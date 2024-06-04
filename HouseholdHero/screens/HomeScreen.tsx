@@ -19,10 +19,12 @@ const HomeScreen: React.FC = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isAddTaskVisible, setIsAddTaskVisible] = useState(false);
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
+  const [isHistoryVisible, setIsHistoryVisible] = useState(false);
 
   const scrollViewRef = useRef<ScrollView>(null); // Reference to the ScrollView
 
   const incompleteTasks = tasks.filter(task => !task.completed);
+  const completedTasks = tasks.filter(task => task.completed);
 
   const getLast7Days = () => {
     const today = new Date();
@@ -37,8 +39,18 @@ const HomeScreen: React.FC = () => {
   };
 
   const labels = getLast7Days();
-  const userPoints = points[currentUser.id] || [0, 0, 0, 0, 0, 0, 0];
-  const chartData = labels.map((label, index) => ({ label, value: userPoints[index] }));
+  const aggregatePoints = () => {
+    const totalPoints = Array(7).fill(0);
+    for (const userId in points) {
+      points[userId].forEach((point, index) => {
+        totalPoints[index] += point;
+      });
+    }
+    return totalPoints;
+  };
+
+  const combinedPoints = aggregatePoints();
+  const chartData = labels.map((label, index) => ({ label, value: combinedPoints[index] }));
 
   const handleAddTask = () => {
     const newTask = {
@@ -91,6 +103,10 @@ const HomeScreen: React.FC = () => {
     setNewTaskPoints(points);
   };
 
+  const toggleHistory = () => {
+    setIsHistoryVisible(!isHistoryVisible);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollView}>
@@ -98,7 +114,25 @@ const HomeScreen: React.FC = () => {
         <View style={styles.chartContainer}>
           <BarGraph data={chartData} />
         </View>
-        <Text style={styles.totalPointsText}>Total Points: {userPoints.reduce((a, b) => a + b, 0)}</Text>
+        <Text style={styles.totalPointsText}>Total Points: {combinedPoints.reduce((a, b) => a + b, 0)}</Text>
+
+        <TouchableOpacity style={styles.historyButton} onPress={toggleHistory}>
+          <Text style={styles.historyButtonText}>{isHistoryVisible ? 'Hide History' : 'Show History'}</Text>
+        </TouchableOpacity>
+
+        {isHistoryVisible && (
+          <View style={styles.historyContainer}>
+            <Text style={styles.subHeaderText}>Chore History</Text>
+            {completedTasks.map(task => (
+              <View key={task.id} style={styles.taskContainer}>
+                <Text style={styles.taskText}>
+                  {task.emoji} {task.text} - Assigned to {users.find(user => user.id === task.assignedTo)?.name}
+                </Text>
+                <Text style={styles.dueDateText}>Completed on: {new Date(task.dueDate).toLocaleDateString()}</Text>
+              </View>
+            ))}
+          </View>
+        )}
 
         <Text style={styles.subHeaderText}>Incomplete Tasks</Text>
         {incompleteTasks.map(task => {
@@ -127,7 +161,7 @@ const HomeScreen: React.FC = () => {
               value={newTaskText}
               onChangeText={setNewTaskText}
             />
-            <Text style={styles.inputLabel}>Points (optional):</Text>
+            <Text style={styles.inputLabel}>Points (difficulty):</Text>
             <View style={styles.pointsLabelContainer}>
               <Text style={styles.pointsLabelText}>Easy</Text>
               <Text style={styles.pointsLabelText}>Hard</Text>

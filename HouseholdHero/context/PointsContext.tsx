@@ -75,7 +75,7 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     // Fetch tasks from the API
     const fetchTasks = async () => {
       try {
-        const response = await fetch('https://be-drp32-5ac34b8c912e.herokuapp.com/chores?familyID=1&completed=false', {
+        const response = await fetch('https://be-drp32-5ac34b8c912e.herokuapp.com/chores?familyID=1', {
           method: 'GET',
           mode: 'no-cors',
           headers: {
@@ -107,6 +107,7 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const formatTaskForApi = (task: Task) => {
     return {
       "description": task.text,
+      "emoji": task.emoji,
       "points": task.points,
       "assigned-to": task.assignedTo,
       "due-date": task.dueDate.toISOString().substring(0, 10), // Convert Date to ISO string
