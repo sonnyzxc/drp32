@@ -16,14 +16,13 @@ func (i impl) GetFamilyChores(ctx context.Context, familyID int64) (model.Chores
 			"WHERE %s IN ( "+
 			"SELECT %s FROM %s "+
 			"WHERE %s=%d "+
-			") AND %s=FALSE",
+			")",
 		orm.TableNames.Chores,
 		orm.ChoreTableColumns.AssignedTo,
 		orm.UserTableColumns.UserID,
 		orm.TableNames.Users,
 		orm.UserTableColumns.FamilyID,
 		familyID,
-		orm.ChoreTableColumns.Completed,
 	)
 
 	var chores model.Chores

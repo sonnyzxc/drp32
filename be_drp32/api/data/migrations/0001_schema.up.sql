@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS redeemed (
 --
 -- insert into chores (description, emoji, points, completed, assigned_to, due_date) values ('Geranium sylvaticum L.', 'test', 31, false, 6, '08/08/2024');
 -- insert into chores (description, emoji, points, completed, assigned_to, due_date) values ('Geranium sylvaticum L.', 'test', 31, true, 6, '08/08/2024');
+-- insert into chores (description, emoji, points, completed, assigned_to, due_date) values ('Geranium sylvaticum L.', 'test', 31, false, 4, '08/08/2024');
 --
 -- insert into rewards (description, points) values ( 'Polygala palmeri S. Watson', 17);
 -- insert into rewards (description, points) values ( 'Petrorhagia nanteuilii (Burnat) P.W. Ball & Heywood', 34);
