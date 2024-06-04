@@ -23,11 +23,10 @@ func (h Handler) CreateChore() http.HandlerFunc {
 		//	return errors.New("bad request"), http.StatusBadRequest
 		//}
 
-		if err = h.ctrl.CreateChore(r.Context(), request.Description, request.Points, request.AssignedTo, dueDate); err != nil {
+		if err = h.ctrl.CreateChore(r.Context(), request.Description, request.Emoji, request.Points, request.AssignedTo, dueDate); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 
-		handler.EnableCors(&w)
 		if err = render.Render(w, r, basic_success.New(http.StatusCreated)); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}

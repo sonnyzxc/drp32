@@ -7,6 +7,7 @@ type User struct {
 	UserEmail string `boil:"user_email" json:"user_email" toml:"user_email" yaml:"user_email"`
 	UserName  string `boil:"user_name" json:"user_name" toml:"user_name" yaml:"user_name"`
 	FamilyID  int64  `boil:"family_id" json:"family_id" toml:"family_id" yaml:"family_id"`
+	Admin     bool   `boil:"admin" json:"admin" toml:"admin" yaml:"admin"`
 }
 
 type Users []User
@@ -17,5 +18,6 @@ func (u User) Orm() *orm.User {
 		UserEmail: u.UserEmail,
 		UserName:  u.UserName,
 		FamilyID:  u.FamilyID,
+		Admin:     u.Admin,
 	}
 }

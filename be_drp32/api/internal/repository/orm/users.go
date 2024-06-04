@@ -27,6 +27,7 @@ type User struct {
 	UserEmail string `boil:"user_email" json:"user_email" toml:"user_email" yaml:"user_email"`
 	UserName  string `boil:"user_name" json:"user_name" toml:"user_name" yaml:"user_name"`
 	FamilyID  int64  `boil:"family_id" json:"family_id" toml:"family_id" yaml:"family_id"`
+	Admin     bool   `boil:"admin" json:"admin" toml:"admin" yaml:"admin"`
 
 	R *userR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L userL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -37,11 +38,13 @@ var UserColumns = struct {
 	UserEmail string
 	UserName  string
 	FamilyID  string
+	Admin     string
 }{
 	UserID:    "user_id",
 	UserEmail: "user_email",
 	UserName:  "user_name",
 	FamilyID:  "family_id",
+	Admin:     "admin",
 }
 
 var UserTableColumns = struct {
@@ -49,11 +52,13 @@ var UserTableColumns = struct {
 	UserEmail string
 	UserName  string
 	FamilyID  string
+	Admin     string
 }{
 	UserID:    "users.user_id",
 	UserEmail: "users.user_email",
 	UserName:  "users.user_name",
 	FamilyID:  "users.family_id",
+	Admin:     "users.admin",
 }
 
 // Generated where
@@ -63,11 +68,13 @@ var UserWhere = struct {
 	UserEmail whereHelperstring
 	UserName  whereHelperstring
 	FamilyID  whereHelperint64
+	Admin     whereHelperbool
 }{
 	UserID:    whereHelperint64{field: "\"users\".\"user_id\""},
 	UserEmail: whereHelperstring{field: "\"users\".\"user_email\""},
 	UserName:  whereHelperstring{field: "\"users\".\"user_name\""},
 	FamilyID:  whereHelperint64{field: "\"users\".\"family_id\""},
+	Admin:     whereHelperbool{field: "\"users\".\"admin\""},
 }
 
 // UserRels is where relationship names are stored.
@@ -118,8 +125,8 @@ func (r *userR) GetRewards() RewardSlice {
 type userL struct{}
 
 var (
-	userAllColumns            = []string{"user_id", "user_email", "user_name", "family_id"}
-	userColumnsWithoutDefault = []string{"user_email", "user_name", "family_id"}
+	userAllColumns            = []string{"user_id", "user_email", "user_name", "family_id", "admin"}
+	userColumnsWithoutDefault = []string{"user_email", "user_name", "family_id", "admin"}
 	userColumnsWithDefault    = []string{"user_id"}
 	userPrimaryKeyColumns     = []string{"user_id"}
 	userGeneratedColumns      = []string{}
