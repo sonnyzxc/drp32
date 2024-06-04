@@ -54,8 +54,8 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [points, setPoints] = useState<{ [userId: number]: number[] }>(initialPoints);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [users, setUsers] = useState<User[]>([
-    { id: 1, name: 'John Doe', isAdmin: true },
-    { id: 2, name: 'Jane Doe', isAdmin: false },
+    { id: 1, name: 'Elizabeth', isAdmin: true },
+    { id: 2, name: 'James', isAdmin: false },
   ]);
   const [currentUser, setCurrentUser] = useState<User>(users[0]);
 
