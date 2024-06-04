@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-export default StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f8f8',
@@ -31,6 +31,9 @@ export default StyleSheet.create({
     marginVertical: 10,
   },
   taskContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 15,
     backgroundColor: '#fff',
     borderRadius: 10,
@@ -41,14 +44,18 @@ export default StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
+  taskTextContainer: {
+    flex: 1,
+    flexDirection: 'column',
+  },
   taskText: {
     fontSize: 16,
     color: '#333',
+    flexWrap: 'wrap',
   },
   dueDateText: {
     fontSize: 14,
     color: 'gray',
-    marginTop: 5,
   },
   adminContainer: {
     marginTop: 20,
@@ -91,14 +98,14 @@ export default StyleSheet.create({
     color: '#fff',
   },
   addButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
     backgroundColor: '#007AFF',
     padding: 10,
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
     width: 50,
     height: 50,
     zIndex: 10,
@@ -107,21 +114,6 @@ export default StyleSheet.create({
     color: '#fff',
     fontSize: 24,
     fontWeight: 'bold',
-  },
-  datePickerButton: {
-    backgroundColor: '#007AFF',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  datePickerButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  selectedDateText: {
-    fontSize: 16,
-    marginVertical: 10,
   },
   submitButton: {
     backgroundColor: '#007AFF',
@@ -133,6 +125,20 @@ export default StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-
-
+  datePickerButton: {
+    backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  datePickerButtonText: {
+    color: '#fff',
+  },
+  selectedDateText: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
 });
+
+export default styles;

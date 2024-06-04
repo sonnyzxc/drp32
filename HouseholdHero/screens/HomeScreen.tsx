@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity, TextInput, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -19,6 +19,8 @@ const HomeScreen: React.FC = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isAddTaskVisible, setIsAddTaskVisible] = useState(false);
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
+
+  const scrollViewRef = useRef<ScrollView>(null); // Reference to the ScrollView
 
   const incompleteTasks = tasks.filter(task => !task.completed);
 
@@ -73,9 +75,21 @@ const HomeScreen: React.FC = () => {
     return dayDiff;
   };
 
+  const scrollToAddTask = () => {
+    setIsAddTaskVisible(!isAddTaskVisible);
+    if (!isAddTaskVisible) {
+      // Delay scrolling to ensure the layout is updated
+      setTimeout(() => {
+        if (scrollViewRef.current) {
+          scrollViewRef.current.scrollToEnd({ animated: true });
+        }
+      }, 300);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollView}>
+      <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollView}>
         <Text style={styles.headerText}>Weekly Chore Points</Text>
         <View style={styles.chartContainer}>
           <BarGraph data={chartData} />
@@ -87,74 +101,76 @@ const HomeScreen: React.FC = () => {
           const daysDiff = calculateDaysDifference(new Date(task.dueDate));
           return (
             <View key={task.id} style={styles.taskContainer}>
-              <Text style={styles.taskText}>
-                {task.emoji} {task.text} - Assigned to {users.find(user => user.id === task.assignedTo)?.name}
-              </Text>
-              <Text style={styles.dueDateText}>Due: {new Date(task.dueDate).toLocaleDateString()}</Text>
-              <Text style={styles.dueDateText}>
-                {daysDiff >= 0 ? `${daysDiff} days left` : `${Math.abs(daysDiff)} days overdue`}
-              </Text>
+              <View style={styles.taskTextContainer}>
+                <Text style={styles.taskText}>
+                  {task.emoji} {task.text} - Assigned to {users.find(user => user.id === task.assignedTo)?.name}
+                </Text>
+                <Text style={styles.dueDateText}>Due: {new Date(task.dueDate).toLocaleDateString()}</Text>
+                <Text style={styles.dueDateText}>
+                  {daysDiff >= 0 ? `${daysDiff} days left` : `${Math.abs(daysDiff)} days overdue`}
+                </Text>
+              </View>
             </View>
           );
         })}
 
-        {currentUser.isAdmin && (
-          <>
-            <TouchableOpacity style={styles.addButton} onPress={() => setIsAddTaskVisible(!isAddTaskVisible)}>
-              <Text style={styles.addButtonText}>{isAddTaskVisible ? '-' : '+'}</Text>
+        {isAddTaskVisible && (
+          <View style={styles.adminContainer}>
+            <Text style={styles.subHeaderText}>Add New Task</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Task Name"
+              value={newTaskText}
+              onChangeText={setNewTaskText}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Emoji"
+              value={newTaskEmoji}
+              onChangeText={setNewTaskEmoji}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Points"
+              value={newTaskPoints.toString()}
+              onChangeText={(text) => setNewTaskPoints(parseInt(text) || 0)}
+              keyboardType="numeric"
+            />
+            <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.datePickerButton}>
+              <Text style={styles.datePickerButtonText}>Select Due Date</Text>
             </TouchableOpacity>
-            {isAddTaskVisible && (
-              <View style={styles.adminContainer}>
-                <Text style={styles.subHeaderText}>Add New Task</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Task Name"
-                  value={newTaskText}
-                  onChangeText={setNewTaskText}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Emoji"
-                  value={newTaskEmoji}
-                  onChangeText={setNewTaskEmoji}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Points"
-                  value={newTaskPoints.toString()}
-                  onChangeText={(text) => setNewTaskPoints(parseInt(text) || 0)}
-                  keyboardType="numeric"
-                />
-                <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.datePickerButton}>
-                  <Text style={styles.datePickerButtonText}>Select Due Date</Text>
-                </TouchableOpacity>
-                {showDatePicker && (
-                  <DateTimePicker
-                    value={newTaskDueDate}
-                    mode="date"
-                    display="default"
-                    onChange={handleDateChange}
-                  />
-                )}
-                <Text style={styles.selectedDateText}>Selected Date: {newTaskDueDate.toLocaleDateString()}</Text>
-                <Text style={styles.inputLabel}>Assign To:</Text>
-                <View style={styles.userPicker}>
-                  {users.map(user => (
-                    <TouchableOpacity key={user.id} onPress={() => setAssignedUserId(user.id)}>
-                      <Text style={[styles.userOption, assignedUserId === user.id && styles.selectedUser]}>
-                        {user.name}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-                <TouchableOpacity style={styles.submitButton} onPress={() => setIsConfirmVisible(true)}>
-                  <Text style={styles.submitButtonText}>Add Task</Text>
-                </TouchableOpacity>
-              </View>
+            {showDatePicker && (
+              <DateTimePicker
+                value={newTaskDueDate}
+                mode="date"
+                display="default"
+                onChange={handleDateChange}
+              />
             )}
-          </>
+            <Text style={styles.selectedDateText}>Selected Date: {newTaskDueDate.toLocaleDateString()}</Text>
+            <Text style={styles.inputLabel}>Assign To:</Text>
+            <View style={styles.userPicker}>
+              {users.map(user => (
+                <TouchableOpacity key={user.id} onPress={() => setAssignedUserId(user.id)}>
+                  <Text style={[styles.userOption, assignedUserId === user.id && styles.selectedUser]}>
+                    {user.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <TouchableOpacity style={styles.submitButton} onPress={() => setIsConfirmVisible(true)}>
+              <Text style={styles.submitButtonText}>Add Task</Text>
+            </TouchableOpacity>
+          </View>
         )}
       </ScrollView>
+
+      {currentUser.isAdmin && (
+        <TouchableOpacity style={styles.addButton} onPress={scrollToAddTask}>
+          <Text style={styles.addButtonText}>{isAddTaskVisible ? '-' : '+'}</Text>
+        </TouchableOpacity>
+      )}
+
       <ConfirmationModal
         visible={isConfirmVisible}
         onConfirm={handleAddTask}
