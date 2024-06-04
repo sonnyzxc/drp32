@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Cache Node Modules
@@ -30,6 +30,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: npm
 
       - name: Install Java
         uses: actions/setup-java@v4
@@ -38,25 +39,22 @@ jobs:
           java-version: '17'
 
       - name: Install Dependencies
-        run: cd HouseholdHero && npm ci
+        working-directory: ./HouseholdHero
+        run: npm ci
 
       - name: Run Tests
-        run: cd HouseholdHero && npm test -- --watchAll=false
+        working-directory: ./HouseholdHero
+        run: npm test -- --watchAll=false
 
       - name: Prebuild Expo
-        # if: contains('ci', github.ref)
-        run: cd HouseholdHero && npx expo prebuild
+        working-directory: ./HouseholdHero
+        run: npx expo prebuild --platform android
 
       - name: Build Android
-        # if: contains('ci', github.ref)
-        run: cd HouseholdHero/android && ./gradlew assembleRelease
-
-      - name: Check files
-        # if: contains('ci', github.ref)
-        run: ls HouseholdHero/android/app/build/outputs/apk/release
+        working-directory: ./HouseholdHero/android
+        run: ./gradlew assembleRelease
 
       - name: Upload APK
-        # if: contains('ci', github.ref)
         uses: actions/upload-artifact@v4
         with:
           name: app-release
