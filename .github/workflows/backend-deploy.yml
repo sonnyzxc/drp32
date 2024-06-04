@@ -1,6 +1,9 @@
 name: DRP32 CI/CD (Backend)
 
-on: push
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   deploy:
