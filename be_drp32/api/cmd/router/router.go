@@ -32,13 +32,33 @@ func (rtr Router) Handler() http.Handler {
 		// middleware.DefaultCompress, // compress results, mostly gzipping assets and json
 		middleware.StripSlashes, // match paths with a trailing slash, strip it, and continue routing through the mux
 		middleware.Recoverer,    // recover from panics without crashing server
+		middleware.RequestID,
+		middleware.RealIP,
 	)
 
 	r.Get("/_/ready", rtr.healthRESTHandler.CheckReadiness())
-	r.Post("/create/family", rtr.familyRESTHandler.CreateFamily())
-	r.Post("/create/user", rtr.userRESTHandler.CreateUser())
-	r.Post("/create/chore", rtr.choreRESTHandler.CreateChore())
-	r.Get("/get/chores", rtr.choreRESTHandler.GetFamilyChores())
+	//r.Post("/create/family", rtr.familyRESTHandler.CreateFamily())
+	//r.Post("/create/user", rtr.userRESTHandler.CreateUser())
+	//r.Post("/create/chore", rtr.choreRESTHandler.CreateChore())
+	//r.Get("/get/chores", rtr.choreRESTHandler.GetChores())
+	//r.Put("/completeChore/{choreID}", rtr.choreRESTHandler.CompleteChore())
+
+	r.Route("/family", func(r chi.Router) {
+		r.Post("/", rtr.familyRESTHandler.CreateFamily())
+	})
+
+	r.Route("/chore", func(r chi.Router) {
+		r.Post("/", rtr.choreRESTHandler.CreateChore())
+		r.Put("/complete/{choreID}", rtr.choreRESTHandler.CompleteChore())
+	})
+
+	r.Route("/chores", func(r chi.Router) {
+		r.Get("/", rtr.choreRESTHandler.GetChores())
+	})
+
+	r.Route("/user", func(r chi.Router) {
+		r.Post("/", rtr.userRESTHandler.CreateUser())
+	})
 
 	return r
 }

@@ -24,10 +24,11 @@ func TestRouter_Handler(t *testing.T) {
 
 	expectedRoutes := []string{
 		"GET /_/ready",
-		"POST /create/family",
-		"POST /create/user",
-		"POST /create/chore",
-		"POST /get/chores",
+		"GET /chores/",
+		"POST /chore/",
+		"POST /family/",
+		"POST /user/",
+		"PUT /chore/complete/{choreID}",
 	}
 	sort.Strings(expectedRoutes)
 	var routesFound []string

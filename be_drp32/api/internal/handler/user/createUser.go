@@ -16,11 +16,10 @@ func (h Handler) CreateUser() http.HandlerFunc {
 			return errors.New("bad request"), http.StatusBadRequest
 		}
 
-		if err := h.ctrl.CreateUser(r.Context(), request.Email, request.Name, request.FamilyID); err != nil {
+		if err := h.ctrl.CreateUser(r.Context(), request.Email, request.Name, request.FamilyID, request.Admin); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 
-		handler.EnableCors(&w)
 		if err := render.Render(w, r, basic_success.New(http.StatusCreated)); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}

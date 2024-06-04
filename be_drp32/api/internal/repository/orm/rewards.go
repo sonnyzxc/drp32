@@ -447,7 +447,7 @@ func (rewardL) LoadUsers(ctx context.Context, e boil.ContextExecutor, singular b
 	}
 
 	query := NewQuery(
-		qm.Select("\"users\".\"user_id\", \"users\".\"user_email\", \"users\".\"user_name\", \"users\".\"family_id\", \"a\".\"reward_id\""),
+		qm.Select("\"users\".\"user_id\", \"users\".\"user_email\", \"users\".\"user_name\", \"users\".\"family_id\", \"users\".\"admin\", \"a\".\"reward_id\""),
 		qm.From("\"users\""),
 		qm.InnerJoin("\"redeemed\" as \"a\" on \"users\".\"user_id\" = \"a\".\"user_id\""),
 		qm.WhereIn("\"a\".\"reward_id\" in ?", args...),
@@ -468,7 +468,7 @@ func (rewardL) LoadUsers(ctx context.Context, e boil.ContextExecutor, singular b
 		one := new(User)
 		var localJoinCol int64
 
-		err = results.Scan(&one.UserID, &one.UserEmail, &one.UserName, &one.FamilyID, &localJoinCol)
+		err = results.Scan(&one.UserID, &one.UserEmail, &one.UserName, &one.FamilyID, &one.Admin, &localJoinCol)
 		if err != nil {
 			return errors.Wrap(err, "failed to scan eager loaded results for users")
 		}

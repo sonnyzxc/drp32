@@ -32,6 +32,36 @@ func (_m *MockRepository) CreateChore(ctx context.Context, chore model.Chore) er
 	return r0
 }
 
+// GetFamilyChores provides a mock function with given fields: ctx, familyID
+func (_m *MockRepository) GetFamilyChores(ctx context.Context, familyID int64) (model.Chores, error) {
+	ret := _m.Called(ctx, familyID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetFamilyChores")
+	}
+
+	var r0 model.Chores
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64) (model.Chores, error)); ok {
+		return rf(ctx, familyID)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int64) model.Chores); ok {
+		r0 = rf(ctx, familyID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(model.Chores)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+		r1 = rf(ctx, familyID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // NewMockRepository creates a new instance of MockRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMockRepository(t interface {

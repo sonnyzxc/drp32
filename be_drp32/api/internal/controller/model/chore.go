@@ -8,6 +8,7 @@ import (
 type Chore struct {
 	ChoreID     int64     `boil:"chore_id" json:"chore_id" toml:"chore_id" yaml:"chore_id"`
 	Description string    `boil:"description" json:"description" toml:"description" yaml:"description"`
+	Emoji       string    `boil:"emoji" json:"emoji" toml:"emoji" yaml:"emoji"`
 	Points      int       `boil:"points" json:"points" toml:"points" yaml:"points"`
 	Completed   bool      `boil:"completed" json:"completed" toml:"completed" yaml:"completed"`
 	AssignedTo  int64     `boil:"assigned_to" json:"assigned_to" toml:"assigned_to" yaml:"assigned_to"`
@@ -20,6 +21,7 @@ func (c Chore) Orm() *orm.Chore {
 	return &orm.Chore{
 		ChoreID:     c.ChoreID,
 		Description: c.Description,
+		Emoji:       c.Emoji,
 		Points:      c.Points,
 		Completed:   c.Completed,
 		AssignedTo:  c.AssignedTo,
