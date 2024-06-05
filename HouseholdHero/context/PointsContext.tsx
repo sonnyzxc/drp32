@@ -39,11 +39,8 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   };
 
   const initializePoints = () => {
-    const userPoints = [...defaultPoints];
-    for (let i = 0; i < 7; i++) {
-      userPoints[i] = Math.floor(Math.random() * 15) + 1;
-    }
-    return rotateArray(userPoints, today + 1);
+    // Initialize points to a default value for all days
+    return rotateArray(defaultPoints, today + 1);
   };
 
   const initialPoints = {
