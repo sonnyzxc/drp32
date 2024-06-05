@@ -1,26 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity, TextInput, Platform } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity, TextInput, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import BarGraph from '../components/BarGraph';
 import ConfirmationModal from '../components/ConfirmationModal';
-import { usePoints } from '../context/PointsContext';
+import TaskBreakdownModal from '../components/TaskBreakdownModal';
+import { usePoints, Task } from '../context/PointsContext'; // Import Task interface and usePoints
+import IncompleteTasks from '../components/IncompleteTasks'; // Import IncompleteTasks component
+import CompletedTasks from '../components/CompletedTasks'; // Import CompletedTasks component
+import AddTask from '../components/AddTask'; // Import AddTask component
 import styles from '../styles/HomeScreenStyles'; // Import the styles
 
 const screenWidth = Dimensions.get('window').width;
 
 const HomeScreen: React.FC = () => {
-  const { points, tasks, currentUser, users, addTask } = usePoints();
+  const { points, tasks, currentUser, users, addTask, toggleTaskCompletion } = usePoints();
   const [newTaskText, setNewTaskText] = useState('');
   const [newTaskEmoji, setNewTaskEmoji] = useState('');
-  const [newTaskPoints, setNewTaskPoints] = useState(0);
+  const [newTaskPoints, setNewTaskPoints] = useState(3); // Default selected points
   const [assignedUserId, setAssignedUserId] = useState(users[0].id);
   const [newTaskDueDate, setNewTaskDueDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isAddTaskVisible, setIsAddTaskVisible] = useState(false);
-  const [isConfirmVisible, setIsConfirmVisible] = useState(false);
+  const [isCompleteConfirmVisible, setIsCompleteConfirmVisible] = useState(false);
+  const [isAddConfirmVisible, setIsAddConfirmVisible] = useState(false);
+  const [isHistoryVisible, setIsHistoryVisible] = useState(false);
+  const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
+
+  const scrollViewRef = useRef<ScrollView>(null); // Reference to the ScrollView
 
   const incompleteTasks = tasks.filter(task => !task.completed);
+  const completedTasks = tasks.filter(task => task.completed);
 
   const getLast7Days = () => {
     const today = new Date();
@@ -35,14 +45,24 @@ const HomeScreen: React.FC = () => {
   };
 
   const labels = getLast7Days();
-  const userPoints = points[currentUser.id] || [0, 0, 0, 0, 0, 0, 0];
-  const chartData = labels.map((label, index) => ({ label, value: userPoints[index] }));
+  const aggregatePoints = () => {
+    const totalPoints = Array(7).fill(0);
+    for (const userId in points) {
+      points[userId].forEach((point, index) => {
+        totalPoints[index] += point;
+      });
+    }
+    return totalPoints;
+  };
+
+  const combinedPoints = aggregatePoints();
+  const chartData = labels.map((label, index) => ({ label, value: combinedPoints[index] }));
 
   const handleAddTask = () => {
-    const newTask = {
+    const newTask: Task = {
       id: tasks.length + 1,
       text: newTaskText,
-      emoji: newTaskEmoji,
+      emoji: newTaskEmoji || '😊',
       points: newTaskPoints,
       completed: false,
       assignedTo: assignedUserId,
@@ -51,10 +71,11 @@ const HomeScreen: React.FC = () => {
     addTask(newTask);
     setNewTaskText('');
     setNewTaskEmoji('');
-    setNewTaskPoints(0);
+    setNewTaskPoints(3); // Reset to default selected points
     setNewTaskDueDate(new Date());
     setIsAddTaskVisible(false);
-    setIsConfirmVisible(false);
+    setIsCompleteConfirmVisible(false);
+    setIsAddConfirmVisible(false);
   };
 
   const handleDateChange = (event: any, selectedDate: Date | undefined) => {
@@ -73,92 +94,95 @@ const HomeScreen: React.FC = () => {
     return dayDiff;
   };
 
+  const scrollToAddTask = () => {
+    setIsAddTaskVisible(!isAddTaskVisible);
+    if (!isAddTaskVisible) {
+      // Delay scrolling to ensure the layout is updated
+      setTimeout(() => {
+        if (scrollViewRef.current) {
+          scrollViewRef.current.scrollToEnd({ animated: true });
+        }
+      }, 300);
+    }
+  };
+
+  const selectPoints = (points: number) => {
+    setNewTaskPoints(points);
+  };
+
+  const toggleHistory = () => {
+    setIsHistoryVisible(!isHistoryVisible);
+  };
+
+  const confirmTaskCompletion = (taskId: number) => {
+    setSelectedTaskId(taskId);
+    setIsCompleteConfirmVisible(true);
+  };
+
+  const handleConfirmCompletion = () => {
+    if (selectedTaskId !== null) {
+      toggleTaskCompletion(selectedTaskId);
+      setSelectedTaskId(null);
+    }
+    setIsCompleteConfirmVisible(false);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollView}>
+      <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollView}>
         <Text style={styles.headerText}>Weekly Chore Points</Text>
         <View style={styles.chartContainer}>
           <BarGraph data={chartData} />
         </View>
-        <Text style={styles.totalPointsText}>Total Points: {userPoints.reduce((a, b) => a + b, 0)}</Text>
+        <Text style={styles.totalPointsText}>Total Points: {combinedPoints.reduce((a, b) => a + b, 0)}</Text>
 
-        <Text style={styles.subHeaderText}>Incomplete Tasks</Text>
-        {incompleteTasks.map(task => {
-          const daysDiff = calculateDaysDifference(new Date(task.dueDate));
-          return (
-            <View key={task.id} style={styles.taskContainer}>
-              <Text style={styles.taskText}>
-                {task.emoji} {task.text} - Assigned to {users.find(user => user.id === task.assignedTo)?.name}
-              </Text>
-              <Text style={styles.dueDateText}>Due: {new Date(task.dueDate).toLocaleDateString()}</Text>
-              <Text style={styles.dueDateText}>
-                {daysDiff >= 0 ? `${daysDiff} days left` : `${Math.abs(daysDiff)} days overdue`}
-              </Text>
-            </View>
-          );
-        })}
+        <TouchableOpacity style={styles.historyButton} onPress={toggleHistory}>
+          <Text style={styles.historyButtonText}>{isHistoryVisible ? 'Hide History' : 'Show History'}</Text>
+        </TouchableOpacity>
 
-        {currentUser.isAdmin && (
-          <>
-            <TouchableOpacity style={styles.addButton} onPress={() => setIsAddTaskVisible(!isAddTaskVisible)}>
-              <Text style={styles.addButtonText}>{isAddTaskVisible ? '-' : '+'}</Text>
-            </TouchableOpacity>
-            {isAddTaskVisible && (
-              <View style={styles.adminContainer}>
-                <Text style={styles.subHeaderText}>Add New Task</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Task Name"
-                  value={newTaskText}
-                  onChangeText={setNewTaskText}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Emoji"
-                  value={newTaskEmoji}
-                  onChangeText={setNewTaskEmoji}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Points"
-                  value={newTaskPoints.toString()}
-                  onChangeText={(text) => setNewTaskPoints(parseInt(text) || 0)}
-                  keyboardType="numeric"
-                />
-                <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.datePickerButton}>
-                  <Text style={styles.datePickerButtonText}>Select Due Date</Text>
-                </TouchableOpacity>
-                {showDatePicker && (
-                  <DateTimePicker
-                    value={newTaskDueDate}
-                    mode="date"
-                    display="default"
-                    onChange={handleDateChange}
-                  />
-                )}
-                <Text style={styles.selectedDateText}>Selected Date: {newTaskDueDate.toLocaleDateString()}</Text>
-                <Text style={styles.inputLabel}>Assign To:</Text>
-                <View style={styles.userPicker}>
-                  {users.map(user => (
-                    <TouchableOpacity key={user.id} onPress={() => setAssignedUserId(user.id)}>
-                      <Text style={[styles.userOption, assignedUserId === user.id && styles.selectedUser]}>
-                        {user.name}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-                <TouchableOpacity style={styles.submitButton} onPress={() => setIsConfirmVisible(true)}>
-                  <Text style={styles.submitButtonText}>Add Task</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </>
+        {isHistoryVisible && <CompletedTasks tasks={completedTasks} users={users} />}
+
+        <IncompleteTasks tasks={incompleteTasks} users={users} currentUser={currentUser} calculateDaysDifference={calculateDaysDifference} confirmTaskCompletion={confirmTaskCompletion} />
+
+        {isAddTaskVisible && (
+          <AddTask
+            newTaskText={newTaskText}
+            setNewTaskText={setNewTaskText}
+            newTaskEmoji={newTaskEmoji}
+            setNewTaskEmoji={setNewTaskEmoji}
+            newTaskPoints={newTaskPoints}
+            setNewTaskPoints={setNewTaskPoints}
+            assignedUserId={assignedUserId}
+            setAssignedUserId={setAssignedUserId}
+            newTaskDueDate={newTaskDueDate}
+            setNewTaskDueDate={setNewTaskDueDate}
+            showDatePicker={showDatePicker}
+            setShowDatePicker={setShowDatePicker}
+            handleDateChange={handleDateChange}
+            selectPoints={selectPoints}
+            users={users}
+            handleAddTask={handleAddTask}
+            setIsConfirmVisible={setIsAddConfirmVisible}
+          />
         )}
       </ScrollView>
+
+      {currentUser.isAdmin && (
+        <TouchableOpacity style={styles.addButton} onPress={scrollToAddTask}>
+          <Text style={styles.addButtonText}>{isAddTaskVisible ? '-' : '+'}</Text>
+        </TouchableOpacity>
+      )}
+
       <ConfirmationModal
-        visible={isConfirmVisible}
+        visible={isCompleteConfirmVisible}
+        onConfirm={handleConfirmCompletion}
+        onCancel={() => setIsCompleteConfirmVisible(false)}
+        message="Are you sure you want to mark this task as complete?"
+      />
+      <ConfirmationModal
+        visible={isAddConfirmVisible}
         onConfirm={handleAddTask}
-        onCancel={() => setIsConfirmVisible(false)}
+        onCancel={() => setIsAddConfirmVisible(false)}
         message="Are you sure you want to add this task?"
       />
     </SafeAreaView>

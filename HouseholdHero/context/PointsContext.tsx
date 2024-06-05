@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
-interface Task {
+export interface Task {
   id: number;
   text: string;
   emoji?: string;
@@ -39,11 +39,8 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   };
 
   const initializePoints = () => {
-    const userPoints = [...defaultPoints];
-    for (let i = 0; i < 7; i++) {
-      userPoints[i] = Math.floor(Math.random() * 15) + 1;
-    }
-    return rotateArray(userPoints, today + 1);
+    // Initialize points to a default value for all days
+    return rotateArray(defaultPoints, today + 1);
   };
 
   const initialPoints = {
@@ -54,8 +51,8 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [points, setPoints] = useState<{ [userId: number]: number[] }>(initialPoints);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [users, setUsers] = useState<User[]>([
-    { id: 1, name: 'John Doe', isAdmin: true },
-    { id: 2, name: 'Jane Doe', isAdmin: false },
+    { id: 1, name: 'Elizabeth', isAdmin: true },
+    { id: 2, name: 'James', isAdmin: false },
   ]);
   const [currentUser, setCurrentUser] = useState<User>(users[0]);
 
@@ -75,12 +72,12 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     // Fetch tasks from the API
     const fetchTasks = async () => {
       try {
-        const response = await fetch('https://be-drp32-5ac34b8c912e.herokuapp.com/chores?familyID=1&completed=false', {
+        const response = await fetch('https://be-drp32-5ac34b8c912e.herokuapp.com/chores?familyID=1', {
           method: 'GET',
           mode: 'no-cors',
           headers: {
             'Content-Type': 'application/json',
-          },
+          }
         });
         const data = await response.json();
         setTasks(data.chores.map(formatTaskFromApi));
@@ -107,6 +104,7 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const formatTaskForApi = (task: Task) => {
     return {
       "description": task.text,
+      "emoji": task.emoji,
       "points": task.points,
       "assigned-to": task.assignedTo,
       "due-date": task.dueDate.toISOString().substring(0, 10), // Convert Date to ISO string

@@ -3,33 +3,55 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import TasksScreen from '../screens/TasksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import { Ionicons } from '@expo/vector-icons'; 
+import InsightScreen from '../screens/InsightScreen';
+import { Ionicons } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
 
 
 const BottomTabNavigator: React.FC = () => {
   return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ color, size }) => {
-          let iconName;
-
-          if (route.name === 'Home') {
-            iconName = 'home';
-          } else if (route.name === 'Tasks') {
-            iconName = 'checkmark-circle';
-          } else if (route.name === 'Settings') {
-            iconName = 'settings';
-          }
-
-          return <Ionicons key={iconName} size={size} color={color} />;
-        },
-      })}
-    >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Tasks" component={TasksScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+    <Tab.Navigator >
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Tasks"
+        component={TasksScreen}
+        options={{
+          tabBarLabel: 'Tasks',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="list-outline" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Insight"
+        component={InsightScreen}
+        options={{
+          tabBarLabel: 'Insight',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="bar-chart-outline" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          tabBarLabel: 'Settings',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings-outline" color={color} size={size} />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 };

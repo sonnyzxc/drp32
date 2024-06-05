@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-export default StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f8f8',
@@ -25,12 +25,26 @@ export default StyleSheet.create({
     textAlign: 'center',
     marginVertical: 10,
   },
+  historyButton: {
+    backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  historyButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
   subHeaderText: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     marginVertical: 10,
   },
   taskContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 15,
     backgroundColor: '#fff',
     borderRadius: 10,
@@ -41,17 +55,40 @@ export default StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
+  taskTextContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    flexWrap: 'wrap',
+  },
   taskText: {
     fontSize: 16,
     color: '#333',
+    flexShrink: 1,
   },
   dueDateText: {
     fontSize: 14,
     color: 'gray',
-    marginTop: 5,
+  },
+  addButton: {
+    backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    width: 50,
+    height: 50,
+    zIndex: 10,
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
   },
   adminContainer: {
-    marginTop: 20,
+    marginVertical: 20,
     padding: 15,
     backgroundColor: '#fff',
     borderRadius: 10,
@@ -73,6 +110,49 @@ export default StyleSheet.create({
     fontSize: 16,
     marginBottom: 5,
   },
+  pointsLabelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  pointsLabelText: {
+    fontSize: 14,
+  },
+  pointsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  pointBox: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+  },
+  selectedPointBox: {
+    backgroundColor: '#007AFF',
+  },
+  pointText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  datePickerButton: {
+    backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  datePickerButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  selectedDateText: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
   userPicker: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -90,39 +170,6 @@ export default StyleSheet.create({
     backgroundColor: '#007AFF',
     color: '#fff',
   },
-  addButton: {
-    backgroundColor: '#007AFF',
-    padding: 10,
-    borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    width: 50,
-    height: 50,
-    zIndex: 10,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  datePickerButton: {
-    backgroundColor: '#007AFF',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  datePickerButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  selectedDateText: {
-    fontSize: 16,
-    marginVertical: 10,
-  },
   submitButton: {
     backgroundColor: '#007AFF',
     padding: 10,
@@ -133,6 +180,6 @@ export default StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-
-
 });
+
+export default styles;
