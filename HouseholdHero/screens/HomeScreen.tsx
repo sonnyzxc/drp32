@@ -23,6 +23,7 @@ const HomeScreen: React.FC = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isAddTaskVisible, setIsAddTaskVisible] = useState(false);
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
+  const [confirmationMessage, setConfirmationMessage] = useState("Are you sure you want to add this task?");
   const [isHistoryVisible, setIsHistoryVisible] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
 
@@ -114,6 +115,7 @@ const HomeScreen: React.FC = () => {
 
   const confirmTaskCompletion = (taskId: number) => {
     setSelectedTaskId(taskId);
+    setConfirmationMessage("Are you sure you want to mark this task as complete?");
     setIsConfirmVisible(true);
   };
 
@@ -161,6 +163,7 @@ const HomeScreen: React.FC = () => {
             users={users}
             handleAddTask={handleAddTask}
             setIsConfirmVisible={setIsConfirmVisible}
+            setConfirmationMessage={setConfirmationMessage}
           />
         )}
       </ScrollView>
@@ -175,7 +178,7 @@ const HomeScreen: React.FC = () => {
         visible={isConfirmVisible}
         onConfirm={handleConfirmCompletion}
         onCancel={() => setIsConfirmVisible(false)}
-        message="Are you sure you want to mark this task as complete?"
+        message={confirmationMessage}
       />
     </SafeAreaView>
   );

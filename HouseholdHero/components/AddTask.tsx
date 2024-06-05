@@ -20,6 +20,7 @@ interface AddTaskProps {
   users: { id: number; name: string; isAdmin: boolean }[];
   handleAddTask: () => void;
   setIsConfirmVisible: (visible: boolean) => void;
+  setConfirmationMessage: (confirmationMessage: string) => void;
 }
 
 const AddTask: React.FC<AddTaskProps> = ({
@@ -39,7 +40,8 @@ const AddTask: React.FC<AddTaskProps> = ({
   selectPoints,
   users,
   handleAddTask,
-  setIsConfirmVisible
+  setIsConfirmVisible,
+  setConfirmationMessage,
 }) => {
   return (
     <View style={styles.container}>
@@ -94,7 +96,11 @@ const AddTask: React.FC<AddTaskProps> = ({
         value={newTaskEmoji}
         onChangeText={setNewTaskEmoji}
       />
-      <TouchableOpacity style={styles.submitButton} onPress={() => setIsConfirmVisible(true)}>
+      <TouchableOpacity style={styles.submitButton} onPress={() => {
+        setConfirmationMessage("Are you sure you want to add this task?");
+        setIsConfirmVisible(true)
+      }
+    }>
         <Text style={styles.submitButtonText}>Add Task</Text>
       </TouchableOpacity>
     </View>
