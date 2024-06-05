@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS chores (
   completed BOOLEAN NOT NULL,
   assigned_to BIGINT NOT NULL,
   due_date DATE NOT NULL,
+  time_completed DATE,
   FOREIGN KEY ( assigned_to ) REFERENCES users ( user_id )
 );
 

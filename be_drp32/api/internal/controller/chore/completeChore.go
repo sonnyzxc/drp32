@@ -6,7 +6,9 @@ import (
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/controller"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/repository"
 	choreRepo "github.com/sonnyzxc/drp/be_drp32/api/internal/repository/chore"
+	"github.com/volatiletech/null/v8"
 	"log"
+	"time"
 )
 
 func (i impl) CompleteChore(ctx context.Context, choreID int64) error {
@@ -27,6 +29,7 @@ func (i impl) CompleteChore(ctx context.Context, choreID int64) error {
 	}
 
 	chore.Completed = true
+	chore.TimeCompleted = null.TimeFrom(time.Now())
 	return i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
 		return txRepo.Chore().UpdateChore(ctx, chore)
 	}, nil)
