@@ -28,7 +28,7 @@ func (h Handler) CompleteChore() http.HandlerFunc {
 			return errors.New("bad request"), http.StatusBadRequest
 		}
 
-		if err = h.ctrl.CompleteChore(r.Context(), choreID); err != nil {
+		if err = h.ctrl.CompleteChore(r.Context(), choreID, request.ImgDir); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 
