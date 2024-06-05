@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func (i impl) CompleteChore(ctx context.Context, choreID int64) error {
+func (i impl) CompleteChore(ctx context.Context, choreID int64, imgDir string) error {
 	chore, err := i.repo.Chore().GetChoreByID(context.Background(), choreID)
 
 	if errors.Is(err, choreRepo.ErrChoreIDNotFound) {
@@ -24,12 +24,10 @@ func (i impl) CompleteChore(ctx context.Context, choreID int64) error {
 		return err
 	}
 
-	if chore.Completed == true {
-		return nil
-	}
-
 	chore.Completed = true
 	chore.TimeCompleted = null.TimeFrom(time.Now())
+	chore.ImgDir = null.StringFrom(imgDir)
+
 	return i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
 		return txRepo.Chore().UpdateChore(ctx, chore)
 	}, nil)

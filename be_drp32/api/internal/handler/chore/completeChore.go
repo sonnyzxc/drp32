@@ -5,6 +5,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler"
+	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/request/imgDir"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/basic_success"
 	"net/http"
 	"strconv"
@@ -22,7 +23,12 @@ func (h Handler) CompleteChore() http.HandlerFunc {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 
-		if err = h.ctrl.CompleteChore(r.Context(), choreID); err != nil {
+		var request imgDir.Request
+		if err = render.Bind(r, &request); err != nil {
+			return errors.New("bad request"), http.StatusBadRequest
+		}
+
+		if err = h.ctrl.CompleteChore(r.Context(), choreID, request.ImgDir); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 
