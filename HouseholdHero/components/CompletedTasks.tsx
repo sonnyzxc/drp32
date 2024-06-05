@@ -16,7 +16,7 @@ const CompletedTasks: React.FC<CompletedTasksProps> = ({ tasks, users }) => {
           <Text style={styles.taskText}>
             {task.emoji} {task.text} - Assigned to {users.find(user => user.id === task.assignedTo)?.name}
           </Text>
-          <Text style={styles.dueDateText}>Completed on: {new Date(task.dueDate).toLocaleDateString()}</Text>
+          <Text style={styles.dueDateText}>Completed on: {new Date(task.completedDate).toLocaleDateString()}</Text>
         </View>
       ))}
     </View>

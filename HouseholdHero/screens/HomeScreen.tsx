@@ -45,14 +45,26 @@ const HomeScreen: React.FC = () => {
   };
 
   const labels = getLast7Days();
+
   const aggregatePoints = () => {
-    const totalPoints = Array(7).fill(0);
-    for (const userId in points) {
-      points[userId].forEach((point, index) => {
-        totalPoints[index] += point;
-      });
-    }
-    return totalPoints;
+    const today = new Date();
+    const last7Days = Array(7).fill(0).map((_, i) => {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      return date.toDateString();
+    });
+
+    const pointsByDay = Array(7).fill(0);
+
+    completedTasks.forEach(task => {
+      const completedDate = task.completedDate.toDateString();
+      const index = last7Days.indexOf(completedDate);
+      if (index !== -1) {
+        pointsByDay[index] += task.points;
+      }
+    });
+
+    return pointsByDay.reverse(); // Reverse to match the labels
   };
 
   const combinedPoints = aggregatePoints();
