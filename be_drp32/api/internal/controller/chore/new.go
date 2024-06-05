@@ -10,7 +10,7 @@ import (
 type Controller interface {
 	CreateChore(ctx context.Context, desc string, emoji string, points int, assignedTo int64, dueDate time.Time) error
 	GetChores(ctx context.Context, familyID int64, completed int, assigned_to int64) (model.Chores, error)
-	CompleteChore(ctx context.Context, choreID int64) error
+	CompleteChore(ctx context.Context, choreID int64, imgDir string) error
 }
 
 type impl struct {

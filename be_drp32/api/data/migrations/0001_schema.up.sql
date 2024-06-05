@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS chores (
   assigned_to BIGINT NOT NULL,
   due_date DATE NOT NULL,
   time_completed DATE,
+  img_dir TEXT,
   FOREIGN KEY ( assigned_to ) REFERENCES users ( user_id )
 );
 
