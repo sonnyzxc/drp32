@@ -6,14 +6,15 @@ export default StyleSheet.create({
     backgroundColor: '#f8f8f8',
   },
   header: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#f8f8f8',
     padding: 20,
   },
   headerText: {
     fontSize: 24,
-    color: '#fff',
+    color: '#000',
     fontWeight: 'bold',
     textAlign: 'center',
+    paddingTop: 40,
   },
   scrollView: {
     paddingVertical: 10,
