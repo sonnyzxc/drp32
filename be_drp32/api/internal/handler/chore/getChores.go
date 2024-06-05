@@ -13,7 +13,7 @@ func (h Handler) GetChores() http.HandlerFunc {
 	return handler.ErrorHandler(func(w http.ResponseWriter, r *http.Request) (error, int) {
 		completed := -1
 		var familyID int64 = -1
-		var assigned_to int64 = -1
+		var assignedTo int64 = -1
 		var err error
 
 		if r.URL.Query().Has("completed") {
@@ -36,13 +36,13 @@ func (h Handler) GetChores() http.HandlerFunc {
 		}
 
 		if r.URL.Query().Has("assigned_to") {
-			assigned_to, err = strconv.ParseInt(r.URL.Query().Get("assigned_to"), 10, 64)
+			assignedTo, err = strconv.ParseInt(r.URL.Query().Get("assigned_to"), 10, 64)
 			if err != nil {
 				return errors.New("something went wrong"), http.StatusInternalServerError
 			}
 		}
 
-		chores, err := h.ctrl.GetChores(r.Context(), familyID, completed, assigned_to)
+		chores, err := h.ctrl.GetChores(r.Context(), familyID, completed, assignedTo)
 		if err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}

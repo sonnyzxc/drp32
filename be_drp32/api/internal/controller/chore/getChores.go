@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-func (i impl) GetChores(ctx context.Context, familyID int64, completed int, assigned_to int64) (model.Chores, error) {
+func (i impl) GetChores(ctx context.Context, familyID int64, completed int, assignedTo int64) (model.Chores, error) {
 
 	var allChores model.Chores
 	var chores model.Chores
@@ -30,7 +30,7 @@ func (i impl) GetChores(ctx context.Context, familyID int64, completed int, assi
 			completedBool = true
 		}
 
-		if (assigned_to == -1 || assigned_to == v.AssignedTo) && (completed == -1 || completedBool == v.Completed) {
+		if (assignedTo == -1 || assignedTo == v.AssignedTo) && (completed == -1 || completedBool == v.Completed) {
 			chores = append(chores, v)
 		}
 	}
