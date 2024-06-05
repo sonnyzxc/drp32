@@ -12,6 +12,7 @@ type Repository interface {
 	UpdateChore(ctx context.Context, chore model.Chore) error
 	GetChoreByID(ctx context.Context, choreID int64) (model.Chore, error)
 	GetChores(ctx context.Context) (model.Chores, error)
+	DeleteChoreByID(ctx context.Context, choreID int64) error
 }
 
 type impl struct {
