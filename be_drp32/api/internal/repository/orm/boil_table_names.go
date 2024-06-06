@@ -6,13 +6,9 @@ package orm
 var TableNames = struct {
 	Chores   string
 	Families string
-	Redeemed string
-	Rewards  string
 	Users    string
 }{
 	Chores:   "chores",
 	Families: "families",
-	Redeemed: "redeemed",
-	Rewards:  "rewards",
 	Users:    "users",
 }
