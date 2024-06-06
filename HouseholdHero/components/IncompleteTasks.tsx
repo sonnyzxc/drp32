@@ -12,7 +12,7 @@ interface IncompleteTasksProps {
 
 const IncompleteTasks: React.FC<IncompleteTasksProps> = ({ tasks, users, currentUser, calculateDaysDifference, confirmTaskCompletion }) => {
   return (
-    <View>
+    <View style={styles.container}>
       <Text style={styles.subHeaderText}>Incomplete Tasks</Text>
       {tasks.map(task => {
         const daysDiff = calculateDaysDifference(new Date(task.dueDate));
@@ -28,7 +28,7 @@ const IncompleteTasks: React.FC<IncompleteTasksProps> = ({ tasks, users, current
             }}
             style={styles.taskContainer}
           >
-            <View style={styles.taskTextContainer}>
+            <View style={styles.textContainer}>
               <Text style={styles.taskText}>
                 {task.emoji} {task.text} - Assigned to {users.find(user => user.id === task.assignedTo)?.name}
               </Text>
@@ -45,15 +45,15 @@ const IncompleteTasks: React.FC<IncompleteTasksProps> = ({ tasks, users, current
 };
 
 const styles = StyleSheet.create({
+  container: {
+    marginVertical: 10,
+  },
   subHeaderText: {
     fontSize: 18,
     fontWeight: 'bold',
     marginVertical: 10,
   },
   taskContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     padding: 15,
     backgroundColor: '#fff',
     borderRadius: 10,
@@ -64,19 +64,19 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
-  taskTextContainer: {
-    flex: 1,
+  textContainer: {
     flexDirection: 'column',
-    flexWrap: 'wrap',
+    flex: 1,
   },
   taskText: {
     fontSize: 16,
     color: '#333',
-    flexShrink: 1,
+    flexWrap: 'wrap', // Ensure text wraps
   },
   dueDateText: {
     fontSize: 14,
     color: 'gray',
+    marginTop: 5,
   },
 });
 
