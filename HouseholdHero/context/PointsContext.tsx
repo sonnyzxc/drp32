@@ -130,7 +130,8 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         throw new Error("Error adding task");
       }
 
-      setTasks(prevTasks => [...prevTasks, task]);
+      const data = await response.json();
+      setTasks(prevTasks => [...prevTasks, formatTaskFromApi(data.chore)]);
     } catch (error) {
       console.error('Error adding task:', error);
     }
@@ -155,14 +156,15 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
 
     try {
-      await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/chore/complete/${taskId}`, {
+      const response = await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/chore/complete/${taskId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'multipart/form-data',
         },
         body: formData,
       });
-      setTasks(tasks.map(task => task.id === taskId ? updatedTask : task));
+      const data = await response.json();
+      setTasks(tasks.map(task => task.id === taskId ? formatTaskFromApi(data.chore) : task));
       addPoints(taskToUpdate.assignedTo, currentDayIndex, updatedTask.completed ? taskToUpdate.points : -taskToUpdate.points);
     } catch (error) {
       console.error('Error updating task:', error);

@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import BarGraph from '../components/BarGraph';
 import ConfirmationModal from '../components/ConfirmationModal';
+import TaskAdditionModal from '../components/TaskAdditionModal';
 import TaskBreakdownModal from '../components/TaskBreakdownModal';
 import { usePoints, Task } from '../context/PointsContext'; // Import Task interface and usePoints
 import IncompleteTasks from '../components/IncompleteTasks'; // Import IncompleteTasks component
@@ -75,7 +76,7 @@ const HomeScreen: React.FC = () => {
 
   const handleAddTask = () => {
     const newTask: Task = {
-      id: tasks.length + 1,
+      id: -1,
       text: newTaskText,
       emoji: newTaskEmoji || '😊',
       points: newTaskPoints,
@@ -200,9 +201,8 @@ const HomeScreen: React.FC = () => {
         onCancel={() => setIsCompleteConfirmVisible(false)}
         message="Are you sure you want to mark this task as complete?"
       />
-      <ConfirmationModal
+      <TaskAdditionModal
         visible={isAddConfirmVisible}
-        onSelectPhoto={setImageUri}
         onConfirm={handleAddTask}
         onCancel={() => setIsAddConfirmVisible(false)}
         message="Are you sure you want to add this task?"
