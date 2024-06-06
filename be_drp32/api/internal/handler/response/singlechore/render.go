@@ -1,4 +1,4 @@
-package choresList
+package singlechore
 
 import "net/http"
 

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"github.com/pkg/errors"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler"
-	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/choresList"
+	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/choreslist"
 	"net/http"
 	"strconv"
 )
@@ -49,7 +49,7 @@ func (h Handler) GetChores() http.HandlerFunc {
 		}
 
 		// custom encoding because we don't want escaped HTML for links
-		resp := choresList.New(chores, http.StatusOK)
+		resp := choreslist.New(chores, http.StatusOK)
 		buf := &bytes.Buffer{}
 		enc := json.NewEncoder(buf)
 		enc.SetEscapeHTML(false)

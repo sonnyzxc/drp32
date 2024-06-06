@@ -1,4 +1,4 @@
-package choreDetails
+package choredetails
 
 type Request struct {
 	Description string `json:"description"`

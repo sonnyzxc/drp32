@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/go-chi/render"
-	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/error_with_string"
+	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/errorwithstring"
 	"net/http"
 )
 
@@ -13,7 +13,7 @@ func ErrorHandler(f func(w http.ResponseWriter, r *http.Request) (error, int)) h
 		err, status := f(w, r)
 
 		if err != nil {
-			render.Render(w, r, error_with_string.New(err.Error(), status))
+			render.Render(w, r, errorwithstring.New(err.Error(), status))
 			return
 		}
 	}

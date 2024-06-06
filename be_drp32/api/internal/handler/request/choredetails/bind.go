@@ -1,4 +1,4 @@
-package choreDetails
+package choredetails
 
 import (
 	"github.com/pkg/errors"

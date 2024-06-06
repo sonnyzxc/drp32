@@ -1,17 +1,17 @@
-package error_with_string
+package errorwithstring
 
 import (
-	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/basic_success"
+	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/basicsuccess"
 )
 
 type Response struct {
-	basic_success.Response
+	basicsuccess.Response
 	ErrMessage string `json:"error_message"`
 }
 
 func New(message string, statusCode int) *Response {
 	return &Response{
-		Response: basic_success.Response{
+		Response: basicsuccess.Response{
 			Success:        false,
 			HttpStatusCode: statusCode,
 		},
