@@ -33,7 +33,7 @@ func (i impl) GetChores(ctx context.Context, familyID int64, completed int, assi
 
 	var sess *session.Session
 	var svc *s3.S3
-	if env.GetAndValidateF("APP_VERSION") == "release" || true {
+	if env.GetAndValidateF("APP_VERSION") == "release" {
 		sess, err = session.NewSession(&aws.Config{Region: aws.String("eu-west-2")})
 		if err != nil {
 			log.Printf(controller.LogErrMessage("GetChore", "creating an AWS session", err))
@@ -56,7 +56,7 @@ func (i impl) GetChores(ctx context.Context, familyID int64, completed int, assi
 		}
 
 		if (assignedTo == -1 || assignedTo == v.AssignedTo) && (completed == -1 || completedBool == v.Completed) {
-			if (env.GetAndValidateF("APP_VERSION") == "release" || true) && v.ImgDir.Valid && v.ImgDir.String != "" {
+			if env.GetAndValidateF("APP_VERSION") == "release" && v.ImgDir.Valid && v.ImgDir.String != "" {
 				var req *request.Request
 				req, _ = svc.GetObjectRequest(&s3.GetObjectInput{
 					Bucket: aws.String("drp32"),

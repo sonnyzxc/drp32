@@ -37,7 +37,7 @@ func (i impl) CompleteChore(ctx context.Context, choreID int64, file multipart.F
 		chore.ImgDir = null.StringFrom("")
 	} else {
 		fileName := fmt.Sprintf("uploads/%d%s", choreID, path.Ext(fileHandler.Filename))
-		if env.GetAndValidateF("APP_VERSION") == "release" || true {
+		if env.GetAndValidateF("APP_VERSION") == "release" {
 			sess, err := session.NewSession(&aws.Config{Region: aws.String("eu-west-2")})
 			if err != nil {
 				log.Printf(controller.LogErrMessage("CompleteChore", "creating an AWS session", err))
