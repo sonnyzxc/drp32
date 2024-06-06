@@ -1,11 +1,13 @@
 package chore
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/render"
+	"github.com/sonnyzxc/drp/be_drp32/api/internal/controller/model"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler"
-	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/basicsuccess"
+	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/singlechore"
 	"net/http"
 	"strconv"
 )
@@ -34,13 +36,24 @@ func (h Handler) CompleteChore() http.HandlerFunc {
 			defer f.Close()
 		}
 
-		if err = h.ctrl.CompleteChore(r.Context(), choreID, f, fh, present); err != nil {
+		var chore model.Chore
+		if chore, err = h.ctrl.CompleteChore(r.Context(), choreID, f, fh, present); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 
-		if err = render.Render(w, r, basicsuccess.New(http.StatusCreated)); err != nil {
+		// custom encoding because we don't want escaped HTML for links
+		resp := singlechore.New(chore, http.StatusCreated)
+		buf := &bytes.Buffer{}
+		enc := json.NewEncoder(buf)
+		enc.SetEscapeHTML(false)
+		if err := enc.Encode(resp); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
+
+		if status, ok := r.Context().Value(&contextKey{"Status"}).(int); ok {
+			w.WriteHeader(status)
+		}
+		w.Write(buf.Bytes())
 
 		return nil, http.StatusCreated
 	})

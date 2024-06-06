@@ -34,7 +34,7 @@ func (c Chore) Orm() *orm.Chore {
 	}
 }
 
-func Model(c *orm.Chore) Chore {
+func ChoreModel(c *orm.Chore) Chore {
 	return Chore{
 		ChoreID:       c.ChoreID,
 		Description:   c.Description,

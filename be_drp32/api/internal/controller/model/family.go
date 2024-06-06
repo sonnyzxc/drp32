@@ -15,3 +15,10 @@ func (f Family) Orm() *orm.Family {
 		FamilyName: f.FamilyName,
 	}
 }
+
+func FamilyModel(f *orm.Family) Family {
+	return Family{
+		FamilyID:   f.FamilyID,
+		FamilyName: f.FamilyName,
+	}
+}

@@ -1,8 +1,6 @@
 package chore
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
 	"github.com/go-chi/render"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/controller/model"
@@ -31,19 +29,9 @@ func (h Handler) CreateChore() http.HandlerFunc {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 
-		// custom encoding because we don't want escaped HTML for links
-		resp := singlechore.New(chore, http.StatusCreated)
-		buf := &bytes.Buffer{}
-		enc := json.NewEncoder(buf)
-		enc.SetEscapeHTML(false)
-		if err := enc.Encode(resp); err != nil {
+		if err = render.Render(w, r, singlechore.New(chore, http.StatusCreated)); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
-
-		if status, ok := r.Context().Value(&contextKey{"Status"}).(int); ok {
-			w.WriteHeader(status)
-		}
-		w.Write(buf.Bytes())
 
 		return nil, http.StatusCreated
 	})

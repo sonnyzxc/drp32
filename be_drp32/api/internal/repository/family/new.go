@@ -7,7 +7,7 @@ import (
 )
 
 type Repository interface {
-	CreateFamily(ctx context.Context, familyName string) error
+	CreateFamily(ctx context.Context, familyName string) (model.Family, error)
 	GetFamilyByID(ctx context.Context, familyID int64) (model.Family, error)
 }
 

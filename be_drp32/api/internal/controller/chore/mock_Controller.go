@@ -8,6 +8,8 @@ import (
 	model "github.com/sonnyzxc/drp/be_drp32/api/internal/controller/model"
 	mock "github.com/stretchr/testify/mock"
 
+	multipart "mime/multipart"
+
 	time "time"
 )
 
@@ -16,17 +18,73 @@ type MockController struct {
 	mock.Mock
 }
 
-// CreateChore provides a mock function with given fields: ctx, desc, points, assignedTo, dueDate
-func (_m *MockController) CreateChore(ctx context.Context, desc string, points int, assignedTo int64, dueDate time.Time) error {
-	ret := _m.Called(ctx, desc, points, assignedTo, dueDate)
+// CompleteChore provides a mock function with given fields: ctx, choreID, file, fileHandler, present
+func (_m *MockController) CompleteChore(ctx context.Context, choreID int64, file multipart.File, fileHandler *multipart.FileHeader, present bool) (model.Chore, error) {
+	ret := _m.Called(ctx, choreID, file, fileHandler, present)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CompleteChore")
+	}
+
+	var r0 model.Chore
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, multipart.File, *multipart.FileHeader, bool) (model.Chore, error)); ok {
+		return rf(ctx, choreID, file, fileHandler, present)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int64, multipart.File, *multipart.FileHeader, bool) model.Chore); ok {
+		r0 = rf(ctx, choreID, file, fileHandler, present)
+	} else {
+		r0 = ret.Get(0).(model.Chore)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int64, multipart.File, *multipart.FileHeader, bool) error); ok {
+		r1 = rf(ctx, choreID, file, fileHandler, present)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CreateChore provides a mock function with given fields: ctx, desc, emoji, points, assignedTo, dueDate
+func (_m *MockController) CreateChore(ctx context.Context, desc string, emoji string, points int, assignedTo int64, dueDate time.Time) (model.Chore, error) {
+	ret := _m.Called(ctx, desc, emoji, points, assignedTo, dueDate)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateChore")
 	}
 
+	var r0 model.Chore
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, int, int64, time.Time) (model.Chore, error)); ok {
+		return rf(ctx, desc, emoji, points, assignedTo, dueDate)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, int, int64, time.Time) model.Chore); ok {
+		r0 = rf(ctx, desc, emoji, points, assignedTo, dueDate)
+	} else {
+		r0 = ret.Get(0).(model.Chore)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string, int, int64, time.Time) error); ok {
+		r1 = rf(ctx, desc, emoji, points, assignedTo, dueDate)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// DeleteChoreByID provides a mock function with given fields: ctx, choreID
+func (_m *MockController) DeleteChoreByID(ctx context.Context, choreID int64) error {
+	ret := _m.Called(ctx, choreID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteChoreByID")
+	}
+
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, int, int64, time.Time) error); ok {
-		r0 = rf(ctx, desc, points, assignedTo, dueDate)
+	if rf, ok := ret.Get(0).(func(context.Context, int64) error); ok {
+		r0 = rf(ctx, choreID)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -34,29 +92,29 @@ func (_m *MockController) CreateChore(ctx context.Context, desc string, points i
 	return r0
 }
 
-// GetFamilyChores provides a mock function with given fields: ctx, familyID
-func (_m *MockController) GetFamilyChores(ctx context.Context, familyID int64) (model.Chores, error) {
-	ret := _m.Called(ctx, familyID)
+// GetChores provides a mock function with given fields: ctx, familyID, completed, assignedTo
+func (_m *MockController) GetChores(ctx context.Context, familyID int64, completed int, assignedTo int64) (model.Chores, error) {
+	ret := _m.Called(ctx, familyID, completed, assignedTo)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetFamilyChores")
+		panic("no return value specified for GetChores")
 	}
 
 	var r0 model.Chores
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64) (model.Chores, error)); ok {
-		return rf(ctx, familyID)
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int, int64) (model.Chores, error)); ok {
+		return rf(ctx, familyID, completed, assignedTo)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64) model.Chores); ok {
-		r0 = rf(ctx, familyID)
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int, int64) model.Chores); ok {
+		r0 = rf(ctx, familyID, completed, assignedTo)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(model.Chores)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
-		r1 = rf(ctx, familyID)
+	if rf, ok := ret.Get(1).(func(context.Context, int64, int, int64) error); ok {
+		r1 = rf(ctx, familyID, completed, assignedTo)
 	} else {
 		r1 = ret.Error(1)
 	}
