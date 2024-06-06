@@ -9,8 +9,9 @@ const InsightScreen: React.FC = () => {
   const { points, tasks, users } = usePoints();
   const [selectedUserId, setSelectedUserId] = useState(users[0].id);
 
-  const selectedUserPoints = points[selectedUserId] || [0, 0, 0, 0, 0, 0, 0];
   const userTasks = tasks.filter(task => task.assignedTo === selectedUserId);
+  const completedTasks = userTasks.filter(task => task.completed);
+  const incompleteTasks = userTasks.filter(task => !task.completed);
 
   const getLast7Days = () => {
     const today = new Date();
@@ -25,10 +26,29 @@ const InsightScreen: React.FC = () => {
   };
 
   const labels = getLast7Days();
-  const chartData = labels.map((label, index) => ({ label, value: selectedUserPoints[index] }));
+  const aggregatePointsForUser = () => {
+    const today = new Date();
+    const last7Days = Array(7).fill(0).map((_, i) => {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      return date.toDateString();
+    });
 
-  const completedTasks = userTasks.filter(task => task.completed);
-  const incompleteTasks = userTasks.filter(task => !task.completed);
+    const pointsByDay = Array(7).fill(0);
+
+    completedTasks.forEach(task => {
+        const completedDate = new Date(task.completedDate).toDateString();
+        const index = last7Days.indexOf(completedDate);
+        if (index !== -1) {
+            pointsByDay[index] += task.points;
+        }
+    });
+
+    return pointsByDay.reverse(); // Reverse to match the labels
+  };
+
+  const selectedUserPoints = aggregatePointsForUser();
+  const chartData = labels.map((label, index) => ({ label, value: selectedUserPoints[index] }));
 
   const calculateDaysDifference = (dueDate: Date) => {
     const today = new Date();
@@ -80,7 +100,7 @@ const InsightScreen: React.FC = () => {
             <Text style={styles.taskText}>
               {task.emoji} {task.text}
             </Text>
-            <Text style={styles.dueDateText}>Completed on: {new Date(task.dueDate).toLocaleDateString()}</Text>
+            <Text style={styles.dueDateText}>Completed on: {new Date(task.completedDate).toLocaleDateString()}</Text>
           </View>
         ))}
       </ScrollView>

@@ -1,23 +1,24 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Task } from '../context/PointsContext';
 
 interface CompletedTasksProps {
   tasks: Task[];
   users: { id: number; name: string; isAdmin: boolean }[];
+  onTaskPress: (imageUrl: string) => void; // New prop for handling task press
 }
 
-const CompletedTasks: React.FC<CompletedTasksProps> = ({ tasks, users }) => {
+const CompletedTasks: React.FC<CompletedTasksProps> = ({ tasks, users, onTaskPress }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.subHeaderText}>Chore History</Text>
       {tasks.map(task => (
-        <View key={task.id} style={styles.taskContainer}>
+        <TouchableOpacity key={task.id} style={styles.taskContainer} onPress={() => onTaskPress(task.imgDir)}>
           <Text style={styles.taskText}>
             {task.emoji} {task.text} - Assigned to {users.find(user => user.id === task.assignedTo)?.name}
           </Text>
-          <Text style={styles.dueDateText}>Completed on: {new Date(task.dueDate).toLocaleDateString()}</Text>
-        </View>
+          <Text style={styles.dueDateText}>Completed on: {new Date(task.completedDate).toLocaleDateString()}</Text>
+        </TouchableOpacity>
       ))}
     </View>
   );

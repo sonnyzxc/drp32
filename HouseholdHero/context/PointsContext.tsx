@@ -8,6 +8,8 @@ export interface Task {
   completed: boolean;
   assignedTo: number; // User ID of the assigned user
   dueDate: Date;
+  completedDate?: Date;
+  imgDir?: string;
 }
 
 interface User {
@@ -23,7 +25,7 @@ interface PointsContextProps {
   users: User[];
   addPoints: (userId: number, index: number, points: number) => void;
   addTask: (task: Task) => void;
-  toggleTaskCompletion: (taskId: number) => void;
+  toggleTaskCompletion: (taskId: number, imageUri: string | null) => void;
   changeUser: (userId: number) => void;
   addUser: (name: string, isAdmin: boolean) => void;
 }
@@ -65,6 +67,8 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       completed: task.completed, // Assuming the API returns `is_done` instead of `completed`
       assignedTo: task.assigned_to, // Assuming the API returns `user_id` instead of `assignedTo`
       dueDate: new Date(task.due_date), // Assuming the API returns `due_date` instead of `dueDate`
+      completedDate: new Date(task.time_completed),
+      imgDir: task.img_dir,
     };
   };
 
@@ -126,13 +130,14 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         throw new Error("Error adding task");
       }
 
-      setTasks(prevTasks => [...prevTasks, task]);
+      const data = await response.json();
+      setTasks(prevTasks => [...prevTasks, formatTaskFromApi(data.chore)]);
     } catch (error) {
       console.error('Error adding task:', error);
     }
   };
 
-  const toggleTaskCompletion = async (taskId: number) => {
+  const toggleTaskCompletion = async (taskId: number, imageUri: string | null) => {
     const currentDayIndex = new Date().getDay();
     console.log('Current day index:', currentDayIndex);
 
@@ -140,14 +145,26 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     if (!taskToUpdate) return;
 
     const updatedTask = { ...taskToUpdate, completed: !taskToUpdate.completed };
+    const formData = new FormData();
+    if (imageUri) {
+      const file = {
+        uri: imageUri,
+        name: "image.jpg",
+        type: "image/jpeg",
+      };
+      formData.append("file", file as any);
+    }
+
     try {
-      await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/chore/complete/${taskId}`, {
+      const response = await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/chore/complete/${taskId}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
+        body: formData,
       });
-      setTasks(tasks.map(task => task.id === taskId ? updatedTask : task));
+      const data = await response.json();
+      setTasks(tasks.map(task => task.id === taskId ? formatTaskFromApi(data.chore) : task));
       addPoints(taskToUpdate.assignedTo, currentDayIndex, updatedTask.completed ? taskToUpdate.points : -taskToUpdate.points);
     } catch (error) {
       console.error('Error updating task:', error);
