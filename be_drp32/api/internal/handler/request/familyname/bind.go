@@ -1,4 +1,4 @@
-package userDetails
+package familyname
 
 import (
 	"github.com/pkg/errors"
@@ -7,8 +7,8 @@ import (
 
 // Bind TODO add tests
 func (req *Request) Bind(r *http.Request) error {
-	if req.Email == "" || req.Name == "" {
-		return errors.New("missing fields")
+	if req.FamilyName == "" {
+		return errors.New("family name is a required field")
 	}
 	return nil
 }

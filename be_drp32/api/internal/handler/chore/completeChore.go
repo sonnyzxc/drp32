@@ -5,7 +5,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler"
-	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/basic_success"
+	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/basicsuccess"
 	"net/http"
 	"strconv"
 )
@@ -38,7 +38,7 @@ func (h Handler) CompleteChore() http.HandlerFunc {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 
-		if err = render.Render(w, r, basic_success.New(http.StatusCreated)); err != nil {
+		if err = render.Render(w, r, basicsuccess.New(http.StatusCreated)); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 

@@ -1,4 +1,4 @@
-package basic_success
+package basicsuccess
 
 type Response struct {
 	Success        bool `json:"success"`

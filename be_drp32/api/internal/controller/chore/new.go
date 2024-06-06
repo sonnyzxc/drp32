@@ -9,7 +9,7 @@ import (
 )
 
 type Controller interface {
-	CreateChore(ctx context.Context, desc string, emoji string, points int, assignedTo int64, dueDate time.Time) error
+	CreateChore(ctx context.Context, desc string, emoji string, points int, assignedTo int64, dueDate time.Time) (model.Chore, error)
 	GetChores(ctx context.Context, familyID int64, completed int, assignedTo int64) (model.Chores, error)
 	CompleteChore(ctx context.Context, choreID int64, file multipart.File, fileHandler *multipart.FileHeader, present bool) error
 	DeleteChoreByID(ctx context.Context, choreID int64) error

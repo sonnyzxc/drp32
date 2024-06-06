@@ -1,4 +1,4 @@
-package userDetails
+package userdetails
 
 type Request struct {
 	Email    string `json:"email"`

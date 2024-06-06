@@ -10,14 +10,16 @@ import (
 	"time"
 )
 
-func (i impl) CreateChore(ctx context.Context, desc string, emoji string, points int, assignedTo int64, dueDate time.Time) error {
+func (i impl) CreateChore(ctx context.Context, desc string, emoji string, points int, assignedTo int64, dueDate time.Time) (model.Chore, error) {
 	if _, err := i.repo.User().GetUserByID(context.Background(), assignedTo); err != nil {
 		log.Printf(controller.LogErrMessage("CreateChore", "user assigned to cannot be found", err))
-		return err
+		return model.Chore{}, err
 	}
 
-	return i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
-		return txRepo.Chore().CreateChore(ctx, model.Chore{
+	var chore model.Chore
+	err := i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
+		var err error
+		chore, err = txRepo.Chore().CreateChore(ctx, model.Chore{
 			Description:   desc,
 			Emoji:         emoji,
 			Points:        points,
@@ -26,5 +28,8 @@ func (i impl) CreateChore(ctx context.Context, desc string, emoji string, points
 			DueDate:       dueDate,
 			TimeCompleted: null.NewTime(time.Now(), false),
 		})
+		return err
 	}, nil)
+
+	return chore, err
 }

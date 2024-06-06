@@ -33,3 +33,17 @@ func (c Chore) Orm() *orm.Chore {
 		ImgDir:        c.ImgDir,
 	}
 }
+
+func Model(c *orm.Chore) Chore {
+	return Chore{
+		ChoreID:       c.ChoreID,
+		Description:   c.Description,
+		Emoji:         c.Emoji,
+		Points:        c.Points,
+		Completed:     c.Completed,
+		AssignedTo:    c.AssignedTo,
+		DueDate:       c.DueDate,
+		TimeCompleted: c.TimeCompleted,
+		ImgDir:        c.ImgDir,
+	}
+}

@@ -1,4 +1,4 @@
-package basic_success
+package basicsuccess
 
 import (
 	"net/http"
