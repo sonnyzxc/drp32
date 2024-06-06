@@ -58,21 +58,24 @@ const HomeScreen: React.FC = () => {
       return date.toDateString();
     });
 
-    const pointsByDay = Array(7).fill(0);
+    const totalPoints = Array(7).fill(0).map(() => users.map(() => 0));
 
     completedTasks.forEach(task => {
       const completedDate = task.completedDate.toDateString();
       const index = last7Days.indexOf(completedDate);
       if (index !== -1) {
-        pointsByDay[index] += task.points;
+        totalPoints[index][task.assignedTo - 1] += task.points;
       }
     });
 
-    return pointsByDay.reverse(); // Reverse to match the labels
+    return totalPoints.reverse(); // Reverse to match the labels
   };
 
   const combinedPoints = aggregatePoints();
-  const chartData = labels.map((label, index) => ({ label, value: combinedPoints[index] }));
+  const chartData = labels.map((label, index) => ({ 
+    label, 
+    users: combinedPoints[index].map((value, userId) => ({ value, userId: userId + 1 }))
+  }));
 
   const handleAddTask = () => {
     const newTask: Task = {
@@ -153,9 +156,9 @@ const HomeScreen: React.FC = () => {
       <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollView}>
         <Text style={styles.headerText}>Weekly Chore Points</Text>
         <View style={styles.chartContainer}>
-          <BarGraph data={chartData} />
+          <BarGraph data={chartData} users={users} />
         </View>
-        <Text style={styles.totalPointsText}>Total Points: {combinedPoints.reduce((a, b) => a + b, 0)}</Text>
+        <Text style={styles.totalPointsText}>Total Points: {combinedPoints.flat().reduce((a, b) => a + b, 0)}</Text>
 
         <TouchableOpacity style={styles.historyButton} onPress={toggleHistory}>
           <Text style={styles.historyButtonText}>{isHistoryVisible ? 'Hide History' : 'Show History'}</Text>
@@ -220,4 +223,3 @@ const HomeScreen: React.FC = () => {
 };
 
 export default HomeScreen;
-
