@@ -1,10 +1,11 @@
 package chore
 
 import (
-	"github.com/go-chi/render"
+	"bytes"
+	"encoding/json"
 	"github.com/pkg/errors"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler"
-	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/choresList"
+	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/choreslist"
 	"net/http"
 	"strconv"
 )
@@ -47,10 +48,28 @@ func (h Handler) GetChores() http.HandlerFunc {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 
-		if err = render.Render(w, r, choresList.New(chores, http.StatusOK)); err != nil {
+		// custom encoding because we don't want escaped HTML for links
+		resp := choreslist.New(chores, http.StatusOK)
+		buf := &bytes.Buffer{}
+		enc := json.NewEncoder(buf)
+		enc.SetEscapeHTML(false)
+		if err := enc.Encode(resp); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 
+		if status, ok := r.Context().Value(&contextKey{"Status"}).(int); ok {
+			w.WriteHeader(status)
+		}
+		w.Write(buf.Bytes())
+
 		return nil, http.StatusOK
 	})
+}
+
+type contextKey struct {
+	name string
+}
+
+func (k *contextKey) String() string {
+	return "chi render context value " + k.name
 }

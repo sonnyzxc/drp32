@@ -2,11 +2,12 @@ package user
 
 import (
 	"context"
+	"github.com/sonnyzxc/drp/be_drp32/api/internal/controller/model"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/repository"
 )
 
 type Controller interface {
-	CreateUser(ctx context.Context, email string, name string, familyID int64, admin bool) error
+	CreateUser(ctx context.Context, email string, name string, familyID int64, admin bool) (model.User, error)
 }
 
 type impl struct {
