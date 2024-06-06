@@ -3,6 +3,7 @@ module github.com/sonnyzxc/drp/be_drp32/api
 go 1.18
 
 require (
+	github.com/aws/aws-sdk-go v1.53.17
 	github.com/cenkalti/backoff/v4 v4.2.1
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-chi/chi/v5 v5.0.10
@@ -18,7 +19,6 @@ require (
 
 require (
 	github.com/ajg/form v1.5.1 // indirect
-	github.com/aws/aws-sdk-go v1.53.17 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gofrs/uuid v4.2.0+incompatible // indirect
@@ -36,8 +36,8 @@ require (
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/volatiletech/inflect v0.0.1 // indirect
 	github.com/volatiletech/randomize v0.0.1 // indirect
-	golang.org/x/sys v0.8.0 // indirect
-	golang.org/x/text v0.13.0 // indirect
+	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
