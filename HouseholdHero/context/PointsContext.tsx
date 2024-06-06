@@ -36,8 +36,8 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const defaultPoints = [0, 0, 0, 0, 0, 0, 0];
 
   const initialUsers = [
-    { id: 1, name: 'John Doe', isAdmin: true },
-    { id: 2, name: 'Jane Doe', isAdmin: false },
+    { id: 1, name: 'Elizabeth', isAdmin: true },
+    { id: 2, name: 'James', isAdmin: false },
   ];
 
   const getRandomPastDate = () => {
