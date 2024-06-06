@@ -15,21 +15,31 @@ type MockRepository struct {
 }
 
 // CreateFamily provides a mock function with given fields: ctx, familyName
-func (_m *MockRepository) CreateFamily(ctx context.Context, familyName string) error {
+func (_m *MockRepository) CreateFamily(ctx context.Context, familyName string) (model.Family, error) {
 	ret := _m.Called(ctx, familyName)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateFamily")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+	var r0 model.Family
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (model.Family, error)); ok {
+		return rf(ctx, familyName)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) model.Family); ok {
 		r0 = rf(ctx, familyName)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(model.Family)
 	}
 
-	return r0
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, familyName)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // GetFamilyByID provides a mock function with given fields: ctx, familyID

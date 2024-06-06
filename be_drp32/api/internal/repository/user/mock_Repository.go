@@ -15,21 +15,31 @@ type MockRepository struct {
 }
 
 // CreateUser provides a mock function with given fields: ctx, user
-func (_m *MockRepository) CreateUser(ctx context.Context, user model.User) error {
+func (_m *MockRepository) CreateUser(ctx context.Context, user model.User) (model.User, error) {
 	ret := _m.Called(ctx, user)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateUser")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, model.User) error); ok {
+	var r0 model.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, model.User) (model.User, error)); ok {
+		return rf(ctx, user)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, model.User) model.User); ok {
 		r0 = rf(ctx, user)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(model.User)
 	}
 
-	return r0
+	if rf, ok := ret.Get(1).(func(context.Context, model.User) error); ok {
+		r1 = rf(ctx, user)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // GetUserByEmail provides a mock function with given fields: ctx, email

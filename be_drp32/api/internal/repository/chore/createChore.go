@@ -9,5 +9,5 @@ import (
 func (i impl) CreateChore(ctx context.Context, chore model.Chore) (model.Chore, error) {
 	choreOrm := chore.Orm()
 	err := choreOrm.Insert(ctx, i.dbConn, boil.Blacklist())
-	return model.Model(choreOrm), err
+	return model.ChoreModel(choreOrm), err
 }

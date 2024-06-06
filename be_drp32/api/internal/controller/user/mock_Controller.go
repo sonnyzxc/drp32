@@ -5,6 +5,7 @@ package user
 import (
 	context "context"
 
+	model "github.com/sonnyzxc/drp/be_drp32/api/internal/controller/model"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -13,22 +14,32 @@ type MockController struct {
 	mock.Mock
 }
 
-// CreateUser provides a mock function with given fields: ctx, email, name, familyID
-func (_m *MockController) CreateUser(ctx context.Context, email string, name string, familyID int64) error {
-	ret := _m.Called(ctx, email, name, familyID)
+// CreateUser provides a mock function with given fields: ctx, email, name, familyID, admin
+func (_m *MockController) CreateUser(ctx context.Context, email string, name string, familyID int64, admin bool) (model.User, error) {
+	ret := _m.Called(ctx, email, name, familyID, admin)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateUser")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, int64) error); ok {
-		r0 = rf(ctx, email, name, familyID)
+	var r0 model.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, int64, bool) (model.User, error)); ok {
+		return rf(ctx, email, name, familyID, admin)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, int64, bool) model.User); ok {
+		r0 = rf(ctx, email, name, familyID, admin)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(model.User)
 	}
 
-	return r0
+	if rf, ok := ret.Get(1).(func(context.Context, string, string, int64, bool) error); ok {
+		r1 = rf(ctx, email, name, familyID, admin)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // NewMockController creates a new instance of MockController. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

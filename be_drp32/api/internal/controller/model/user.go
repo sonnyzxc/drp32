@@ -21,3 +21,13 @@ func (u User) Orm() *orm.User {
 		Admin:     u.Admin,
 	}
 }
+
+func UserModel(u *orm.User) User {
+	return User{
+		UserID:    u.UserID,
+		UserEmail: u.UserEmail,
+		UserName:  u.UserName,
+		FamilyID:  u.FamilyID,
+		Admin:     u.Admin,
+	}
+}

@@ -15,21 +15,107 @@ type MockRepository struct {
 }
 
 // CreateChore provides a mock function with given fields: ctx, chore
-func (_m *MockRepository) CreateChore(ctx context.Context, chore model.Chore) error {
+func (_m *MockRepository) CreateChore(ctx context.Context, chore model.Chore) (model.Chore, error) {
 	ret := _m.Called(ctx, chore)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateChore")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, model.Chore) error); ok {
+	var r0 model.Chore
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, model.Chore) (model.Chore, error)); ok {
+		return rf(ctx, chore)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, model.Chore) model.Chore); ok {
 		r0 = rf(ctx, chore)
+	} else {
+		r0 = ret.Get(0).(model.Chore)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, model.Chore) error); ok {
+		r1 = rf(ctx, chore)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// DeleteChoreByID provides a mock function with given fields: ctx, choreID
+func (_m *MockRepository) DeleteChoreByID(ctx context.Context, choreID int64) error {
+	ret := _m.Called(ctx, choreID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteChoreByID")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64) error); ok {
+		r0 = rf(ctx, choreID)
 	} else {
 		r0 = ret.Error(0)
 	}
 
 	return r0
+}
+
+// GetChoreByID provides a mock function with given fields: ctx, choreID
+func (_m *MockRepository) GetChoreByID(ctx context.Context, choreID int64) (model.Chore, error) {
+	ret := _m.Called(ctx, choreID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetChoreByID")
+	}
+
+	var r0 model.Chore
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64) (model.Chore, error)); ok {
+		return rf(ctx, choreID)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int64) model.Chore); ok {
+		r0 = rf(ctx, choreID)
+	} else {
+		r0 = ret.Get(0).(model.Chore)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+		r1 = rf(ctx, choreID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetChores provides a mock function with given fields: ctx
+func (_m *MockRepository) GetChores(ctx context.Context) (model.Chores, error) {
+	ret := _m.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetChores")
+	}
+
+	var r0 model.Chores
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context) (model.Chores, error)); ok {
+		return rf(ctx)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context) model.Chores); ok {
+		r0 = rf(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(model.Chores)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // GetFamilyChores provides a mock function with given fields: ctx, familyID
@@ -55,6 +141,34 @@ func (_m *MockRepository) GetFamilyChores(ctx context.Context, familyID int64) (
 
 	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
 		r1 = rf(ctx, familyID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UpdateChore provides a mock function with given fields: ctx, chore
+func (_m *MockRepository) UpdateChore(ctx context.Context, chore model.Chore) (model.Chore, error) {
+	ret := _m.Called(ctx, chore)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateChore")
+	}
+
+	var r0 model.Chore
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, model.Chore) (model.Chore, error)); ok {
+		return rf(ctx, chore)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, model.Chore) model.Chore); ok {
+		r0 = rf(ctx, chore)
+	} else {
+		r0 = ret.Get(0).(model.Chore)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, model.Chore) error); ok {
+		r1 = rf(ctx, chore)
 	} else {
 		r1 = ret.Error(1)
 	}
