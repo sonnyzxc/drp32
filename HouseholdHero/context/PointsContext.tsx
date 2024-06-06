@@ -36,8 +36,8 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const defaultPoints = [0, 0, 0, 0, 0, 0, 0];
 
   const initialUsers = [
-    { id: 1, name: 'John Doe', isAdmin: true, color: userColors[0] },
-    { id: 2, name: 'Jane Doe', isAdmin: false, color: userColors[1] },
+    { id: 1, name: 'Elizabeth', isAdmin: true, color: userColors[0] },
+    { id: 2, name: 'James', isAdmin: false, color: userColors[1] },
   ];
 
   const getRandomPastDate = () => {
@@ -49,15 +49,15 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   };
 
   const initialTasks: Task[] = [
-    { id: 1, text: 'Buy groceries', emoji: '🛒', points: 5, completed: true, assignedTo: 1, dueDate: getRandomPastDate() },
-    { id: 2, text: 'Walk the dog', emoji: '🐕', points: 3, completed: true, assignedTo: 2, dueDate: getRandomPastDate() },
-    { id: 3, text: 'Do laundry', emoji: '🧺', points: 4, completed: true, assignedTo: 1, dueDate: getRandomPastDate() },
-    { id: 4, text: 'Clean the kitchen', emoji: '🍽️', points: 10, completed: false, assignedTo: 2, dueDate: getRandomPastDate() },
-    { id: 5, text: 'Water the plants', emoji: '🌿', points: 5, completed: true, assignedTo: 2, dueDate: getRandomPastDate() },
-    { id: 6, text: 'Take out the trash', emoji: '🗑️', points: 2, completed: true, assignedTo: 1, dueDate: getRandomPastDate() },
-    { id: 7, text: 'Vacuum the house', emoji: '🧹', points: 8, completed: false, assignedTo: 1, dueDate: getRandomPastDate() },
-    { id: 8, text: 'Wash the car', emoji: '🚗', points: 7, completed: true, assignedTo: 2, dueDate: getRandomPastDate() },
-    { id: 9, text: 'Organize the garage', emoji: '🔧', points: 10, completed: true, assignedTo: 2, dueDate: getRandomPastDate() },
+    // { id: 1, text: 'Buy groceries', emoji: '🛒', points: 5, completed: true, assignedTo: 1, dueDate: getRandomPastDate() },
+    // { id: 2, text: 'Walk the dog', emoji: '🐕', points: 3, completed: true, assignedTo: 2, dueDate: getRandomPastDate() },
+    // { id: 3, text: 'Do laundry', emoji: '🧺', points: 4, completed: true, assignedTo: 1, dueDate: getRandomPastDate() },
+    // { id: 4, text: 'Clean the kitchen', emoji: '🍽️', points: 10, completed: false, assignedTo: 2, dueDate: getRandomPastDate() },
+    // { id: 5, text: 'Water the plants', emoji: '🌿', points: 5, completed: true, assignedTo: 2, dueDate: getRandomPastDate() },
+    // { id: 6, text: 'Take out the trash', emoji: '🗑️', points: 2, completed: true, assignedTo: 1, dueDate: getRandomPastDate() },
+    // { id: 7, text: 'Vacuum the house', emoji: '🧹', points: 8, completed: false, assignedTo: 1, dueDate: getRandomPastDate() },
+    // { id: 8, text: 'Wash the car', emoji: '🚗', points: 7, completed: true, assignedTo: 2, dueDate: getRandomPastDate() },
+    // { id: 9, text: 'Organize the garage', emoji: '🔧', points: 10, completed: true, assignedTo: 2, dueDate: getRandomPastDate() },
   ];
 
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
