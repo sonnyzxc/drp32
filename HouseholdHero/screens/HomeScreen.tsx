@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity, TextInput, Platform, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity, TextInput, Platform, Alert, Modal, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import BarGraph from '../components/BarGraph';
@@ -26,6 +26,8 @@ const HomeScreen: React.FC = () => {
   const [isAddConfirmVisible, setIsAddConfirmVisible] = useState(false);
   const [isHistoryVisible, setIsHistoryVisible] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
+  const [isImageModalVisible, setIsImageModalVisible] = useState(false); // State for image modal visibility
+  const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null); // State for selected image URL
 
   const scrollViewRef = useRef<ScrollView>(null); // Reference to the ScrollView
 
@@ -45,7 +47,6 @@ const HomeScreen: React.FC = () => {
   };
 
   const labels = getLast7Days();
-
   const aggregatePoints = () => {
     const today = new Date();
     const last7Days = Array(7).fill(0).map((_, i) => {
@@ -139,6 +140,11 @@ const HomeScreen: React.FC = () => {
     setIsCompleteConfirmVisible(false);
   };
 
+  const handleTaskPress = (imageUrl: string) => {
+    setSelectedImageUrl(imageUrl);
+    setIsImageModalVisible(true);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollView}>
@@ -152,7 +158,7 @@ const HomeScreen: React.FC = () => {
           <Text style={styles.historyButtonText}>{isHistoryVisible ? 'Hide History' : 'Show History'}</Text>
         </TouchableOpacity>
 
-        {isHistoryVisible && <CompletedTasks tasks={completedTasks} users={users} />}
+        {isHistoryVisible && <CompletedTasks tasks={completedTasks} users={users} onTaskPress={handleTaskPress} />}
 
         <IncompleteTasks tasks={incompleteTasks} users={users} currentUser={currentUser} calculateDaysDifference={calculateDaysDifference} confirmTaskCompletion={confirmTaskCompletion} />
 
@@ -197,9 +203,17 @@ const HomeScreen: React.FC = () => {
         onCancel={() => setIsAddConfirmVisible(false)}
         message="Are you sure you want to add this task?"
       />
+
+      <Modal visible={isImageModalVisible} transparent={true} animationType="slide">
+        <View style={styles.modalContainer}>
+          <Image source={{ uri: selectedImageUrl }} style={styles.image} />
+          <TouchableOpacity style={styles.closeButton} onPress={() => setIsImageModalVisible(false)}>
+            <Text style={styles.closeButtonText}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
 
 export default HomeScreen;
-
