@@ -21,21 +21,9 @@ CREATE TABLE IF NOT EXISTS chores (
   completed BOOLEAN NOT NULL,
   assigned_to BIGINT NOT NULL,
   due_date DATE NOT NULL,
+  time_completed DATE,
+  img_dir TEXT,
   FOREIGN KEY ( assigned_to ) REFERENCES users ( user_id )
-);
-
-CREATE TABLE IF NOT EXISTS rewards (
-  reward_id BIGSERIAL PRIMARY KEY,
-  description TEXT NOT NULL,
-  points INT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS redeemed (
-  reward_id BIGINT,
-  user_id BIGINT,
-  PRIMARY KEY ( reward_id, user_id ),
-  FOREIGN KEY ( reward_id ) REFERENCES rewards ( reward_id ),
-  FOREIGN KEY ( user_id ) REFERENCES users ( user_id )
 );
 
 -- insert into families (family_name) values ('McGinn');
@@ -63,18 +51,3 @@ CREATE TABLE IF NOT EXISTS redeemed (
 -- insert into chores (description, emoji, points, completed, assigned_to, due_date) values ('Geranium sylvaticum L.', 'test', 31, false, 6, '08/08/2024');
 -- insert into chores (description, emoji, points, completed, assigned_to, due_date) values ('Geranium sylvaticum L.', 'test', 31, true, 6, '08/08/2024');
 -- insert into chores (description, emoji, points, completed, assigned_to, due_date) values ('Geranium sylvaticum L.', 'test', 31, false, 4, '08/08/2024');
---
--- insert into rewards (description, points) values ( 'Polygala palmeri S. Watson', 17);
--- insert into rewards (description, points) values ( 'Petrorhagia nanteuilii (Burnat) P.W. Ball & Heywood', 34);
--- insert into rewards (description, points) values ( 'Caloplaca saxifragarum Poelt', 13);
--- insert into rewards (description, points) values ( 'Euphorbia stricta L.', 46);
--- insert into rewards (description, points) values ( 'Clermontia grandiflora Gaudich.', 27);
--- insert into rewards (description, points) values ( 'Petrophytum caespitosum (Nutt.) Rydb. var. elatius (S. Watson) Tidestr.', 15);
--- insert into rewards (description, points) values ( 'Echinocereus coccineus Engelm. var. gurneyi (L.D. Benson) K.D. Heil & Brack', 6);
--- insert into rewards (description, points) values ( 'Rhexia aristosa Britton', 33);
---
--- insert into redeemed (reward_id, user_id) values (8, 6);
--- insert into redeemed (reward_id, user_id) values (3, 1);
--- insert into redeemed (reward_id, user_id) values (6, 3);
--- insert into redeemed (reward_id, user_id) values (1, 1);
--- insert into redeemed (reward_id, user_id) values (6, 1);

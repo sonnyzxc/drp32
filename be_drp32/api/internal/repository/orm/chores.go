@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/friendsofgo/errors"
+	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
@@ -23,52 +24,62 @@ import (
 
 // Chore is an object representing the database table.
 type Chore struct {
-	ChoreID     int64     `boil:"chore_id" json:"chore_id" toml:"chore_id" yaml:"chore_id"`
-	Description string    `boil:"description" json:"description" toml:"description" yaml:"description"`
-	Emoji       string    `boil:"emoji" json:"emoji" toml:"emoji" yaml:"emoji"`
-	Points      int       `boil:"points" json:"points" toml:"points" yaml:"points"`
-	Completed   bool      `boil:"completed" json:"completed" toml:"completed" yaml:"completed"`
-	AssignedTo  int64     `boil:"assigned_to" json:"assigned_to" toml:"assigned_to" yaml:"assigned_to"`
-	DueDate     time.Time `boil:"due_date" json:"due_date" toml:"due_date" yaml:"due_date"`
+	ChoreID       int64       `boil:"chore_id" json:"chore_id" toml:"chore_id" yaml:"chore_id"`
+	Description   string      `boil:"description" json:"description" toml:"description" yaml:"description"`
+	Emoji         string      `boil:"emoji" json:"emoji" toml:"emoji" yaml:"emoji"`
+	Points        int         `boil:"points" json:"points" toml:"points" yaml:"points"`
+	Completed     bool        `boil:"completed" json:"completed" toml:"completed" yaml:"completed"`
+	AssignedTo    int64       `boil:"assigned_to" json:"assigned_to" toml:"assigned_to" yaml:"assigned_to"`
+	DueDate       time.Time   `boil:"due_date" json:"due_date" toml:"due_date" yaml:"due_date"`
+	TimeCompleted null.Time   `boil:"time_completed" json:"time_completed,omitempty" toml:"time_completed" yaml:"time_completed,omitempty"`
+	ImgDir        null.String `boil:"img_dir" json:"img_dir,omitempty" toml:"img_dir" yaml:"img_dir,omitempty"`
 
 	R *choreR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L choreL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var ChoreColumns = struct {
-	ChoreID     string
-	Description string
-	Emoji       string
-	Points      string
-	Completed   string
-	AssignedTo  string
-	DueDate     string
+	ChoreID       string
+	Description   string
+	Emoji         string
+	Points        string
+	Completed     string
+	AssignedTo    string
+	DueDate       string
+	TimeCompleted string
+	ImgDir        string
 }{
-	ChoreID:     "chore_id",
-	Description: "description",
-	Emoji:       "emoji",
-	Points:      "points",
-	Completed:   "completed",
-	AssignedTo:  "assigned_to",
-	DueDate:     "due_date",
+	ChoreID:       "chore_id",
+	Description:   "description",
+	Emoji:         "emoji",
+	Points:        "points",
+	Completed:     "completed",
+	AssignedTo:    "assigned_to",
+	DueDate:       "due_date",
+	TimeCompleted: "time_completed",
+	ImgDir:        "img_dir",
 }
 
 var ChoreTableColumns = struct {
-	ChoreID     string
-	Description string
-	Emoji       string
-	Points      string
-	Completed   string
-	AssignedTo  string
-	DueDate     string
+	ChoreID       string
+	Description   string
+	Emoji         string
+	Points        string
+	Completed     string
+	AssignedTo    string
+	DueDate       string
+	TimeCompleted string
+	ImgDir        string
 }{
-	ChoreID:     "chores.chore_id",
-	Description: "chores.description",
-	Emoji:       "chores.emoji",
-	Points:      "chores.points",
-	Completed:   "chores.completed",
-	AssignedTo:  "chores.assigned_to",
-	DueDate:     "chores.due_date",
+	ChoreID:       "chores.chore_id",
+	Description:   "chores.description",
+	Emoji:         "chores.emoji",
+	Points:        "chores.points",
+	Completed:     "chores.completed",
+	AssignedTo:    "chores.assigned_to",
+	DueDate:       "chores.due_date",
+	TimeCompleted: "chores.time_completed",
+	ImgDir:        "chores.img_dir",
 }
 
 // Generated where
@@ -176,22 +187,100 @@ func (w whereHelpertime_Time) GTE(x time.Time) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.GTE, x)
 }
 
+type whereHelpernull_Time struct{ field string }
+
+func (w whereHelpernull_Time) EQ(x null.Time) qm.QueryMod {
+	return qmhelper.WhereNullEQ(w.field, false, x)
+}
+func (w whereHelpernull_Time) NEQ(x null.Time) qm.QueryMod {
+	return qmhelper.WhereNullEQ(w.field, true, x)
+}
+func (w whereHelpernull_Time) LT(x null.Time) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LT, x)
+}
+func (w whereHelpernull_Time) LTE(x null.Time) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LTE, x)
+}
+func (w whereHelpernull_Time) GT(x null.Time) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GT, x)
+}
+func (w whereHelpernull_Time) GTE(x null.Time) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GTE, x)
+}
+
+func (w whereHelpernull_Time) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
+func (w whereHelpernull_Time) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
+
+type whereHelpernull_String struct{ field string }
+
+func (w whereHelpernull_String) EQ(x null.String) qm.QueryMod {
+	return qmhelper.WhereNullEQ(w.field, false, x)
+}
+func (w whereHelpernull_String) NEQ(x null.String) qm.QueryMod {
+	return qmhelper.WhereNullEQ(w.field, true, x)
+}
+func (w whereHelpernull_String) LT(x null.String) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LT, x)
+}
+func (w whereHelpernull_String) LTE(x null.String) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LTE, x)
+}
+func (w whereHelpernull_String) GT(x null.String) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GT, x)
+}
+func (w whereHelpernull_String) GTE(x null.String) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GTE, x)
+}
+func (w whereHelpernull_String) LIKE(x null.String) qm.QueryMod {
+	return qm.Where(w.field+" LIKE ?", x)
+}
+func (w whereHelpernull_String) NLIKE(x null.String) qm.QueryMod {
+	return qm.Where(w.field+" NOT LIKE ?", x)
+}
+func (w whereHelpernull_String) ILIKE(x null.String) qm.QueryMod {
+	return qm.Where(w.field+" ILIKE ?", x)
+}
+func (w whereHelpernull_String) NILIKE(x null.String) qm.QueryMod {
+	return qm.Where(w.field+" NOT ILIKE ?", x)
+}
+func (w whereHelpernull_String) IN(slice []string) qm.QueryMod {
+	values := make([]interface{}, 0, len(slice))
+	for _, value := range slice {
+		values = append(values, value)
+	}
+	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
+}
+func (w whereHelpernull_String) NIN(slice []string) qm.QueryMod {
+	values := make([]interface{}, 0, len(slice))
+	for _, value := range slice {
+		values = append(values, value)
+	}
+	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
+}
+
+func (w whereHelpernull_String) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
+func (w whereHelpernull_String) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
+
 var ChoreWhere = struct {
-	ChoreID     whereHelperint64
-	Description whereHelperstring
-	Emoji       whereHelperstring
-	Points      whereHelperint
-	Completed   whereHelperbool
-	AssignedTo  whereHelperint64
-	DueDate     whereHelpertime_Time
+	ChoreID       whereHelperint64
+	Description   whereHelperstring
+	Emoji         whereHelperstring
+	Points        whereHelperint
+	Completed     whereHelperbool
+	AssignedTo    whereHelperint64
+	DueDate       whereHelpertime_Time
+	TimeCompleted whereHelpernull_Time
+	ImgDir        whereHelpernull_String
 }{
-	ChoreID:     whereHelperint64{field: "\"chores\".\"chore_id\""},
-	Description: whereHelperstring{field: "\"chores\".\"description\""},
-	Emoji:       whereHelperstring{field: "\"chores\".\"emoji\""},
-	Points:      whereHelperint{field: "\"chores\".\"points\""},
-	Completed:   whereHelperbool{field: "\"chores\".\"completed\""},
-	AssignedTo:  whereHelperint64{field: "\"chores\".\"assigned_to\""},
-	DueDate:     whereHelpertime_Time{field: "\"chores\".\"due_date\""},
+	ChoreID:       whereHelperint64{field: "\"chores\".\"chore_id\""},
+	Description:   whereHelperstring{field: "\"chores\".\"description\""},
+	Emoji:         whereHelperstring{field: "\"chores\".\"emoji\""},
+	Points:        whereHelperint{field: "\"chores\".\"points\""},
+	Completed:     whereHelperbool{field: "\"chores\".\"completed\""},
+	AssignedTo:    whereHelperint64{field: "\"chores\".\"assigned_to\""},
+	DueDate:       whereHelpertime_Time{field: "\"chores\".\"due_date\""},
+	TimeCompleted: whereHelpernull_Time{field: "\"chores\".\"time_completed\""},
+	ImgDir:        whereHelpernull_String{field: "\"chores\".\"img_dir\""},
 }
 
 // ChoreRels is where relationship names are stored.
@@ -222,9 +311,9 @@ func (r *choreR) GetAssignedToUser() *User {
 type choreL struct{}
 
 var (
-	choreAllColumns            = []string{"chore_id", "description", "emoji", "points", "completed", "assigned_to", "due_date"}
+	choreAllColumns            = []string{"chore_id", "description", "emoji", "points", "completed", "assigned_to", "due_date", "time_completed", "img_dir"}
 	choreColumnsWithoutDefault = []string{"description", "emoji", "points", "completed", "assigned_to", "due_date"}
-	choreColumnsWithDefault    = []string{"chore_id"}
+	choreColumnsWithDefault    = []string{"chore_id", "time_completed", "img_dir"}
 	chorePrimaryKeyColumns     = []string{"chore_id"}
 	choreGeneratedColumns      = []string{}
 )
