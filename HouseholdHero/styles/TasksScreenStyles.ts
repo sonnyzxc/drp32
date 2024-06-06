@@ -27,17 +27,25 @@ export default StyleSheet.create({
   },
   taskContainer: {
     marginBottom: 15,
-    padding: 15,
     backgroundColor: '#fff',
     borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 1,
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
+    marginHorizontal: 20, // Add some horizontal margin for better spacing
+    padding: 20, // Add padding to create space for the due date text
+    position: 'relative', // Position relative for absolute positioning of due date text
   },
   dueDateText: {
     fontSize: 14,
-    color: 'gray',
+    color: '#fff',
+    backgroundColor: 'gray',
+    padding: 5,
+    borderRadius: 5,
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
   },
 });

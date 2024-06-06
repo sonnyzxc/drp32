@@ -13,6 +13,16 @@ const TasksScreen: React.FC = () => {
   // Filter tasks assigned to the current user and not completed
   const userTasks = tasks.filter(task => task.assignedTo === currentUser.id && !task.completed);
 
+  // Group tasks by their due dates
+  const groupedTasks = userTasks.reduce((acc, task) => {
+    const dueDate = new Date(task.dueDate).toLocaleDateString();
+    if (!acc[dueDate]) {
+      acc[dueDate] = [];
+    }
+    acc[dueDate].push(task);
+    return acc;
+  }, {});
+
   const handleToggleTask = (taskId: number) => {
     setSelectedTaskId(taskId);
     setIsConfirmVisible(true);
@@ -33,16 +43,16 @@ const TasksScreen: React.FC = () => {
         <Text style={styles.headerText}>Your Tasks</Text>
       </View>
       <ScrollView contentContainerStyle={styles.scrollView}>
-        {userTasks.length > 0 ? (
-          userTasks.map(task => (
-            <View key={task.id} style={styles.taskContainer}>
-              <ToDoItem item={task} onToggle={() => handleToggleTask(task.id)} />
-              <Text style={styles.dueDateText}>Due: {new Date(task.dueDate).toLocaleDateString()}</Text>
-            </View>
-          ))
-        ) : (
-          <Text style={styles.noTasksText}>No tasks assigned to you.</Text>
-        )}
+        {Object.entries(groupedTasks).map(([dueDate, tasks]) => (
+          <View key={dueDate}>
+            <Text style={styles.dueDateTitle}>Due: {dueDate}</Text>
+            {tasks.map(task => (
+              <View key={task.id}>
+                <ToDoItem item={task} onToggle={() => handleToggleTask(task.id)} />
+              </View>
+            ))}
+          </View>
+        ))}
       </ScrollView>
       <ConfirmationModal
         visible={isConfirmVisible}
@@ -55,3 +65,4 @@ const TasksScreen: React.FC = () => {
 };
 
 export default TasksScreen;
+
