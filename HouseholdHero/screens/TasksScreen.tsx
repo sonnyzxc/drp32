@@ -9,6 +9,7 @@ const TasksScreen: React.FC = () => {
   const { tasks, currentUser, toggleTaskCompletion } = usePoints();
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
+  const [imageUri, setImageUri] = useState<string | null>(null);
 
   // Filter tasks assigned to the current user and not completed
   const userTasks = tasks.filter(task => task.assignedTo === currentUser.id && !task.completed);
@@ -30,7 +31,7 @@ const TasksScreen: React.FC = () => {
 
   const handleConfirmToggle = () => {
     if (selectedTaskId !== null) {
-      toggleTaskCompletion(selectedTaskId);
+      toggleTaskCompletion(selectedTaskId, imageUri);
       setSelectedTaskId(null);
     }
     setIsConfirmVisible(false);
@@ -56,6 +57,7 @@ const TasksScreen: React.FC = () => {
       </ScrollView>
       <ConfirmationModal
         visible={isConfirmVisible}
+        onSelectPhoto={setImageUri}
         onConfirm={handleConfirmToggle}
         onCancel={() => setIsConfirmVisible(false)}
         message="Are you sure you want to mark this task as complete?"

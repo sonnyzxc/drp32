@@ -26,6 +26,7 @@ const HomeScreen: React.FC = () => {
   const [isAddConfirmVisible, setIsAddConfirmVisible] = useState(false);
   const [isHistoryVisible, setIsHistoryVisible] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
+  const [imageUri, setImageUri] = useState<string | null>(null);
 
   const scrollViewRef = useRef<ScrollView>(null); // Reference to the ScrollView
 
@@ -133,7 +134,7 @@ const HomeScreen: React.FC = () => {
 
   const handleConfirmCompletion = () => {
     if (selectedTaskId !== null) {
-      toggleTaskCompletion(selectedTaskId);
+      toggleTaskCompletion(selectedTaskId, imageUri);
       setSelectedTaskId(null);
     }
     setIsCompleteConfirmVisible(false);
@@ -187,12 +188,14 @@ const HomeScreen: React.FC = () => {
 
       <ConfirmationModal
         visible={isCompleteConfirmVisible}
+        onSelectPhoto={setImageUri}
         onConfirm={handleConfirmCompletion}
         onCancel={() => setIsCompleteConfirmVisible(false)}
         message="Are you sure you want to mark this task as complete?"
       />
       <ConfirmationModal
         visible={isAddConfirmVisible}
+        onSelectPhoto={setImageUri}
         onConfirm={handleAddTask}
         onCancel={() => setIsAddConfirmVisible(false)}
         message="Are you sure you want to add this task?"

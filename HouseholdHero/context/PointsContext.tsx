@@ -24,7 +24,7 @@ interface PointsContextProps {
   users: User[];
   addPoints: (userId: number, index: number, points: number) => void;
   addTask: (task: Task) => void;
-  toggleTaskCompletion: (taskId: number) => void;
+  toggleTaskCompletion: (taskId: number, imageUri: string | null) => void;
   changeUser: (userId: number) => void;
   addUser: (name: string, isAdmin: boolean) => void;
 }
@@ -134,7 +134,7 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
-  const toggleTaskCompletion = async (taskId: number) => {
+  const toggleTaskCompletion = async (taskId: number, imageUri: string | null) => {
     const currentDayIndex = new Date().getDay();
     console.log('Current day index:', currentDayIndex);
 
@@ -142,12 +142,23 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     if (!taskToUpdate) return;
 
     const updatedTask = { ...taskToUpdate, completed: !taskToUpdate.completed };
+    const formData = new FormData();
+    if (imageUri) {
+      const file = {
+        uri: imageUri,
+        name: "image.jpg",
+        type: "image/jpeg",
+      };
+      formData.append("file", file as any);
+    }
+
     try {
       await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/chore/complete/${taskId}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
+        body: formData,
       });
       setTasks(tasks.map(task => task.id === taskId ? updatedTask : task));
       addPoints(taskToUpdate.assignedTo, currentDayIndex, updatedTask.completed ? taskToUpdate.points : -taskToUpdate.points);

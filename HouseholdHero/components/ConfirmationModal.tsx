@@ -1,19 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Modal, StyleSheet, TouchableOpacity } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
 interface ConfirmationModalProps {
   visible: boolean;
+  onSelectPhoto: (imageUri: string) => void;
   onConfirm: () => void;
   onCancel: () => void;
   message: string;
 }
 
-const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ visible, onConfirm, onCancel, message }) => {
+const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ visible, onSelectPhoto, onConfirm, onCancel, message }) => {
+
+  const handleUploadPhoto = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      onSelectPhoto(result.assets[0].uri);
+    }
+  }
+
   return (
     <Modal transparent={true} visible={visible} animationType="slide">
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
           <Text style={styles.messageText}>{message}</Text>
+          <TouchableOpacity style={styles.uploadButton} onPress={handleUploadPhoto}>
+            <Text style={styles.buttonText}>Upload Photo</Text>
+          </TouchableOpacity>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
               <Text style={styles.buttonText}>Confirm</Text>
@@ -50,6 +69,14 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    width: '100%',
+  },
+  uploadButton: {
+    backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 20,
+    alignItems: 'center',
     width: '100%',
   },
   confirmButton: {
