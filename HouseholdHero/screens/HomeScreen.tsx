@@ -4,14 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import BarGraph from '../components/BarGraph';
 import ConfirmationModal from '../components/ConfirmationModal';
-import TaskBreakdownModal from '../components/TaskBreakdownModal';
-import { usePoints, Task } from '../context/PointsContext'; // Import Task interface and usePoints
-import IncompleteTasks from '../components/IncompleteTasks'; // Import IncompleteTasks component
-import CompletedTasks from '../components/CompletedTasks'; // Import CompletedTasks component
-import AddTask from '../components/AddTask'; // Import AddTask component
-import styles from '../styles/HomeScreenStyles'; // Import the styles
-
-const screenWidth = Dimensions.get('window').width;
+import { usePoints, Task } from '../context/PointsContext';
+import IncompleteTasks from '../components/IncompleteTasks';
+import CompletedTasks from '../components/CompletedTasks';
+import AddTask from '../components/AddTask';
+import styles from '../styles/HomeScreenStyles';
 
 const HomeScreen: React.FC = () => {
   const { points, tasks, currentUser, users, addTask, toggleTaskCompletion } = usePoints();
@@ -27,7 +24,7 @@ const HomeScreen: React.FC = () => {
   const [isHistoryVisible, setIsHistoryVisible] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
 
-  const scrollViewRef = useRef<ScrollView>(null); // Reference to the ScrollView
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const incompleteTasks = tasks.filter(task => !task.completed);
   const completedTasks = tasks.filter(task => task.completed);
@@ -46,17 +43,20 @@ const HomeScreen: React.FC = () => {
 
   const labels = getLast7Days();
   const aggregatePoints = () => {
-    const totalPoints = Array(7).fill(0);
+    const totalPoints = Array(7).fill(0).map(() => users.map(() => 0));
     for (const userId in points) {
       points[userId].forEach((point, index) => {
-        totalPoints[index] += point;
+        totalPoints[index][parseInt(userId) - 1] += point;
       });
     }
     return totalPoints;
   };
 
   const combinedPoints = aggregatePoints();
-  const chartData = labels.map((label, index) => ({ label, value: combinedPoints[index] }));
+  const chartData = labels.map((label, index) => ({
+    label,
+    users: combinedPoints[index].map((value, userId) => ({ value, userId: userId + 1 }))
+  }));
 
   const handleAddTask = () => {
     const newTask: Task = {
@@ -97,7 +97,6 @@ const HomeScreen: React.FC = () => {
   const scrollToAddTask = () => {
     setIsAddTaskVisible(!isAddTaskVisible);
     if (!isAddTaskVisible) {
-      // Delay scrolling to ensure the layout is updated
       setTimeout(() => {
         if (scrollViewRef.current) {
           scrollViewRef.current.scrollToEnd({ animated: true });
@@ -132,9 +131,9 @@ const HomeScreen: React.FC = () => {
       <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollView}>
         <Text style={styles.headerText}>Weekly Chore Points</Text>
         <View style={styles.chartContainer}>
-          <BarGraph data={chartData} />
+          <BarGraph data={chartData} users={users} />
         </View>
-        <Text style={styles.totalPointsText}>Total Points: {combinedPoints.reduce((a, b) => a + b, 0)}</Text>
+        <Text style={styles.totalPointsText}>Total Points: {combinedPoints.flat().reduce((a, b) => a + b, 0)}</Text>
 
         <TouchableOpacity style={styles.historyButton} onPress={toggleHistory}>
           <Text style={styles.historyButtonText}>{isHistoryVisible ? 'Hide History' : 'Show History'}</Text>
@@ -142,7 +141,13 @@ const HomeScreen: React.FC = () => {
 
         {isHistoryVisible && <CompletedTasks tasks={completedTasks} users={users} />}
 
-        <IncompleteTasks tasks={incompleteTasks} users={users} currentUser={currentUser} calculateDaysDifference={calculateDaysDifference} confirmTaskCompletion={confirmTaskCompletion} />
+        <IncompleteTasks
+          tasks={incompleteTasks}
+          users={users}
+          currentUser={currentUser}
+          calculateDaysDifference={calculateDaysDifference}
+          confirmTaskCompletion={confirmTaskCompletion}
+        />
 
         {isAddTaskVisible && (
           <AddTask
@@ -190,4 +195,3 @@ const HomeScreen: React.FC = () => {
 };
 
 export default HomeScreen;
-

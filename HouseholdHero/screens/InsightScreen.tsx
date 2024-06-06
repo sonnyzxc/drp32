@@ -25,7 +25,10 @@ const InsightScreen: React.FC = () => {
   };
 
   const labels = getLast7Days();
-  const chartData = labels.map((label, index) => ({ label, value: selectedUserPoints[index] }));
+  const chartData = labels.map((label, index) => ({
+    label,
+    users: [{ value: selectedUserPoints[index], userId: selectedUserId }],
+  }));
 
   const completedTasks = userTasks.filter(task => task.completed);
   const incompleteTasks = userTasks.filter(task => !task.completed);
@@ -52,7 +55,7 @@ const InsightScreen: React.FC = () => {
 
         <Text style={styles.subHeaderText}>Weekly Points</Text>
         <View style={styles.chartContainer}>
-          <BarGraph data={chartData} />
+          <BarGraph data={chartData} users={users.filter(user => user.id === selectedUserId)} />
         </View>
         <Text style={styles.totalPointsText}>Total Points: {selectedUserPoints.reduce((a, b) => a + b, 0)}</Text>
 

@@ -7,21 +7,21 @@ export interface Task {
   points: number;
   completed: boolean;
   assignedTo: number; // User ID of the assigned user
-  dueDate: Date;
+  dueDate: Date; // Due date for the task
 }
 
 interface User {
   id: number;
   name: string;
   isAdmin: boolean;
+  color: string;
 }
 
 interface PointsContextProps {
-  points: { [userId: number]: number[] }; // User-specific points
+  points: { [userId: number]: number[] };
   tasks: Task[];
   currentUser: User;
   users: User[];
-  addPoints: (userId: number, index: number, points: number) => void;
   addTask: (task: Task) => void;
   toggleTaskCompletion: (taskId: number) => void;
   changeUser: (userId: number) => void;
@@ -30,128 +30,87 @@ interface PointsContextProps {
 
 const PointsContext = createContext<PointsContextProps | undefined>(undefined);
 
+const userColors = ['#6a11cb', '#2575fc', '#fc2575', '#fca311', '#00b4d8'];
+
 export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const today = new Date().getDay();
   const defaultPoints = [0, 0, 0, 0, 0, 0, 0];
 
-  const rotateArray = (arr: number[], rotateBy: number) => {
-    return arr.slice(rotateBy).concat(arr.slice(0, rotateBy));
+  const initialUsers = [
+    { id: 1, name: 'John Doe', isAdmin: true, color: userColors[0] },
+    { id: 2, name: 'Jane Doe', isAdmin: false, color: userColors[1] },
+  ];
+
+  const getRandomPastDate = () => {
+    const today = new Date();
+    const daysAgo = Math.floor(Math.random() * 7); // 0 to 6 days ago
+    const randomDate = new Date();
+    randomDate.setDate(today.getDate() - daysAgo);
+    return randomDate;
   };
 
-  const initializePoints = () => {
-    // Initialize points to a default value for all days
-    return rotateArray(defaultPoints, today + 1);
-  };
+  const initialTasks: Task[] = [
+    { id: 1, text: 'Buy groceries', emoji: '🛒', points: 5, completed: true, assignedTo: 1, dueDate: getRandomPastDate() },
+    { id: 2, text: 'Walk the dog', emoji: '🐕', points: 3, completed: true, assignedTo: 2, dueDate: getRandomPastDate() },
+    { id: 3, text: 'Do laundry', emoji: '🧺', points: 4, completed: true, assignedTo: 1, dueDate: getRandomPastDate() },
+    { id: 4, text: 'Clean the kitchen', emoji: '🍽️', points: 10, completed: false, assignedTo: 2, dueDate: getRandomPastDate() },
+    { id: 5, text: 'Water the plants', emoji: '🌿', points: 5, completed: true, assignedTo: 2, dueDate: getRandomPastDate() },
+    { id: 6, text: 'Take out the trash', emoji: '🗑️', points: 2, completed: true, assignedTo: 1, dueDate: getRandomPastDate() },
+    { id: 7, text: 'Vacuum the house', emoji: '🧹', points: 8, completed: false, assignedTo: 1, dueDate: getRandomPastDate() },
+    { id: 8, text: 'Wash the car', emoji: '🚗', points: 7, completed: true, assignedTo: 2, dueDate: getRandomPastDate() },
+    { id: 9, text: 'Organize the garage', emoji: '🔧', points: 10, completed: true, assignedTo: 2, dueDate: getRandomPastDate() },
+  ];
 
-  const initialPoints = {
-    1: initializePoints(),
-    2: initializePoints(),
-  };
-
-  const [points, setPoints] = useState<{ [userId: number]: number[] }>(initialPoints);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [users, setUsers] = useState<User[]>([
-    { id: 1, name: 'Elizabeth', isAdmin: true },
-    { id: 2, name: 'James', isAdmin: false },
-  ]);
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [users, setUsers] = useState<User[]>(initialUsers);
   const [currentUser, setCurrentUser] = useState<User>(users[0]);
+  const [points, setPoints] = useState<{ [userId: number]: number[] }>({});
 
-  const formatTaskFromApi = (task: any): Task => {
-    return {
-      id: task.chore_id,
-      text: task.description, // Assuming the API returns `description` instead of `text`
-      emoji: task.emoji,
-      points: task.points, // Assuming the API returns `reward_points` instead of `points`
-      completed: task.completed, // Assuming the API returns `is_done` instead of `completed`
-      assignedTo: task.assigned_to, // Assuming the API returns `user_id` instead of `assignedTo`
-      dueDate: new Date(task.due_date), // Assuming the API returns `due_date` instead of `dueDate`
-    };
+  const calculatePoints = (tasks: Task[]) => {
+    const points: { [userId: number]: number[] } = {};
+    users.forEach(user => {
+      points[user.id] = [...defaultPoints];
+    });
+    tasks.forEach(task => {
+      if (task.completed) {
+        const taskDay = new Date(task.dueDate).getDay();
+        points[task.assignedTo][taskDay] += task.points;
+      }
+    });
+    return points;
   };
 
   useEffect(() => {
-    // Fetch tasks from the API
-    const fetchTasks = async () => {
-      try {
-        const response = await fetch('https://be-drp32-5ac34b8c912e.herokuapp.com/chores?familyID=1', {
-          method: 'GET',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/json',
+    setPoints(calculatePoints(tasks));
+  }, [tasks]);
+
+  const addTask = (task: Task) => {
+    setTasks(prevTasks => [...prevTasks, task]);
+  };
+
+  const toggleTaskCompletion = (taskId: number) => {
+    setTasks(prevTasks => {
+      const updatedTasks = prevTasks.map(task => {
+        if (task.id === taskId) {
+          const todayIndex = new Date().getDay();
+          if (!task.completed) {
+            setPoints(prevPoints => {
+              const userPoints = [...prevPoints[task.assignedTo]];
+              userPoints[todayIndex] += task.points;
+              return { ...prevPoints, [task.assignedTo]: userPoints };
+            });
+          } else {
+            setPoints(prevPoints => {
+              const userPoints = [...prevPoints[task.assignedTo]];
+              userPoints[todayIndex] -= task.points;
+              return { ...prevPoints, [task.assignedTo]: userPoints };
+            });
           }
-        });
-        const data = await response.json();
-        setTasks(data.chores.map(formatTaskFromApi));
-        console.log(data);
-      } catch (error) {
-        console.error('Error fetching tasks:', error);
-      }
-    };
-
-    fetchTasks();
-  }, []);
-
-  const addPoints = (userId: number, index: number, newPoints: number) => {
-    setPoints(prevPoints => {
-      const userPoints = prevPoints[userId] ? [...prevPoints[userId]] : [0, 0, 0, 0, 0, 0, 0];
-      const rotatedIndex = (index + userPoints.length - (today + 1)) % userPoints.length;
-      userPoints[rotatedIndex] += newPoints;
-      console.log(`Adding ${newPoints} points to user ${userId} on rotated index ${rotatedIndex}`);
-      console.log('Updated points:', userPoints);
-      return { ...prevPoints, [userId]: userPoints };
+          return { ...task, completed: !task.completed, dueDate: new Date() };
+        }
+        return task;
+      });
+      return updatedTasks;
     });
-  };
-
-  const formatTaskForApi = (task: Task) => {
-    return {
-      "description": task.text,
-      "emoji": task.emoji,
-      "points": task.points,
-      "assigned-to": task.assignedTo,
-      "due-date": task.dueDate.toISOString().substring(0, 10), // Convert Date to ISO string
-    };
-  };
-
-  const addTask = async (task: Task) => {
-    try {
-      const response = await fetch('https://be-drp32-5ac34b8c912e.herokuapp.com/chore', {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formatTaskForApi(task)),
-      });
-
-      if (!response.ok) {
-        throw new Error("Error adding task");
-      }
-
-      setTasks(prevTasks => [...prevTasks, task]);
-    } catch (error) {
-      console.error('Error adding task:', error);
-    }
-  };
-
-  const toggleTaskCompletion = async (taskId: number) => {
-    const currentDayIndex = new Date().getDay();
-    console.log('Current day index:', currentDayIndex);
-
-    const taskToUpdate = tasks.find(task => task.id === taskId);
-    if (!taskToUpdate) return;
-
-    const updatedTask = { ...taskToUpdate, completed: !taskToUpdate.completed };
-    try {
-      await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/chore/complete/${taskId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      setTasks(tasks.map(task => task.id === taskId ? updatedTask : task));
-      addPoints(taskToUpdate.assignedTo, currentDayIndex, updatedTask.completed ? taskToUpdate.points : -taskToUpdate.points);
-    } catch (error) {
-      console.error('Error updating task:', error);
-    }
   };
 
   const changeUser = (userId: number) => {
@@ -166,13 +125,14 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       id: users.length + 1,
       name,
       isAdmin,
+      color: userColors[users.length % userColors.length],
     };
     setUsers(prevUsers => [...prevUsers, newUser]);
-    setPoints(prevPoints => ({ ...prevPoints, [newUser.id]: rotateArray([0, 0, 0, 0, 0, 0, 0], today + 1) })); // Initialize points
+    setPoints(prevPoints => ({ ...prevPoints, [newUser.id]: [0, 0, 0, 0, 0, 0, 0] }));
   };
 
   return (
-    <PointsContext.Provider value={{ points, tasks, currentUser, users, addPoints, addTask, toggleTaskCompletion, changeUser, addUser }}>
+    <PointsContext.Provider value={{ points, tasks, currentUser, users, addTask, toggleTaskCompletion, changeUser, addUser }}>
       {children}
     </PointsContext.Provider>
   );
