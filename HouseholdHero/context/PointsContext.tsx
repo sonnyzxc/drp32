@@ -9,6 +9,7 @@ export interface Task {
   assignedTo: number; // User ID of the assigned user
   dueDate: Date;
   completedDate?: Date;
+  imgDir?: string;
 }
 
 interface User {
@@ -67,6 +68,7 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       assignedTo: task.assigned_to, // Assuming the API returns `user_id` instead of `assignedTo`
       dueDate: new Date(task.due_date), // Assuming the API returns `due_date` instead of `dueDate`
       completedDate: new Date(task.time_completed),
+      imgDir: task.img_dir,
     };
   };
 
