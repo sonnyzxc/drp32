@@ -26,24 +26,40 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ visible, onSelect
       setSelectedImageUri(uri);
       onSelectPhoto(uri);
     }
-  }
+  };
+
+  const handleTakePhoto = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const uri = result.assets[0].uri;
+      setSelectedImageUri(uri);
+      onSelectPhoto(uri);
+    }
+  };
 
   return (
     <Modal transparent={true} visible={visible} animationType="slide">
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
           <Text style={styles.messageText}>{message}</Text>
-          {selectedImageUri && (
-            <Image source={{ uri: selectedImageUri }} style={styles.imagePreview} />
-          )}
+          {selectedImageUri && <Image source={{ uri: selectedImageUri }} style={styles.imagePreview} />}
           <TouchableOpacity style={styles.uploadButton} onPress={handleUploadPhoto}>
-            <Text style={styles.buttonText}>{selectedImageUri ? 'Change Photo' : 'Upload Photo'}</Text>
+            <Text style={styles.buttonText}>Upload Photo</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.cameraButton} onPress={handleTakePhoto}>
+            <Text style={styles.buttonText}>Take Photo</Text>
           </TouchableOpacity>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
               <Text style={styles.buttonText}>Confirm</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.cancelButton} onPress={() => {setSelectedImageUri(null); onCancel()}}>
+            <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
               <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
@@ -72,12 +88,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
-  imagePreview: {
-    width: 250,
-    height: 200,
-    borderRadius: 10,
-    marginBottom: 20,
-  },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -85,6 +95,14 @@ const styles = StyleSheet.create({
   },
   uploadButton: {
     backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+    alignItems: 'center',
+    width: '100%',
+  },
+  cameraButton: {
+    backgroundColor: '#FFA500',
     padding: 10,
     borderRadius: 5,
     marginBottom: 20,
@@ -109,6 +127,12 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  imagePreview: {
+    width: 250,
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 20,
   },
 });
 
