@@ -16,6 +16,7 @@ interface User {
   id: number;
   name: string;
   isAdmin: boolean;
+  color: string;
 }
 
 interface PointsContextProps {
@@ -31,6 +32,8 @@ interface PointsContextProps {
 }
 
 const PointsContext = createContext<PointsContextProps | undefined>(undefined);
+
+const userColors = ['#6a11cb', '#2575fc', '#fc2575', '#fca311', '#00b4d8'];
 
 export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const today = new Date().getDay();
@@ -53,8 +56,8 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [points, setPoints] = useState<{ [userId: number]: number[] }>(initialPoints);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [users, setUsers] = useState<User[]>([
-    { id: 1, name: 'Elizabeth', isAdmin: true },
-    { id: 2, name: 'James', isAdmin: false },
+    { id: 1, name: 'Elizabeth', isAdmin: true, color: userColors[0] },
+    { id: 2, name: 'James', isAdmin: false, color: userColors[1] },
   ]);
   const [currentUser, setCurrentUser] = useState<User>(users[0]);
 
