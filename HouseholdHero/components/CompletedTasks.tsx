@@ -5,7 +5,7 @@ import { Task } from '../context/PointsContext';
 interface CompletedTasksProps {
   tasks: Task[];
   users: { id: number; name: string; isAdmin: boolean }[];
-  onTaskPress: (imageUrl: string) => void; // New prop for handling task press
+  onTaskPress: (task: Task) => void; // New prop for handling task press
 }
 
 const CompletedTasks: React.FC<CompletedTasksProps> = ({ tasks, users, onTaskPress }) => {
@@ -13,7 +13,7 @@ const CompletedTasks: React.FC<CompletedTasksProps> = ({ tasks, users, onTaskPre
     <View style={styles.container}>
       <Text style={styles.subHeaderText}>Chore History</Text>
       {tasks.map(task => (
-        <TouchableOpacity key={task.id} style={styles.taskContainer} onPress={() => onTaskPress(task.imgDir)}>
+        <TouchableOpacity key={task.id} style={styles.taskContainer} onPress={() => onTaskPress(task)}>
           <Text style={styles.taskText}>
             {task.emoji} {task.text} - Assigned to {users.find(user => user.id === task.assignedTo)?.name}
           </Text>
