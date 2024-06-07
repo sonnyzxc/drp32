@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Modal, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Modal, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
 interface ConfirmationModalProps {
@@ -11,6 +11,7 @@ interface ConfirmationModalProps {
 }
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ visible, onSelectPhoto, onConfirm, onCancel, message }) => {
+  const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
 
   const handleUploadPhoto = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -21,7 +22,9 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ visible, onSelect
     });
 
     if (!result.canceled) {
-      onSelectPhoto(result.assets[0].uri);
+      const uri = result.assets[0].uri;
+      setSelectedImageUri(uri);
+      onSelectPhoto(uri);
     }
   }
 
@@ -30,14 +33,17 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ visible, onSelect
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
           <Text style={styles.messageText}>{message}</Text>
+          {selectedImageUri && (
+            <Image source={{ uri: selectedImageUri }} style={styles.imagePreview} />
+          )}
           <TouchableOpacity style={styles.uploadButton} onPress={handleUploadPhoto}>
-            <Text style={styles.buttonText}>Upload Photo</Text>
+            <Text style={styles.buttonText}>{selectedImageUri ? 'Change Photo' : 'Upload Photo'}</Text>
           </TouchableOpacity>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
               <Text style={styles.buttonText}>Confirm</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
+            <TouchableOpacity style={styles.cancelButton} onPress={() => {setSelectedImageUri(null); onCancel()}}>
               <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
@@ -64,6 +70,12 @@ const styles = StyleSheet.create({
   messageText: {
     fontSize: 18,
     textAlign: 'center',
+    marginBottom: 20,
+  },
+  imagePreview: {
+    width: 250,
+    height: 200,
+    borderRadius: 10,
     marginBottom: 20,
   },
   buttonContainer: {
