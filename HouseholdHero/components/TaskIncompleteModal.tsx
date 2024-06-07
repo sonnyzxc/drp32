@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, Modal, StyleSheet, TouchableOpacity } from 'react-native';
 
-interface TaskAdditionModalProps {
+interface ConfirmationModalProps {
   visible: boolean;
   onConfirm: () => void;
   onCancel: () => void;
   message: string;
 }
 
-const TaskAdditionModal: React.FC<TaskAdditionModalProps> = ({ visible, onConfirm, onCancel, message }) => {
+const TaskIncompleteModal: React.FC<ConfirmationModalProps> = ({ visible, onConfirm, onCancel, message }) => {
   return (
     <Modal transparent={true} visible={visible} animationType="slide">
       <View style={styles.modalOverlay}>
@@ -81,4 +81,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TaskAdditionModal;
+export default TaskIncompleteModal;

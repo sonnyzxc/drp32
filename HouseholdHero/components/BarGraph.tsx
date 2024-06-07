@@ -9,9 +9,6 @@ const BarGraph: React.FC<{ data: { label: string; users: { value: number; userId
   const maxValue = Math.max(...data.flatMap(d => d.users.map(u => u.value))) + padding;
   const scale = maxValue ? (chartHeight - padding) / maxValue : 0; // Adjust for padding
 
-  const todayIndex = new Date().getDay();
-  const rotatedData = [...data.slice(todayIndex + 1), ...data.slice(0, todayIndex + 1)];
-
   return (
     <View style={styles.container}>
       <Svg height={chartHeight + 50} width="100%">
@@ -24,7 +21,7 @@ const BarGraph: React.FC<{ data: { label: string; users: { value: number; userId
           ))}
         </Defs>
         <G>
-        {rotatedData.map((item, index) => {
+        {data.map((item, index) => {
             let cumulativeHeight = 0;
             return (
               <React.Fragment key={`bar-${index}`}>

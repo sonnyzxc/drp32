@@ -1,16 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity, TextInput, Platform, Alert, Modal, Image } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Modal, Dimensions, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import BarGraph from '../components/BarGraph';
 import ConfirmationModal from '../components/ConfirmationModal';
 import TaskAdditionModal from '../components/TaskAdditionModal';
-import TaskBreakdownModal from '../components/TaskBreakdownModal';
-import { usePoints, Task } from '../context/PointsContext'; // Import Task interface and usePoints
-import IncompleteTasks from '../components/IncompleteTasks'; // Import IncompleteTasks component
-import CompletedTasks from '../components/CompletedTasks'; // Import CompletedTasks component
-import AddTask from '../components/AddTask'; // Import AddTask component
-import styles from '../styles/HomeScreenStyles'; // Import the styles
+import CompletedTaskDetails from '../components/CompletedTaskDetails'; // Import TaskDetailsModal
+import { usePoints, Task } from '../context/PointsContext';
+import IncompleteTasks from '../components/IncompleteTasks';
+import CompletedTasks from '../components/CompletedTasks';
+import AddTask from '../components/AddTask';
+import styles from '../styles/HomeScreenStyles';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -72,8 +71,8 @@ const HomeScreen: React.FC = () => {
   };
 
   const combinedPoints = aggregatePoints();
-  const chartData = labels.map((label, index) => ({ 
-    label, 
+  const chartData = labels.map((label, index) => ({
+    label,
     users: combinedPoints[index].map((value, userId) => ({ value, userId: userId + 1 }))
   }));
 
@@ -146,8 +145,9 @@ const HomeScreen: React.FC = () => {
     setIsCompleteConfirmVisible(false);
   };
 
-  const handleTaskPress = (imageUrl: string) => {
-    setSelectedImageUrl(imageUrl);
+  const handleTaskPress = (task: Task) => {
+    setSelectedTaskId(task.id);
+    setSelectedImageUrl(task.imgDir);
     setIsImageModalVisible(true);
   };
 
@@ -210,14 +210,13 @@ const HomeScreen: React.FC = () => {
         onCancel={() => setIsAddConfirmVisible(false)}
         message="Are you sure you want to add this task?"
       />
-      <Modal visible={isImageModalVisible} transparent={true} animationType="slide">
-        <View style={styles.modalContainer}>
-          <Image source={{ uri: selectedImageUrl }} style={styles.image} />
-          <TouchableOpacity style={styles.closeButton} onPress={() => setIsImageModalVisible(false)}>
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
+      <CompletedTaskDetails
+        visible={isImageModalVisible}
+        onClose={() => setIsImageModalVisible(false)}
+        task={tasks.find((value, index) => value.id == selectedTaskId)}
+        users={users}
+        imageUrl={selectedImageUrl}
+      />
     </SafeAreaView>
   );
 };

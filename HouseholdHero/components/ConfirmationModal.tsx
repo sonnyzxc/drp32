@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, Modal, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Modal, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
 interface ConfirmationModalProps {
@@ -11,6 +11,13 @@ interface ConfirmationModalProps {
 }
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ visible, onSelectPhoto, onConfirm, onCancel, message }) => {
+  const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!visible) {
+      setSelectedImageUri(null);
+    }
+  }, [visible]);
 
   const handleUploadPhoto = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -21,23 +28,49 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ visible, onSelect
     });
 
     if (!result.canceled) {
-      onSelectPhoto(result.assets[0].uri);
+      const uri = result.assets[0].uri;
+      setSelectedImageUri(uri);
+      onSelectPhoto(uri);
     }
-  }
+  };
+
+  const handleTakePhoto = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const uri = result.assets[0].uri;
+      setSelectedImageUri(uri);
+      onSelectPhoto(uri);
+    }
+  };
+
+  const handleCancel = () => {
+    setSelectedImageUri(null);
+    onCancel();
+  };
 
   return (
     <Modal transparent={true} visible={visible} animationType="slide">
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
           <Text style={styles.messageText}>{message}</Text>
+          {selectedImageUri && <Image source={{ uri: selectedImageUri }} style={styles.imagePreview} />}
           <TouchableOpacity style={styles.uploadButton} onPress={handleUploadPhoto}>
             <Text style={styles.buttonText}>Upload Photo</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.cameraButton} onPress={handleTakePhoto}>
+            <Text style={styles.buttonText}>Take Photo</Text>
           </TouchableOpacity>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
               <Text style={styles.buttonText}>Confirm</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
+            <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
               <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
@@ -75,6 +108,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#007AFF',
     padding: 10,
     borderRadius: 5,
+    marginBottom: 10,
+    alignItems: 'center',
+    width: '100%',
+  },
+  cameraButton: {
+    backgroundColor: '#FFA500',
+    padding: 10,
+    borderRadius: 5,
     marginBottom: 20,
     alignItems: 'center',
     width: '100%',
@@ -97,6 +138,12 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  imagePreview: {
+    width: 250,
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 20,
   },
 });
 
