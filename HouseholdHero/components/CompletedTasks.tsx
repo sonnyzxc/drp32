@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Task } from '../context/PointsContext';
 import { usePoints } from '../context/PointsContext';
-import ConfirmationModal from '../components/ConfirmationModal';
+import TaskIncompleteModal from '../components/TaskIncompleteModal';
 
 interface CompletedTasksProps {
   tasks: Task[];
@@ -51,7 +51,7 @@ const CompletedTasks: React.FC<CompletedTasksProps> = ({ tasks, users, onTaskPre
           </View>
         </TouchableOpacity>
       ))}
-      <ConfirmationModal
+      <TaskIncompleteModal
         visible={isConfirmVisible}
         onConfirm={handleConfirm}
         onCancel={() => setIsConfirmVisible(false)}
