@@ -27,6 +27,8 @@ interface PointsContextProps {
   addPoints: (userId: number, index: number, points: number) => void;
   addTask: (task: Task) => void;
   toggleTaskCompletion: (taskId: number, imageUri: string | null) => void;
+  deleteTask: (taskId: number) => void;
+  markTaskAsIncomplete: (task: Task) => void;
   changeUser: (userId: number) => void;
   addUser: (name: string, isAdmin: boolean) => void;
 }
@@ -174,6 +176,30 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
+  const deleteTask = async (taskId: number) => {
+    try {
+      const response = await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/chore/${taskId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+        //TODO: REMOVE TASK'S POINTS 
+      } else {
+        console.error('Failed to delete task');
+      }
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
+  };
+
+  const markTaskAsIncomplete = async (task: Task) => {
+    await deleteTask(task.id);
+    addTask({
+      ...task,
+      completed: false,
+    });
+  };
+
   const changeUser = (userId: number) => {
     const user = users.find(user => user.id === userId);
     if (user) {
@@ -192,7 +218,7 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   };
 
   return (
-    <PointsContext.Provider value={{ points, tasks, currentUser, users, addPoints, addTask, toggleTaskCompletion, changeUser, addUser }}>
+    <PointsContext.Provider value={{ points, tasks, currentUser, users, addPoints, addTask, toggleTaskCompletion, deleteTask, markTaskAsIncomplete, changeUser, addUser }}>
       {children}
     </PointsContext.Provider>
   );
