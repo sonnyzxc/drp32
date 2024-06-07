@@ -185,7 +185,7 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       const date = new Date(today);
       date.setDate(today.getDate() - i);
       return date.toDateString();
-    });
+    }).reverse();
   
     try {
       const response = await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/chore/${taskId}`, {

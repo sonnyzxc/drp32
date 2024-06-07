@@ -21,6 +21,7 @@ const CompletedTaskDetails: React.FC<TaskDetailsModalProps> = ({ visible, onClos
           <Text style={styles.label}>Assigned To: {users.find(user => user.id === task.assignedTo)?.name}</Text>
           <Text style={styles.label}>Due Date: {new Date(task.dueDate).toLocaleDateString()}</Text>
           <Text style={styles.label}>Completed Date: {new Date(task.completedDate).toLocaleDateString()}</Text>
+          <Text style={styles.label}>Points: {task.points}</Text>
           {imageUrl ? (
             <Image source={{ uri: imageUrl }} style={styles.image} />
           ) : (

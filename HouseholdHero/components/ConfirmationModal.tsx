@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Modal, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -12,6 +12,12 @@ interface ConfirmationModalProps {
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ visible, onSelectPhoto, onConfirm, onCancel, message }) => {
   const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!visible) {
+      setSelectedImageUri(null);
+    }
+  }, [visible]);
 
   const handleUploadPhoto = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -43,6 +49,11 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ visible, onSelect
     }
   };
 
+  const handleCancel = () => {
+    setSelectedImageUri(null);
+    onCancel();
+  };
+
   return (
     <Modal transparent={true} visible={visible} animationType="slide">
       <View style={styles.modalOverlay}>
@@ -59,7 +70,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ visible, onSelect
             <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
               <Text style={styles.buttonText}>Confirm</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
+            <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
               <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
