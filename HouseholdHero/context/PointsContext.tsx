@@ -177,13 +177,34 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   };
 
   const deleteTask = async (taskId: number) => {
+    const taskToDelete = tasks.find(task => task.id === taskId);
+    if (!taskToDelete) return;
+  
+    const today = new Date();
+    const last7Days = Array(7).fill(0).map((_, i) => {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      return date.toDateString();
+    });
+  
     try {
       const response = await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/chore/${taskId}`, {
         method: 'DELETE',
       });
+  
       if (response.ok) {
         setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
-        //TODO: REMOVE TASK'S POINTS 
+  
+        const completedDate = taskToDelete.completedDate.toDateString();
+        const dateIndex = completedDate ? last7Days.indexOf(completedDate) : -1;
+  
+        if (dateIndex !== -1) {
+          setPoints(prevPoints => {
+            const userPoints = prevPoints[taskToDelete.assignedTo] ? [...prevPoints[taskToDelete.assignedTo]] : [0, 0, 0, 0, 0, 0, 0];
+            userPoints[dateIndex] -= taskToDelete.points;
+            return { ...prevPoints, [taskToDelete.assignedTo]: userPoints };
+          });
+        }
       } else {
         console.error('Failed to delete task');
       }
