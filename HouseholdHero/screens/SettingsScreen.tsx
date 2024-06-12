@@ -10,7 +10,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { usePoints } from "../context/PointsContext";
 import styles from "../styles/SettingsScreenStyles"; // Import the styles
-
+import { usePageTimer, useTaskAddTimer } from "../utils/metrics";
 
 const SettingsScreen: React.FC = () => {
   const { users, currentUser, changeUser, addUser } = usePoints();
@@ -18,13 +18,22 @@ const SettingsScreen: React.FC = () => {
   const [newUserName, setNewUserName] = useState("");
   const [newUserIsAdmin, setNewUserIsAdmin] = useState(false);
 
+  const { startTaskAddTimer, endTaskAddTimer } = useTaskAddTimer();
+  usePageTimer('SettingsScreen');
+
   const handleAddUser = () => {
     if (newUserName) {
       addUser(newUserName, newUserIsAdmin);
       setNewUserName("");
       setNewUserIsAdmin(false);
       setIsAddUserVisible(false);
+      endTaskAddTimer();
     }
+  };
+
+  const handleStartAddUser = () => {
+    setIsAddUserVisible(!isAddUserVisible);
+    startTaskAddTimer();
   };
 
   return (
@@ -51,7 +60,7 @@ const SettingsScreen: React.FC = () => {
       </View>
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => setIsAddUserVisible(!isAddUserVisible)}
+        onPress={handleStartAddUser}
       >
         <Text style={styles.addButtonText}>
           {isAddUserVisible ? "Cancel" : "Add User"}

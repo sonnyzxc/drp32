@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, StatusBar, View, Text } from 'react-native';
+import { SafeAreaView, ScrollView, StatusBar, View, Text } from 'react-native';
 import ToDoItem from '../components/ToDoItem';
 import ConfirmationModal from '../components/ConfirmationModal';
 import { usePoints } from '../context/PointsContext';
 import styles from '../styles/TasksScreenStyles'; // Import the styles
+import { usePageTimer } from '../utils/metrics';
 
 const TasksScreen: React.FC = () => {
   const { tasks, currentUser, toggleTaskCompletion } = usePoints();
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [imageUri, setImageUri] = useState<string | null>(null);
+
+  usePageTimer('TasksScreen');
 
   // Filter tasks assigned to the current user and not completed
   const userTasks = tasks.filter(task => task.assignedTo === currentUser.id && !task.completed);
@@ -67,4 +70,3 @@ const TasksScreen: React.FC = () => {
 };
 
 export default TasksScreen;
-
