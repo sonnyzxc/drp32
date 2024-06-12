@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+
 import { Platform, View, Text, ScrollView, TouchableOpacity, Modal, Dimensions, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BarGraph from '../components/BarGraph';
@@ -10,6 +11,7 @@ import IncompleteTasks from '../components/IncompleteTasks';
 import CompletedTasks from '../components/CompletedTasks';
 import AddTask from '../components/AddTask';
 import styles from '../styles/HomeScreenStyles';
+import { useTaskAddTimer, usePageTimer } from '../utils/metrics';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -31,6 +33,9 @@ const HomeScreen: React.FC = () => {
   const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null); // State for selected image URL
 
   const scrollViewRef = useRef<ScrollView>(null); // Reference to the ScrollView
+
+  const { startTaskAddTimer, endTaskAddTimer } = useTaskAddTimer();
+  usePageTimer('HomeScreen');
 
   const incompleteTasks = tasks.filter(task => !task.completed);
   const completedTasks = tasks.filter(task => task.completed);
@@ -77,8 +82,13 @@ const HomeScreen: React.FC = () => {
   }));
 
   const handleAddTask = () => {
+    const taskAddDuration = endTaskAddTimer();
+    if (taskAddDuration !== null) {
+      // You can handle the task add duration here, e.g., send to a server or log it
+    }
+
     const newTask: Task = {
-      id: -1,
+      id: tasks.length + 1,
       text: newTaskText,
       emoji: newTaskEmoji || '😊',
       points: newTaskPoints,
@@ -115,6 +125,7 @@ const HomeScreen: React.FC = () => {
   const scrollToAddTask = () => {
     setIsAddTaskVisible(!isAddTaskVisible);
     if (!isAddTaskVisible) {
+      startTaskAddTimer();
       // Delay scrolling to ensure the layout is updated
       setTimeout(() => {
         if (scrollViewRef.current) {
