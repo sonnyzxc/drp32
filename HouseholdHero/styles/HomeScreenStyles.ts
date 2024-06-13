@@ -201,6 +201,41 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'black',
   },
+  timelineContainer: {
+    paddingHorizontal: 10,
+  },
+  timelineItem: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginRight: 20,
+  },
+  timelineEmojiContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#f0f0f0',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  timelineEmoji: {
+    fontSize: 30,
+  },
+  timelineContent: {
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  timelineTaskName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  timelineDay: {
+    fontSize: 14,
+    color: '#666',
+  },
+  timelineUser: {
+    fontSize: 14,
+    color: '#333',
+  },
 });
 
 export default styles;

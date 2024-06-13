@@ -1,8 +1,9 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Modal, Image, StyleSheet } from 'react-native';
-import { Task } from '../context/PointsContext';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Image } from 'react-native';
+import { Task, usePoints } from '../context/PointsContext';
+import TaskIncompleteModal from '../components/TaskIncompleteModal';
 
-interface TaskDetailsModalProps {
+interface CompletedTaskDetailsProps {
   visible: boolean;
   onClose: () => void;
   task: Task | null;
@@ -10,7 +11,24 @@ interface TaskDetailsModalProps {
   imageUrl: string | null;
 }
 
-const CompletedTaskDetails: React.FC<TaskDetailsModalProps> = ({ visible, onClose, task, users, imageUrl }) => {
+const CompletedTaskDetails: React.FC<CompletedTaskDetailsProps> = ({ visible, onClose, task, users, imageUrl }) => {
+  const { currentUser, markTaskAsIncomplete } = usePoints();
+  const [isConfirmVisible, setIsConfirmVisible] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+  const confirmMarkAsIncomplete = () => {
+    setSelectedTask(task);
+    setIsConfirmVisible(true);
+  };
+
+  const handleConfirm = () => {
+    if (selectedTask) {
+      markTaskAsIncomplete(selectedTask);
+      setSelectedTask(null);
+    }
+    setIsConfirmVisible(false);
+  };
+
   if (!task) return null;
 
   return (
@@ -27,11 +45,25 @@ const CompletedTaskDetails: React.FC<TaskDetailsModalProps> = ({ visible, onClos
           ) : (
             <Text style={styles.noPhotoText}>No photo uploaded</Text>
           )}
+          {currentUser.isAdmin && (
+                <TouchableOpacity
+                  style={styles.incompleteButton}
+                  onPress={() => confirmMarkAsIncomplete(task)}
+                >
+                  <Text style={styles.incompleteButtonText}>Mark as Incomplete</Text>
+                </TouchableOpacity>
+              )}
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
         </View>
       </View>
+      <TaskIncompleteModal
+        visible={isConfirmVisible}
+        onConfirm={handleConfirm}
+        onCancel={() => setIsConfirmVisible(false)}
+        message="Are you sure you want to mark this task as incomplete?"
+      />
     </Modal>
   );
 };
@@ -50,9 +82,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '80%',
   },
-  emoji: {
-    fontSize: 40,
-  },
   taskName: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -61,10 +90,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  value: {
-    fontSize: 16,
-    marginBottom: 10,
   },
   image: {
     width: 250,
@@ -82,8 +107,20 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
+    marginVertical: 10,
   },
   closeButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  incompleteButton: {
+    backgroundColor: '#dc3545',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginVertical: 10,
+  },
+  incompleteButtonText: {
     color: 'white',
     fontSize: 16,
   },
