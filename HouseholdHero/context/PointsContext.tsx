@@ -162,7 +162,7 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     try {
       let response = null;
       if (imageUri) {
-        response = await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/chore/complete/${taskId}`, {
+        response = await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/chore/complete/${taskId}/${currentUser.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -170,11 +170,12 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           body: formData,
         });
       } else {
-        response = await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/chore/complete/${taskId}`, {
+        response = await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/chore/complete/${taskId}/${currentUser.id}`, {
           method: 'PUT',
         });
       }
       const data = await response.json();
+      console.log(data);
       setTasks(tasks.map(task => task.id === taskId ? formatTaskFromApi(data.chore) : task));
       addPoints(taskToUpdate.completedBy, currentDayIndex, updatedTask.completed ? taskToUpdate.points : -taskToUpdate.points);
     } catch (error) {

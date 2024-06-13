@@ -149,6 +149,7 @@ const HomeScreen: React.FC = () => {
       setSelectedTaskId(null);
     }
     setIsCompleteConfirmVisible(false);
+    setImageUri(null);
   };
 
   const handleTaskPress = (task: Task) => {
