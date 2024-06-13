@@ -29,8 +29,8 @@ type Chore struct {
 	Emoji         string      `boil:"emoji" json:"emoji" toml:"emoji" yaml:"emoji"`
 	Points        int         `boil:"points" json:"points" toml:"points" yaml:"points"`
 	Completed     bool        `boil:"completed" json:"completed" toml:"completed" yaml:"completed"`
-	AssignedTo    int64       `boil:"assigned_to" json:"assigned_to" toml:"assigned_to" yaml:"assigned_to"`
-	DueDate       time.Time   `boil:"due_date" json:"due_date" toml:"due_date" yaml:"due_date"`
+	AssignedTo    null.Int64  `boil:"assigned_to" json:"assigned_to,omitempty" toml:"assigned_to" yaml:"assigned_to,omitempty"`
+	DueDate       null.Time   `boil:"due_date" json:"due_date,omitempty" toml:"due_date" yaml:"due_date,omitempty"`
 	TimeCompleted null.Time   `boil:"time_completed" json:"time_completed,omitempty" toml:"time_completed" yaml:"time_completed,omitempty"`
 	ImgDir        null.String `boil:"img_dir" json:"img_dir,omitempty" toml:"img_dir" yaml:"img_dir,omitempty"`
 
@@ -166,26 +166,43 @@ func (w whereHelperbool) LTE(x bool) qm.QueryMod { return qmhelper.Where(w.field
 func (w whereHelperbool) GT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
 func (w whereHelperbool) GTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
 
-type whereHelpertime_Time struct{ field string }
+type whereHelpernull_Int64 struct{ field string }
 
-func (w whereHelpertime_Time) EQ(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.EQ, x)
+func (w whereHelpernull_Int64) EQ(x null.Int64) qm.QueryMod {
+	return qmhelper.WhereNullEQ(w.field, false, x)
 }
-func (w whereHelpertime_Time) NEQ(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.NEQ, x)
+func (w whereHelpernull_Int64) NEQ(x null.Int64) qm.QueryMod {
+	return qmhelper.WhereNullEQ(w.field, true, x)
 }
-func (w whereHelpertime_Time) LT(x time.Time) qm.QueryMod {
+func (w whereHelpernull_Int64) LT(x null.Int64) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.LT, x)
 }
-func (w whereHelpertime_Time) LTE(x time.Time) qm.QueryMod {
+func (w whereHelpernull_Int64) LTE(x null.Int64) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.LTE, x)
 }
-func (w whereHelpertime_Time) GT(x time.Time) qm.QueryMod {
+func (w whereHelpernull_Int64) GT(x null.Int64) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.GT, x)
 }
-func (w whereHelpertime_Time) GTE(x time.Time) qm.QueryMod {
+func (w whereHelpernull_Int64) GTE(x null.Int64) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.GTE, x)
 }
+func (w whereHelpernull_Int64) IN(slice []int64) qm.QueryMod {
+	values := make([]interface{}, 0, len(slice))
+	for _, value := range slice {
+		values = append(values, value)
+	}
+	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
+}
+func (w whereHelpernull_Int64) NIN(slice []int64) qm.QueryMod {
+	values := make([]interface{}, 0, len(slice))
+	for _, value := range slice {
+		values = append(values, value)
+	}
+	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
+}
+
+func (w whereHelpernull_Int64) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
+func (w whereHelpernull_Int64) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
 
 type whereHelpernull_Time struct{ field string }
 
@@ -267,8 +284,8 @@ var ChoreWhere = struct {
 	Emoji         whereHelperstring
 	Points        whereHelperint
 	Completed     whereHelperbool
-	AssignedTo    whereHelperint64
-	DueDate       whereHelpertime_Time
+	AssignedTo    whereHelpernull_Int64
+	DueDate       whereHelpernull_Time
 	TimeCompleted whereHelpernull_Time
 	ImgDir        whereHelpernull_String
 }{
@@ -277,8 +294,8 @@ var ChoreWhere = struct {
 	Emoji:         whereHelperstring{field: "\"chores\".\"emoji\""},
 	Points:        whereHelperint{field: "\"chores\".\"points\""},
 	Completed:     whereHelperbool{field: "\"chores\".\"completed\""},
-	AssignedTo:    whereHelperint64{field: "\"chores\".\"assigned_to\""},
-	DueDate:       whereHelpertime_Time{field: "\"chores\".\"due_date\""},
+	AssignedTo:    whereHelpernull_Int64{field: "\"chores\".\"assigned_to\""},
+	DueDate:       whereHelpernull_Time{field: "\"chores\".\"due_date\""},
 	TimeCompleted: whereHelpernull_Time{field: "\"chores\".\"time_completed\""},
 	ImgDir:        whereHelpernull_String{field: "\"chores\".\"img_dir\""},
 }
@@ -312,8 +329,8 @@ type choreL struct{}
 
 var (
 	choreAllColumns            = []string{"chore_id", "description", "emoji", "points", "completed", "assigned_to", "due_date", "time_completed", "img_dir"}
-	choreColumnsWithoutDefault = []string{"description", "emoji", "points", "completed", "assigned_to", "due_date"}
-	choreColumnsWithDefault    = []string{"chore_id", "time_completed", "img_dir"}
+	choreColumnsWithoutDefault = []string{"description", "emoji", "points", "completed"}
+	choreColumnsWithDefault    = []string{"chore_id", "assigned_to", "due_date", "time_completed", "img_dir"}
 	chorePrimaryKeyColumns     = []string{"chore_id"}
 	choreGeneratedColumns      = []string{}
 )
@@ -640,7 +657,9 @@ func (choreL) LoadAssignedToUser(ctx context.Context, e boil.ContextExecutor, si
 		if object.R == nil {
 			object.R = &choreR{}
 		}
-		args = append(args, object.AssignedTo)
+		if !queries.IsNil(object.AssignedTo) {
+			args = append(args, object.AssignedTo)
+		}
 
 	} else {
 	Outer:
@@ -650,12 +669,14 @@ func (choreL) LoadAssignedToUser(ctx context.Context, e boil.ContextExecutor, si
 			}
 
 			for _, a := range args {
-				if a == obj.AssignedTo {
+				if queries.Equal(a, obj.AssignedTo) {
 					continue Outer
 				}
 			}
 
-			args = append(args, obj.AssignedTo)
+			if !queries.IsNil(obj.AssignedTo) {
+				args = append(args, obj.AssignedTo)
+			}
 
 		}
 	}
@@ -713,7 +734,7 @@ func (choreL) LoadAssignedToUser(ctx context.Context, e boil.ContextExecutor, si
 
 	for _, local := range slice {
 		for _, foreign := range resultSlice {
-			if local.AssignedTo == foreign.UserID {
+			if queries.Equal(local.AssignedTo, foreign.UserID) {
 				local.R.AssignedToUser = foreign
 				if foreign.R == nil {
 					foreign.R = &userR{}
@@ -754,7 +775,7 @@ func (o *Chore) SetAssignedToUser(ctx context.Context, exec boil.ContextExecutor
 		return errors.Wrap(err, "failed to update local table")
 	}
 
-	o.AssignedTo = related.UserID
+	queries.Assign(&o.AssignedTo, related.UserID)
 	if o.R == nil {
 		o.R = &choreR{
 			AssignedToUser: related,
@@ -771,6 +792,39 @@ func (o *Chore) SetAssignedToUser(ctx context.Context, exec boil.ContextExecutor
 		related.R.AssignedToChores = append(related.R.AssignedToChores, o)
 	}
 
+	return nil
+}
+
+// RemoveAssignedToUser relationship.
+// Sets o.R.AssignedToUser to nil.
+// Removes o from all passed in related items' relationships struct.
+func (o *Chore) RemoveAssignedToUser(ctx context.Context, exec boil.ContextExecutor, related *User) error {
+	var err error
+
+	queries.SetScanner(&o.AssignedTo, nil)
+	if _, err = o.Update(ctx, exec, boil.Whitelist("assigned_to")); err != nil {
+		return errors.Wrap(err, "failed to update local table")
+	}
+
+	if o.R != nil {
+		o.R.AssignedToUser = nil
+	}
+	if related == nil || related.R == nil {
+		return nil
+	}
+
+	for i, ri := range related.R.AssignedToChores {
+		if queries.Equal(o.AssignedTo, ri.AssignedTo) {
+			continue
+		}
+
+		ln := len(related.R.AssignedToChores)
+		if ln > 1 && i < ln-1 {
+			related.R.AssignedToChores[i] = related.R.AssignedToChores[ln-1]
+		}
+		related.R.AssignedToChores = related.R.AssignedToChores[:ln-1]
+		break
+	}
 	return nil
 }
 
