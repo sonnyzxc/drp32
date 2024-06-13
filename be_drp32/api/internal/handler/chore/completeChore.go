@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/controller/model"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler"
+	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/realtimeupdates"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/singlechore"
 	"net/http"
 	"strconv"
@@ -64,6 +65,8 @@ func (h Handler) CompleteChore() http.HandlerFunc {
 			w.WriteHeader(status)
 		}
 		w.Write(buf.Bytes())
+
+		realtimeupdates.Broadcast <- []byte("update")
 
 		return nil, http.StatusCreated
 	})

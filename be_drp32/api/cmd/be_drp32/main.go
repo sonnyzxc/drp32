@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/sonnyzxc/drp/be_drp32/api/cmd/router"
+	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/realtimeupdates"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/repository"
 	"github.com/sonnyzxc/drp/be_drp32/api/pkg/app"
 	"github.com/sonnyzxc/drp/be_drp32/api/pkg/db/pg"
@@ -67,6 +68,8 @@ func run(ctx context.Context) error {
 	rtr, _ := initRouter(ctx, conn)
 
 	log.Println("App initialization completed")
+
+	go realtimeupdates.HandleMessages()
 
 	httpserv.NewServer(rtr.Handler()).Start(ctx)
 

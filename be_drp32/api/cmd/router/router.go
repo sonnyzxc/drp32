@@ -8,6 +8,7 @@ import (
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/chore"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/family"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/health"
+	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/realtimeupdates"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/user"
 	"net/http"
 )
@@ -21,6 +22,7 @@ type Router struct {
 	familyRESTHandler    family.Handler
 	userRESTHandler      user.Handler
 	choreRESTHandler     chore.Handler
+	rtuHandler           realtimeupdates.Handler
 }
 
 // Handler returns the Handler for use by the server
@@ -60,6 +62,8 @@ func (rtr Router) Handler() http.Handler {
 	r.Route("/user", func(r chi.Router) {
 		r.Post("/", rtr.userRESTHandler.CreateUser())
 	})
+
+	r.Get("/rtu", rtr.rtuHandler.HandleConnections())
 
 	return r
 }
