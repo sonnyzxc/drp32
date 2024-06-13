@@ -7,6 +7,7 @@ import (
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/request/choredetails"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/singlechore"
+	"github.com/volatiletech/null/v8"
 	"net/http"
 	"time"
 )
@@ -18,14 +19,18 @@ func (h Handler) CreateChore() http.HandlerFunc {
 			return errors.New("bad request"), http.StatusBadRequest
 		}
 
-		dueDate, err := time.Parse("2006-01-02", request.DueDate)
-
-		//if err != nil || dueDate.Before(time.Now()) {
-		//	return errors.New("bad request"), http.StatusBadRequest
-		//}
+		dueDateNull := null.NewTime(time.Now(), false)
+		if request.DueDate.Valid {
+			dueDate, err := time.Parse("2006-01-02", request.DueDate.String)
+			if err != nil {
+				return errors.New("bad request"), http.StatusBadRequest
+			}
+			dueDateNull = null.TimeFrom(dueDate)
+		}
 
 		var chore model.Chore
-		if chore, err = h.ctrl.CreateChore(r.Context(), request.Description, request.Emoji, request.Points, request.AssignedTo, dueDate); err != nil {
+		var err error
+		if chore, err = h.ctrl.CreateChore(r.Context(), request.Description, request.Emoji, request.Points, request.AssignedTo, dueDateNull); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 

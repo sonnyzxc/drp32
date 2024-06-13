@@ -10,10 +10,12 @@ import (
 	"time"
 )
 
-func (i impl) CreateChore(ctx context.Context, desc string, emoji string, points int, assignedTo int64, dueDate time.Time) (model.Chore, error) {
-	if _, err := i.repo.User().GetUserByID(context.Background(), assignedTo); err != nil {
-		log.Printf(controller.LogErrMessage("CreateChore", "user assigned to cannot be found", err))
-		return model.Chore{}, err
+func (i impl) CreateChore(ctx context.Context, desc string, emoji string, points int, assignedTo null.Int64, dueDate null.Time) (model.Chore, error) {
+	if assignedTo.Valid {
+		if _, err := i.repo.User().GetUserByID(context.Background(), assignedTo.Int64); err != nil {
+			log.Printf(controller.LogErrMessage("CreateChore", "user assigned to cannot be found", err))
+			return model.Chore{}, err
+		}
 	}
 
 	var chore model.Chore

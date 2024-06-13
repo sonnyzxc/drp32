@@ -56,7 +56,7 @@ func (i impl) GetChores(ctx context.Context, familyID int64, completed int, assi
 			completedBool = true
 		}
 
-		if (assignedTo == -1 || assignedTo == v.AssignedTo) && (completed == -1 || completedBool == v.Completed) {
+		if (assignedTo == -1 || v.AssignedTo.Valid && (assignedTo == v.AssignedTo.Int64)) && (completed == -1 || completedBool == v.Completed) {
 			if env.GetAndValidateF("APP_VERSION") == "release" && v.ImgDir.Valid && v.ImgDir.String != "" {
 				// Retrieve URL
 				var req *request.Request
