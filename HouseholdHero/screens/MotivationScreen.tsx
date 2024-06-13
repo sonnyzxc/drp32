@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, Dimensions, Image, ScrollView, TouchableOpacity } from 'react-native';
+import styles from "../styles/MotivationScreenStyles";
 import { usePoints } from '../context/PointsContext';
+import CompletedTasks from '../components/CompletedTasks';
 
 const screenWidth = Dimensions.get('window').width;
 
 const MotivationScreen: React.FC = () => {
-  const { tasks } = usePoints();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const { tasks, users } = usePoints(); // Assuming tasks and users are provided by usePoints context
+  const [currentIndex, setCurrentIndex] = useState(6); // Start with the rightmost element
+
+  const scrollRef = useRef<ScrollView>(null);
 
   const getLast7Days = () => {
     const days = [];
@@ -21,7 +25,7 @@ const MotivationScreen: React.FC = () => {
   const days = getLast7Days();
 
   const checkTasksForDate = (date: Date) => {
-    return tasks.some(task => {
+    return tasks.filter(task => {
       const taskDate = new Date(task.completedDate);
       return (
         task.completed &&
@@ -32,34 +36,50 @@ const MotivationScreen: React.FC = () => {
     });
   };
 
-  const renderDayItem = (date: Date) => {
-    const hasCompletedTasks = checkTasksForDate(date);
+  const renderDayItem = (date: Date, index: number) => {
+    const completedTasks = checkTasksForDate(date);
     return (
       <View key={date.toDateString()} style={styles.dayContainer}>
         <Image
-          source={hasCompletedTasks ? require('../assets/images/happy.png') : require('../assets/images/normal.png')}
+          source={completedTasks.length > 0 ? require('../assets/images/happy.png') : require('../assets/images/normal.png')}
           style={styles.faceImage}
         />
         <Text style={styles.dateText}>{date.toLocaleDateString()}</Text>
+        {completedTasks.map(task => (
+          <View key={task.id} style={styles.taskContainer}>
+            <Text style={styles.taskText}>
+              {task.emoji} {task.text}
+            </Text>
+            <Text style={styles.dueDateText}>Completed on: {new Date(task.completedDate).toLocaleDateString()}</Text>
+          </View>
+        ))}
       </View>
     );
   };
 
   const renderMiniMapItem = (date: Date, index: number) => {
-    const hasCompletedTasks = checkTasksForDate(date);
+    const completedTasks = checkTasksForDate(date);
     return (
       <View key={date.toDateString()} style={[styles.miniMapItem, currentIndex === index && styles.selectedMiniMapItem]}>
         <Image
-          source={hasCompletedTasks ? require('../assets/images/happy.png') : require('../assets/images/normal.png')}
+          source={completedTasks.length > 0 ? require('../assets/images/happy.png') : require('../assets/images/normal.png')}
           style={styles.miniFaceImage}
         />
       </View>
     );
   };
 
+  const scrollToRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ x: screenWidth * (days.length - 1), animated: false });
+    }
+  };
+
   return (
     <View style={styles.container}>
+      <Text style={styles.headerText}>Family Forest</Text>
       <ScrollView
+        ref={scrollRef}
         horizontal
         pagingEnabled
         onMomentumScrollEnd={(event) => {
@@ -67,6 +87,7 @@ const MotivationScreen: React.FC = () => {
           setCurrentIndex(index);
         }}
         showsHorizontalScrollIndicator={false}
+        onLayout={scrollToRight}
       >
         {days.map(renderDayItem)}
       </ScrollView>
@@ -76,45 +97,5 @@ const MotivationScreen: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  dayContainer: {
-    width: screenWidth,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  faceImage: {
-    width: 150,
-    height: 150,
-  },
-  dateText: {
-    marginTop: 10,
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  miniMapContainer: {
-    position: 'absolute',
-    top: 10,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  miniMapItem: {
-    marginHorizontal: 5,
-  },
-  selectedMiniMapItem: {
-    borderColor: '#007AFF',
-    borderWidth: 2,
-  },
-  miniFaceImage: {
-    width: 30,
-    height: 30,
-  },
-});
 
 export default MotivationScreen;
