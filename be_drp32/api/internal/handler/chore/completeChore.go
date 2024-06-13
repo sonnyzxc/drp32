@@ -19,7 +19,17 @@ func (h Handler) CompleteChore() http.HandlerFunc {
 			return errors.New("bad request"), http.StatusBadRequest
 		}
 
+		userIDString := chi.URLParam(r, "userID")
+		if userIDString == "" {
+			return errors.New("bad request"), http.StatusBadRequest
+		}
+
 		choreID, err := strconv.ParseInt(choreIDString, 10, 64)
+		if err != nil {
+			return errors.New("something went wrong"), http.StatusInternalServerError
+		}
+
+		userID, err := strconv.ParseInt(userIDString, 10, 64)
 		if err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
@@ -37,7 +47,7 @@ func (h Handler) CompleteChore() http.HandlerFunc {
 		}
 
 		var chore model.Chore
-		if chore, err = h.ctrl.CompleteChore(r.Context(), choreID, f, fh, present); err != nil {
+		if chore, err = h.ctrl.CompleteChore(r.Context(), choreID, userID, f, fh, present); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 

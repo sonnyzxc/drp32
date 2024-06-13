@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-func (i impl) CompleteChore(ctx context.Context, choreID int64, file multipart.File, fileHandler *multipart.FileHeader, present bool) (model.Chore, error) {
+func (i impl) CompleteChore(ctx context.Context, choreID int64, userID int64, file multipart.File, fileHandler *multipart.FileHeader, present bool) (model.Chore, error) {
 	chore, err := i.repo.Chore().GetChoreByID(context.Background(), choreID)
 
 	if errors.Is(err, choreRepo.ErrChoreIDNotFound) {
@@ -33,6 +33,7 @@ func (i impl) CompleteChore(ctx context.Context, choreID int64, file multipart.F
 	}
 
 	chore.Completed = true
+	chore.AssignedTo = null.Int64From(userID)
 	chore.TimeCompleted = null.TimeFrom(time.Now())
 	var url string
 	if !present {
