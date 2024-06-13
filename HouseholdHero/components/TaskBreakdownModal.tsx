@@ -7,7 +7,6 @@ interface Task {
   emoji?: string;
   points: number;
   completed: boolean;
-  assignedTo: number;
   dueDate: Date;
 }
 

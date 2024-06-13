@@ -10,7 +10,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { usePoints } from "../context/PointsContext";
 import styles from "../styles/SettingsScreenStyles"; // Import the styles
-import { usePageTimer, useTaskAddTimer } from "../utils/metrics";
+import { useTaskAddTimer } from "../utils/metrics";
 
 const SettingsScreen: React.FC = () => {
   const { users, currentUser, changeUser, addUser } = usePoints();
@@ -19,7 +19,6 @@ const SettingsScreen: React.FC = () => {
   const [newUserIsAdmin, setNewUserIsAdmin] = useState(false);
 
   const { startTaskAddTimer, endTaskAddTimer } = useTaskAddTimer();
-  usePageTimer('SettingsScreen');
 
   const handleAddUser = () => {
     if (newUserName) {

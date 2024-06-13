@@ -20,17 +20,13 @@ const IncompleteTasks: React.FC<IncompleteTasksProps> = ({ tasks, users, current
           <TouchableOpacity
             key={task.id}
             onPress={() => {
-              if (currentUser.isAdmin || currentUser.id === task.assignedTo) {
-                confirmTaskCompletion(task.id);
-              } else {
-                alert('You can only complete your own tasks.');
-              }
+              confirmTaskCompletion(task.id);
             }}
             style={styles.taskContainer}
           >
             <View style={styles.textContainer}>
               <Text style={styles.taskText}>
-                {task.emoji} {task.text} - Assigned to {users.find(user => user.id === task.assignedTo)?.name}
+                {task.emoji} {task.text}
               </Text>
               <Text style={styles.dueDateText}>Due: {new Date(task.dueDate).toLocaleDateString()}</Text>
               <Text style={styles.dueDateText}>

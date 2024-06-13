@@ -16,7 +16,6 @@ const HomeScreen: React.FC = () => {
   const [newTaskText, setNewTaskText] = useState('');
   const [newTaskEmoji, setNewTaskEmoji] = useState('');
   const [newTaskPoints, setNewTaskPoints] = useState(3);
-  const [assignedUserId, setAssignedUserId] = useState(users[0].id);
   const [newTaskDueDate, setNewTaskDueDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isAddTaskVisible, setIsAddTaskVisible] = useState(false);
@@ -63,7 +62,7 @@ const HomeScreen: React.FC = () => {
       const completedDate = task.completedDate.toDateString();
       const index = last7Days.indexOf(completedDate);
       if (index !== -1) {
-        totalPoints[index][task.assignedTo - 1] += task.points;
+        totalPoints[index][task.completedBy - 1] += task.points;
       }
     });
 
@@ -76,7 +75,7 @@ const HomeScreen: React.FC = () => {
     emoji: task.emoji,
     taskName: task.text,
     day: task.completedDate.toLocaleDateString(),
-    user: users.find(user => user.id === task.assignedTo)?.name || 'Unknown'
+    user: users.find(user => user.id === task.completedBy)?.name || 'Unknown'
   })).reverse();
 
   const handleAddTask = () => {
@@ -91,7 +90,6 @@ const HomeScreen: React.FC = () => {
       emoji: newTaskEmoji || '😊',
       points: newTaskPoints,
       completed: false,
-      assignedTo: assignedUserId,
       dueDate: newTaskDueDate,
     };
     addTask(newTask);
@@ -192,8 +190,6 @@ const HomeScreen: React.FC = () => {
             setNewTaskEmoji={setNewTaskEmoji}
             newTaskPoints={newTaskPoints}
             setNewTaskPoints={setNewTaskPoints}
-            assignedUserId={assignedUserId}
-            setAssignedUserId={setAssignedUserId}
             newTaskDueDate={newTaskDueDate}
             setNewTaskDueDate={setNewTaskDueDate}
             showDatePicker={showDatePicker}

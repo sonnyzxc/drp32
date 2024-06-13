@@ -4,15 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import BarGraph from '../components/BarGraph';
 import { usePoints } from '../context/PointsContext';
 import styles from '../styles/InsightScreenStyles';
-import { usePageTimer } from '../utils/metrics';
 
 const InsightScreen: React.FC = () => {
   const { points, tasks, users } = usePoints();
   const [selectedUserId, setSelectedUserId] = useState(users[0].id);
 
-  usePageTimer('InsightScreen');
-
-  const userTasks = tasks.filter(task => task.assignedTo === selectedUserId);
+  const userTasks = tasks.filter(task => task.completedBy === selectedUserId);
   const completedTasks = userTasks.filter(task => task.completed);
   const incompleteTasks = userTasks.filter(task => !task.completed);
 

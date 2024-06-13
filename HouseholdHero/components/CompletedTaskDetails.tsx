@@ -36,7 +36,7 @@ const CompletedTaskDetails: React.FC<CompletedTaskDetailsProps> = ({ visible, on
       <View style={styles.modalContainer}>
         <View style={styles.contentContainer}>
           <Text style={styles.taskName}>{task.emoji} {task.text}</Text>
-          <Text style={styles.label}>Assigned To: {users.find(user => user.id === task.assignedTo)?.name}</Text>
+          <Text style={styles.label}>Completed By: {users.find(user => user.id === task.completedBy)?.name}</Text>
           <Text style={styles.label}>Due Date: {new Date(task.dueDate).toLocaleDateString()}</Text>
           <Text style={styles.label}>Completed Date: {new Date(task.completedDate).toLocaleDateString()}</Text>
           <Text style={styles.label}>Points: {task.points}</Text>
