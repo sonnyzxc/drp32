@@ -28,7 +28,7 @@ func TestRouter_Handler(t *testing.T) {
 		"POST /chore/",
 		"POST /family/",
 		"POST /user/",
-		"PUT /chore/complete/{choreID}",
+		"PUT /chore/complete/{choreID}/{userID}",
 		"DELETE /chore/{choreID}",
 	}
 	sort.Strings(expectedRoutes)

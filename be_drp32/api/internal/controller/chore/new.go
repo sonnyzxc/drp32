@@ -11,7 +11,7 @@ import (
 type Controller interface {
 	CreateChore(ctx context.Context, desc string, emoji string, points int, assignedTo null.Int64, dueDate null.Time) (model.Chore, error)
 	GetChores(ctx context.Context, familyID int64, completed int, assignedTo int64) (model.Chores, error)
-	CompleteChore(ctx context.Context, choreID int64, file multipart.File, fileHandler *multipart.FileHeader, present bool) (model.Chore, error)
+	CompleteChore(ctx context.Context, choreID int64, userID int64, file multipart.File, fileHandler *multipart.FileHeader, present bool) (model.Chore, error)
 	DeleteChoreByID(ctx context.Context, choreID int64) error
 }
 
