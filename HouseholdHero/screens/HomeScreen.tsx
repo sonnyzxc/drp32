@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Platform, View, Text, ScrollView, TouchableOpacity, Modal, Dimensions, Image, FlatList, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ConfirmationModal from '../components/ConfirmationModal';
@@ -10,9 +10,11 @@ import CompletedTasks from '../components/CompletedTasks';
 import AddTask from '../components/AddTask';
 import styles from '../styles/HomeScreenStyles';
 import { useTaskAddTimer } from '../utils/metrics';
+import { connectWebSocket, closeWebSocket } from '../services/websocket';
+import PeriodicMessageSender from '../components/PeriodicMessageSender';
 
 const HomeScreen: React.FC = () => {
-  const { points, tasks, currentUser, users, addTask, toggleTaskCompletion } = usePoints();
+  const { points, tasks, currentUser, users, addTask, toggleTaskCompletion, fetchTasks } = usePoints();
   const [newTaskText, setNewTaskText] = useState('');
   const [newTaskEmoji, setNewTaskEmoji] = useState('');
   const [newTaskPoints, setNewTaskPoints] = useState(3);
@@ -30,6 +32,20 @@ const HomeScreen: React.FC = () => {
   const scrollViewRef = useRef<ScrollView>(null);
 
   const { startTaskAddTimer, endTaskAddTimer } = useTaskAddTimer();
+
+  useEffect(() => {
+    connectWebSocket(handleUpdate);
+    return () => {
+      closeWebSocket();
+    };
+  }, []);
+
+  const handleUpdate = () => {
+    // Logic to update data when receiving WebSocket updates
+    // You may need to refetch data or update state here
+    console.log('Updating data...');
+    fetchTasks(); // Example: If you need to refetch tasks
+  };
 
   const incompleteTasks = tasks.filter(task => !task.completed);
   const completedTasks = tasks.filter(task => task.completed);
@@ -228,6 +244,7 @@ const HomeScreen: React.FC = () => {
         users={users}
         imageUrl={selectedImageUrl}
       />
+      <PeriodicMessageSender />
     </SafeAreaView>
   );
 };

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback } from 'react';
 
 export interface Task {
   id: number;
@@ -31,6 +31,7 @@ interface PointsContextProps {
   markTaskAsIncomplete: (task: Task) => void;
   changeUser: (userId: number) => void;
   addUser: (name: string, isAdmin: boolean) => void;
+  fetchTasks: () => void;
 }
 
 const PointsContext = createContext<PointsContextProps | undefined>(undefined);
@@ -77,27 +78,26 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     };
   };
 
-  useEffect(() => {
-    // Fetch tasks from the API
-    const fetchTasks = async () => {
-      try {
-        const response = await fetch('https://be-drp32-5ac34b8c912e.herokuapp.com/chores', {
-          method: 'GET',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
-        const data = await response.json();
-        setTasks(data.chores.map(formatTaskFromApi));
-        console.log(data);
-      } catch (error) {
-        console.error('Error fetching tasks:', error);
-      }
-    };
-
-    fetchTasks();
+  const fetchTasks = useCallback(async () => {
+    try {
+      const response = await fetch('https://be-drp32-5ac34b8c912e.herokuapp.com/chores', {
+        method: 'GET',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      const data = await response.json();
+      setTasks(data.chores.map(formatTaskFromApi));
+      console.log(data);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
 
   const addPoints = (userId: number, index: number, newPoints: number) => {
     setPoints(prevPoints => {
@@ -246,7 +246,7 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   };
 
   return (
-    <PointsContext.Provider value={{ points, tasks, currentUser, users, addPoints, addTask, toggleTaskCompletion, deleteTask, markTaskAsIncomplete, changeUser, addUser }}>
+    <PointsContext.Provider value={{ points, tasks, currentUser, users, addPoints, addTask, toggleTaskCompletion, deleteTask, markTaskAsIncomplete, changeUser, addUser, fetchTasks }}>
       {children}
     </PointsContext.Provider>
   );
