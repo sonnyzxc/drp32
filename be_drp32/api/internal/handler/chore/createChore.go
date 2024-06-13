@@ -5,6 +5,7 @@ import (
 	"github.com/go-chi/render"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/controller/model"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler"
+	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/realtimeupdates"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/request/choredetails"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/singlechore"
 	"github.com/volatiletech/null/v8"
@@ -37,6 +38,8 @@ func (h Handler) CreateChore() http.HandlerFunc {
 		if err = render.Render(w, r, singlechore.New(chore, http.StatusCreated)); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
+
+		realtimeupdates.Broadcast <- []byte("update")
 
 		return nil, http.StatusCreated
 	})

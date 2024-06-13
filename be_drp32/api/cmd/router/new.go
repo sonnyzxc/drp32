@@ -9,6 +9,7 @@ import (
 	choreHandler "github.com/sonnyzxc/drp/be_drp32/api/internal/handler/chore"
 	familyHandler "github.com/sonnyzxc/drp/be_drp32/api/internal/handler/family"
 	healthHandler "github.com/sonnyzxc/drp/be_drp32/api/internal/handler/health"
+	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/realtimeupdates"
 	userHandler "github.com/sonnyzxc/drp/be_drp32/api/internal/handler/user"
 )
 
@@ -30,5 +31,6 @@ func New(
 		familyRESTHandler:    familyHandler.New(familyCtrl),
 		userRESTHandler:      userHandler.New(userCtrl),
 		choreRESTHandler:     choreHandler.New(choreCtrl),
+		rtuHandler:           realtimeupdates.New(),
 	}
 }
