@@ -23,22 +23,3 @@ export const useTaskAddTimer = () => {
 
   return { startTaskAddTimer, endTaskAddTimer };
 };
-
-export const usePageTimer = (pageName: string) => {
-  const [totalTimeOnPage, setTotalTimeOnPage] = useState<number>(0);
-
-  useFocusEffect(
-    useCallback(() => {
-      const startTime = Date.now();
-
-      return () => {
-        const endTime = Date.now();
-        const duration = (endTime - startTime) / 1000;
-        setTotalTimeOnPage(prevTime => prevTime + duration);
-        console.log(`Total time spent on ${pageName}: ${totalTimeOnPage + duration} seconds`);
-      };
-    }, [totalTimeOnPage])
-  );
-
-  return totalTimeOnPage;
-};

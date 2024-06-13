@@ -9,8 +9,6 @@ interface AddTaskProps {
   setNewTaskEmoji: (text: string) => void;
   newTaskPoints: number;
   setNewTaskPoints: (points: number) => void;
-  assignedUserId: number;
-  setAssignedUserId: (id: number) => void;
   newTaskDueDate: Date;
   setNewTaskDueDate: (date: Date) => void;
   showDatePicker: boolean;
@@ -29,8 +27,6 @@ const AddTask: React.FC<AddTaskProps> = ({
   setNewTaskEmoji,
   newTaskPoints,
   setNewTaskPoints,
-  assignedUserId,
-  setAssignedUserId,
   newTaskDueDate,
   setNewTaskDueDate,
   showDatePicker,
@@ -78,16 +74,6 @@ const AddTask: React.FC<AddTaskProps> = ({
         />
       )}
       <Text style={styles.selectedDateText}>Selected Date: {newTaskDueDate.toLocaleDateString()}</Text>
-      <Text style={styles.inputLabel}>Assign To:</Text>
-      <View style={styles.userPicker}>
-        {users.map(user => (
-          <TouchableOpacity key={user.id} onPress={() => setAssignedUserId(user.id)}>
-            <Text style={[styles.userOption, assignedUserId === user.id && styles.selectedUser]}>
-              {user.name}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
       <TextInput
         style={styles.input}
         placeholder="Emoji (optional, e.g., 😊)"

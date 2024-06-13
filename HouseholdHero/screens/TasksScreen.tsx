@@ -4,7 +4,6 @@ import ToDoItem from '../components/ToDoItem';
 import ConfirmationModal from '../components/ConfirmationModal';
 import { usePoints } from '../context/PointsContext';
 import styles from '../styles/TasksScreenStyles'; // Import the styles
-import { usePageTimer } from '../utils/metrics';
 
 const TasksScreen: React.FC = () => {
   const { tasks, currentUser, toggleTaskCompletion } = usePoints();
@@ -12,10 +11,8 @@ const TasksScreen: React.FC = () => {
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [imageUri, setImageUri] = useState<string | null>(null);
 
-  usePageTimer('TasksScreen');
-
   // Filter tasks assigned to the current user and not completed
-  const userTasks = tasks.filter(task => task.assignedTo === currentUser.id && !task.completed);
+  const userTasks = tasks.filter(task => !task.completed);
 
   // Group tasks by their due dates
   const groupedTasks = userTasks.reduce((acc, task) => {

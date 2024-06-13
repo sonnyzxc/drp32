@@ -6,9 +6,9 @@ export interface Task {
   emoji?: string;
   points: number;
   completed: boolean;
-  assignedTo: number; // User ID of the assigned user
   dueDate: Date;
   completedDate?: Date;
+  completedBy?: number; // User ID of completer
   imgDir?: string;
 }
 
@@ -70,9 +70,9 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       emoji: task.emoji,
       points: task.points, // Assuming the API returns `reward_points` instead of `points`
       completed: task.completed, // Assuming the API returns `is_done` instead of `completed`
-      assignedTo: task.assigned_to, // Assuming the API returns `user_id` instead of `assignedTo`
       dueDate: new Date(task.due_date), // Assuming the API returns `due_date` instead of `dueDate`
       completedDate: new Date(task.time_completed),
+      completedBy: task.assigned_to,
       imgDir: task.img_dir,
     };
   };
@@ -81,7 +81,7 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     // Fetch tasks from the API
     const fetchTasks = async () => {
       try {
-        const response = await fetch('https://be-drp32-5ac34b8c912e.herokuapp.com/chores?familyID=1', {
+        const response = await fetch('https://be-drp32-5ac34b8c912e.herokuapp.com/chores', {
           method: 'GET',
           mode: 'no-cors',
           headers: {
@@ -115,7 +115,6 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       "description": task.text,
       "emoji": task.emoji,
       "points": task.points,
-      "assigned-to": task.assignedTo,
       "due-date": task.dueDate.toISOString().substring(0, 10), // Convert Date to ISO string
     };
   };
@@ -161,16 +160,24 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
 
     try {
-      const response = await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/chore/complete/${taskId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        body: formData,
-      });
+      let response = null;
+      if (imageUri) {
+        response = await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/chore/complete/${taskId}/${currentUser.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          body: formData,
+        });
+      } else {
+        response = await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/chore/complete/${taskId}/${currentUser.id}`, {
+          method: 'PUT',
+        });
+      }
       const data = await response.json();
+      console.log(data);
       setTasks(tasks.map(task => task.id === taskId ? formatTaskFromApi(data.chore) : task));
-      addPoints(taskToUpdate.assignedTo, currentDayIndex, updatedTask.completed ? taskToUpdate.points : -taskToUpdate.points);
+      addPoints(taskToUpdate.completedBy, currentDayIndex, updatedTask.completed ? taskToUpdate.points : -taskToUpdate.points);
     } catch (error) {
       console.error('Error updating task:', error);
     }
@@ -200,9 +207,9 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   
         if (dateIndex !== -1) {
           setPoints(prevPoints => {
-            const userPoints = prevPoints[taskToDelete.assignedTo] ? [...prevPoints[taskToDelete.assignedTo]] : [0, 0, 0, 0, 0, 0, 0];
+            const userPoints = prevPoints[taskToDelete.completedBy] ? [...prevPoints[taskToDelete.completedBy]] : [0, 0, 0, 0, 0, 0, 0];
             userPoints[dateIndex] -= taskToDelete.points;
-            return { ...prevPoints, [taskToDelete.assignedTo]: userPoints };
+            return { ...prevPoints, [taskToDelete.completedBy]: userPoints };
           });
         }
       } else {
