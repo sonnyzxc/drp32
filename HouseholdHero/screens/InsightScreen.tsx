@@ -6,12 +6,13 @@ import { usePoints } from '../context/PointsContext';
 import styles from '../styles/InsightScreenStyles';
 
 const InsightScreen: React.FC = () => {
-  const { points, tasks, users } = usePoints();
+  const { currentUser, points, tasks, users } = usePoints();
   const [selectedUserId, setSelectedUserId] = useState(users[0].id);
 
   const userTasks = tasks.filter(task => task.completedBy === selectedUserId);
   const completedTasks = userTasks.filter(task => task.completed);
   const incompleteTasks = userTasks.filter(task => !task.completed);
+  const isAdmin = currentUser.isAdmin; // Check if the current user is an admin
 
   const getLast7Days = () => {
     const today = new Date();
@@ -60,6 +61,10 @@ const InsightScreen: React.FC = () => {
     return dayDiff;
   };
 
+  if (!isAdmin) {
+    return null;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollView}>
@@ -79,6 +84,21 @@ const InsightScreen: React.FC = () => {
         </View>
         <Text style={styles.totalPointsText}>Total Points: {selectedUserPoints.reduce((a, b) => a + b, 0)}</Text>
 
+        <Text style={styles.subHeaderText}>Completed Tasks</Text>
+        {completedTasks.map(task => (
+          <View key={task.id} style={styles.taskContainer}>
+            <Text style={styles.taskText}>
+              {task.emoji} {task.text}
+            </Text>
+            <Text style={styles.dueDateText}>Completed on: {new Date(task.completedDate).toLocaleDateString()}</Text>
+          </View>
+        ))}
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+/*
         <Text style={styles.subHeaderText}>Incomplete Tasks</Text>
         {incompleteTasks.map(task => {
           const daysDiff = calculateDaysDifference(new Date(task.dueDate));
@@ -96,19 +116,6 @@ const InsightScreen: React.FC = () => {
             </View>
           );
         })}
-
-        <Text style={styles.subHeaderText}>Completed Tasks</Text>
-        {completedTasks.map(task => (
-          <View key={task.id} style={styles.taskContainer}>
-            <Text style={styles.taskText}>
-              {task.emoji} {task.text}
-            </Text>
-            <Text style={styles.dueDateText}>Completed on: {new Date(task.completedDate).toLocaleDateString()}</Text>
-          </View>
-        ))}
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
+        */
 
 export default InsightScreen;

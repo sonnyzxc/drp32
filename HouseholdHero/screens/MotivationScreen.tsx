@@ -39,10 +39,21 @@ const MotivationScreen: React.FC = () => {
 
   const renderDayItem = (date: Date, index: number) => {
     const completedTasks = checkTasksForDate(date);
+    const user1Tasks = completedTasks.filter(task => task.completedBy === 1);
+    const user2Tasks = completedTasks.filter(task => task.completedBy === 2);
+
+    let imageSource = require('../assets/images/lvl1.png'); // Default image
+
+    if ((user1Tasks.length === 0 && user2Tasks.length > 0) || (user1Tasks.length > 0 && user2Tasks.length === 0)) {
+      imageSource = require('../assets/images/lvl2.png'); // Only user1 has done chores
+    } else if (user1Tasks.length > 0 && user2Tasks.length > 0) {
+      imageSource = require('../assets/images/lvl3.png'); // Both users have done chores
+    }
+
     return (
       <View key={date.toDateString()} style={styles.dayContainer}>
         <Image
-          source={completedTasks.length > 0 ? require('../assets/images/happy.png') : require('../assets/images/normal.png')}
+          source={imageSource}
           style={styles.faceImage}
         />
         <Text style={styles.dateText}>{date.toLocaleDateString()}</Text>
@@ -60,10 +71,21 @@ const MotivationScreen: React.FC = () => {
 
   const renderMiniMapItem = (date: Date, index: number) => {
     const completedTasks = checkTasksForDate(date);
+    const user1Tasks = completedTasks.filter(task => task.completedBy === 1);
+    const user2Tasks = completedTasks.filter(task => task.completedBy === 2);
+  
+    let imageSource = require('../assets/images/lvl1.png'); // Default image
+  
+    if ((user1Tasks.length === 0 && user2Tasks.length > 0) || (user1Tasks.length > 0 && user2Tasks.length === 0)) {
+      imageSource = require('../assets/images/lvl2.png'); // Only user1 has done chores
+    } else if (user1Tasks.length > 0 && user2Tasks.length > 0) {
+      imageSource = require('../assets/images/lvl3.png'); // Both users have done chores
+    }
+
     return (
       <View key={date.toDateString()} style={[styles.miniMapItem, currentIndex === index && styles.selectedMiniMapItem]}>
         <Image
-          source={completedTasks.length > 0 ? require('../assets/images/happy.png') : require('../assets/images/normal.png')}
+          source={imageSource}
           style={styles.miniFaceImage}
         />
       </View>
@@ -78,7 +100,7 @@ const MotivationScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Family Forest</Text>
+      <Text style={styles.headerText}>Happy Houses</Text>
       <Button title={viewMode === 'daily' ? "Switch to Monthly View" : "Switch to Weekly View"} onPress={() => setViewMode(viewMode === 'daily' ? 'monthly' : 'daily')} />
       {viewMode === 'daily' ? (
         <>

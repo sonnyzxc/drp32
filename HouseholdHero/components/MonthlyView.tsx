@@ -33,7 +33,7 @@ const MonthlyView: React.FC<{ tasks: Task[]; users: User[] }> = ({ tasks, users 
     return (
       <View key={day.toString()} style={styles.dayContainer}>
         <Image
-          source={completedTasks.length > 0 ? require('../assets/images/happy.png') : require('../assets/images/normal.png')}
+          source={completedTasks.length > 0 ? require('../assets/images/lvl3.png') : require('../assets/images/lvl1.png')}
           style={styles.faceImage}
         />
         <Text style={styles.dateText}>{day}</Text>
