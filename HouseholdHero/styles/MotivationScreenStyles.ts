@@ -44,8 +44,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   selectedMiniMapItem: {
-    borderColor: '#007AFF',
-    borderWidth: 2,
+    backgroundColor: '#bdbdbd',
+    borderRadius: 15,
+    padding: 5,
   },
   miniFaceImage: {
     width: 30,
@@ -79,7 +80,33 @@ const styles = StyleSheet.create({
   dueDateText: {
     fontSize: 14,
     color: 'gray',
-  }, 
+  },
+  monthNavigation: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: screenWidth * 0.8,
+    marginVertical: 20,
+  },
+  navigationText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  monthText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  calendarGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    width: screenWidth * 0.9,
+  },
+  emptyDayContainer: {
+    width: screenWidth * 0.1,
+    height: screenWidth * 0.1,
+    margin: screenWidth * 0.02,
+  },
 });
 
 export default styles;

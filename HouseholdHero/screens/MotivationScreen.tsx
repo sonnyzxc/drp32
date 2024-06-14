@@ -1,14 +1,15 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, Dimensions, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Image, ScrollView, TouchableOpacity, Button } from 'react-native';
 import styles from "../styles/MotivationScreenStyles";
 import { usePoints } from '../context/PointsContext';
-import CompletedTasks from '../components/CompletedTasks';
+import MonthlyView from '../components/MonthlyView'; // Import the MonthlyView component
 
 const screenWidth = Dimensions.get('window').width;
 
 const MotivationScreen: React.FC = () => {
   const { tasks, users } = usePoints(); // Assuming tasks and users are provided by usePoints context
   const [currentIndex, setCurrentIndex] = useState(6); // Start with the rightmost element
+  const [viewMode, setViewMode] = useState<'daily' | 'monthly'>('daily'); // State to switch between daily and monthly view
 
   const scrollRef = useRef<ScrollView>(null);
 
@@ -78,22 +79,29 @@ const MotivationScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>Family Forest</Text>
-      <ScrollView
-        ref={scrollRef}
-        horizontal
-        pagingEnabled
-        onMomentumScrollEnd={(event) => {
-          const index = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
-          setCurrentIndex(index);
-        }}
-        showsHorizontalScrollIndicator={false}
-        onLayout={scrollToRight}
-      >
-        {days.map(renderDayItem)}
-      </ScrollView>
-      <View style={styles.miniMapContainer}>
-        {days.map((date, index) => renderMiniMapItem(date, index))}
-      </View>
+      <Button title={viewMode === 'daily' ? "Switch to Monthly View" : "Switch to Weekly View"} onPress={() => setViewMode(viewMode === 'daily' ? 'monthly' : 'daily')} />
+      {viewMode === 'daily' ? (
+        <>
+          <ScrollView
+            ref={scrollRef}
+            horizontal
+            pagingEnabled
+            onMomentumScrollEnd={(event) => {
+              const index = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
+              setCurrentIndex(index);
+            }}
+            showsHorizontalScrollIndicator={false}
+            onLayout={scrollToRight}
+          >
+            {days.map(renderDayItem)}
+          </ScrollView>
+          <View style={styles.miniMapContainer}>
+            {days.map((date, index) => renderMiniMapItem(date, index))}
+          </View>
+        </>
+      ) : (
+        <MonthlyView tasks={tasks} users={users} />
+      )}
     </View>
   );
 };
