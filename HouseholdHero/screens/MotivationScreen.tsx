@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, Dimensions, Image, ScrollView, TouchableOpacity, Button } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Image, ScrollView, TouchableOpacity, Button, Modal } from 'react-native';
 import styles from "../styles/MotivationScreenStyles";
 import { usePoints } from '../context/PointsContext';
 import MonthlyView from '../components/MonthlyView'; // Import the MonthlyView component
@@ -10,6 +10,7 @@ const MotivationScreen: React.FC = () => {
   const { tasks, users } = usePoints(); // Assuming tasks and users are provided by usePoints context
   const [currentIndex, setCurrentIndex] = useState(6); // Start with the rightmost element
   const [viewMode, setViewMode] = useState<'daily' | 'monthly'>('daily'); // State to switch between daily and monthly view
+  const [isHelpModalVisible, setIsHelpModalVisible] = useState(false);
 
   const scrollRef = useRef<ScrollView>(null);
 
@@ -45,7 +46,7 @@ const MotivationScreen: React.FC = () => {
     let imageSource = require('../assets/images/lvl1.png'); // Default image
 
     if ((user1Tasks.length === 0 && user2Tasks.length > 0) || (user1Tasks.length > 0 && user2Tasks.length === 0)) {
-      imageSource = require('../assets/images/lvl2.png'); // Only user1 has done chores
+      imageSource = require('../assets/images/lvl2.png'); // Only one user has done chores
     } else if (user1Tasks.length > 0 && user2Tasks.length > 0) {
       imageSource = require('../assets/images/lvl3.png'); // Both users have done chores
     }
@@ -77,7 +78,7 @@ const MotivationScreen: React.FC = () => {
     let imageSource = require('../assets/images/lvl1.png'); // Default image
   
     if ((user1Tasks.length === 0 && user2Tasks.length > 0) || (user1Tasks.length > 0 && user2Tasks.length === 0)) {
-      imageSource = require('../assets/images/lvl2.png'); // Only user1 has done chores
+      imageSource = require('../assets/images/lvl2.png'); // Only one user has done chores
     } else if (user1Tasks.length > 0 && user2Tasks.length > 0) {
       imageSource = require('../assets/images/lvl3.png'); // Both users have done chores
     }
@@ -100,8 +101,11 @@ const MotivationScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Happy Houses</Text>
-      <Button title={viewMode === 'daily' ? "Switch to Monthly View" : "Switch to Weekly View"} onPress={() => setViewMode(viewMode === 'daily' ? 'monthly' : 'daily')} />
+      {viewMode === 'daily' ? (<Text style={styles.headerText}>Happy Street</Text>) : (<Text style={styles.headerText}>Happy City</Text>)}
+      <TouchableOpacity style={styles.helpIcon} onPress={() => setIsHelpModalVisible(true)}>
+        <Text style={styles.helpIconText}>?</Text>
+      </TouchableOpacity>
+      <Button title={viewMode === 'daily' ? "Switch to City (Monthly) View" : "Switch to Street (Weekly) View"} onPress={() => setViewMode(viewMode === 'daily' ? 'monthly' : 'daily')} />
       {viewMode === 'daily' ? (
         <>
           <ScrollView
@@ -124,6 +128,27 @@ const MotivationScreen: React.FC = () => {
       ) : (
         <MonthlyView tasks={tasks} users={users} />
       )}
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isHelpModalVisible}
+        onRequestClose={() => setIsHelpModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalHeaderText}>Help</Text>
+            <Text style={styles.modalText}>
+            Build your happy street with daily happy houses! Each day, your family gets a new house.
+            No chores done? The house stays cozy at level 1. 
+            If one family member does chores, the house levels up to level 2!
+            And if both family members join in, the house transforms to an awesome level 3! 
+            Let's make our city shine by completing chores together!
+            </Text>
+            <Button title="Close" onPress={() => setIsHelpModalVisible(false)} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };

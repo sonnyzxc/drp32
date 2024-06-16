@@ -107,6 +107,42 @@ const styles = StyleSheet.create({
     height: screenWidth * 0.1,
     margin: screenWidth * 0.02,
   },
+  helpIcon: {
+    position: 'absolute',
+    top: 30,
+    right: 10,
+    backgroundColor: 'lightgray',
+    borderRadius: 20,
+    padding: 10,
+    zIndex: 1,
+  },
+  helpIconText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalHeaderText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
 });
 
 export default styles;
