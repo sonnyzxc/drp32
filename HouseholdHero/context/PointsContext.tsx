@@ -10,6 +10,8 @@ export interface Task {
   completedDate?: Date;
   completedBy?: number; // User ID of completer
   imgDir?: string;
+  recurring: number;
+  next?: number;
 }
 
 interface User {
@@ -75,6 +77,8 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       completedDate: new Date(task.time_completed),
       completedBy: task.assigned_to,
       imgDir: task.img_dir,
+      recurring: task.recurring,
+      next: task.next,
     };
   };
 
@@ -116,6 +120,7 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       "emoji": task.emoji,
       "points": task.points,
       "due-date": task.dueDate.toISOString().substring(0, 10), // Convert Date to ISO string
+      "recurring": task.recurring,
     };
   };
 
@@ -175,8 +180,10 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         });
       }
       const data = await response.json();
+      const chores = data.chores.map(formatTaskFromApi);
       console.log(data);
-      setTasks(tasks.map(task => task.id === taskId ? formatTaskFromApi(data.chore) : task));
+      const updatedTasks = tasks.map(task => task.id === taskId ? chores[0] : task).push(chores[1]);
+      setTasks(tasks)
       addPoints(taskToUpdate.completedBy, currentDayIndex, updatedTask.completed ? taskToUpdate.points : -taskToUpdate.points);
     } catch (error) {
       console.error('Error updating task:', error);
@@ -220,12 +227,34 @@ export const PointsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
+  /*
   const markTaskAsIncomplete = async (task: Task) => {
     await deleteTask(task.id);
     addTask({
       ...task,
       completed: false,
     });
+  };
+  */
+
+  const markTaskAsIncomplete = async (task: Task) => {
+    try {
+      const response = await fetch(`https://be-drp32-5ac34b8c912e.herokuapp.com/chore/incomplete/${task.id}`, {
+        method: 'PUT', // Assuming PUT method is used to mark tasks as incomplete
+      });
+  
+      if (response.ok) {
+        // Update your local state or perform any necessary actions
+        console.log('Task marked as incomplete successfully');
+        const data = await response.json();
+        console.log(data);
+        setTasks(tasks.map(t => t.id === task.id ? formatTaskFromApi(data.chore) : t));
+      } else {
+        console.error('Failed to mark task as incomplete');
+      }
+    } catch (error) {
+      console.error('Error marking task as incomplete:', error);
+    }
   };
 
   const changeUser = (userId: number) => {

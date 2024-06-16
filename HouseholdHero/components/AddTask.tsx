@@ -9,6 +9,8 @@ interface AddTaskProps {
   setNewTaskEmoji: (text: string) => void;
   newTaskPoints: number;
   setNewTaskPoints: (points: number) => void;
+  recurring: number;
+  setRecurring: (value: number) => void;
   newTaskDueDate: Date;
   setNewTaskDueDate: (date: Date) => void;
   showDatePicker: boolean;
@@ -27,6 +29,8 @@ const AddTask: React.FC<AddTaskProps> = ({
   setNewTaskEmoji,
   newTaskPoints,
   setNewTaskPoints,
+  recurring,
+  setRecurring,
   newTaskDueDate,
   setNewTaskDueDate,
   showDatePicker,
@@ -74,6 +78,21 @@ const AddTask: React.FC<AddTaskProps> = ({
               </TouchableOpacity>
             ))}
           </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Recurring (optional, e.g., 7 for weekly)"
+            value={recurring !== null ? recurring.toString() : ""}
+            onChangeText={(value) => {
+              const intValue = parseInt(value);
+              if (!isNaN(intValue)) {
+                setRecurring(intValue);
+              } else if (value === "") {
+                // Allow empty string for clearing the input
+                setRecurring(null);
+              }
+            } }
+            keyboardType="numeric"
+          />
           <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.datePickerButton}>
             <Text style={styles.datePickerButtonText}>Select Due Date</Text>
           </TouchableOpacity>

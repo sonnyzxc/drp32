@@ -18,6 +18,7 @@ const HomeScreen: React.FC = () => {
   const [newTaskText, setNewTaskText] = useState('');
   const [newTaskEmoji, setNewTaskEmoji] = useState('');
   const [newTaskPoints, setNewTaskPoints] = useState(3);
+  const [newTaskRecurring, setNewTaskRecurring] = useState<number | null>(null);
   const [newTaskDueDate, setNewTaskDueDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isAddTaskVisible, setIsAddTaskVisible] = useState(false);
@@ -107,11 +108,13 @@ const HomeScreen: React.FC = () => {
       points: newTaskPoints,
       completed: false,
       dueDate: newTaskDueDate,
+      recurring: newTaskRecurring !== null ? newTaskRecurring : 0,
     };
     addTask(newTask);
     setNewTaskText('');
     setNewTaskEmoji('');
     setNewTaskPoints(3);
+    setNewTaskRecurring(null);
     setNewTaskDueDate(new Date());
     setIsAddTaskVisible(false);
     setIsCompleteConfirmVisible(false);
@@ -207,6 +210,8 @@ const HomeScreen: React.FC = () => {
             setNewTaskEmoji={setNewTaskEmoji}
             newTaskPoints={newTaskPoints}
             setNewTaskPoints={setNewTaskPoints}
+            recurring={newTaskRecurring}
+            setRecurring={setNewTaskRecurring}
             newTaskDueDate={newTaskDueDate}
             setNewTaskDueDate={setNewTaskDueDate}
             showDatePicker={showDatePicker}
