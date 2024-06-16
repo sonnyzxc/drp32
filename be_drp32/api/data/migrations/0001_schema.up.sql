@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS chores (
   due_date DATE,
   time_completed DATE,
   img_dir TEXT,
+  recurring INT NOT NULL,
+  next BIGINT,
   FOREIGN KEY ( assigned_to ) REFERENCES users ( user_id )
 );
 
@@ -48,6 +50,6 @@ CREATE TABLE IF NOT EXISTS chores (
 -- insert into users ( user_email, user_name, family_id, admin) values ( 'rstallon8@photobucket.com', 'Renee', 6, false);
 -- insert into users ( user_email, user_name, family_id, admin) values ( 'csansam9@freewebs.com', 'Chilton', 4, true);
 --
--- insert into chores (description, emoji, points, completed, assigned_to, due_date) values ('Geranium sylvaticum L.', 'test', 31, false, 6, '08/08/2024');
--- insert into chores (description, emoji, points, completed, assigned_to, due_date) values ('Geranium sylvaticum L.', 'test', 31, true, 6, '08/08/2024');
--- insert into chores (description, emoji, points, completed, assigned_to, due_date) values ('Geranium sylvaticum L.', 'test', 31, false, 4, '08/08/2024');
+-- insert into chores (description, emoji, points, completed, assigned_to, due_date, recurring) values ('Geranium sylvaticum L.', 'test', 31, false, 6, '08/08/2024', 0);
+-- insert into chores (description, emoji, points, completed, assigned_to, due_date, recurring) values ('Geranium sylvaticum L.', 'test', 31, true, 6, '08/08/2024', 0);
+-- insert into chores (description, emoji, points, completed, assigned_to, due_date, recurring) values ('Geranium sylvaticum L.', 'test', 31, false, 4, '08/08/2024', 0);

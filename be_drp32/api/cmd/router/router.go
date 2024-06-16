@@ -53,6 +53,7 @@ func (rtr Router) Handler() http.Handler {
 		r.Post("/", rtr.choreRESTHandler.CreateChore())
 		r.Delete("/{choreID}", rtr.choreRESTHandler.DeleteChoreByID())
 		r.Put("/complete/{choreID}/{userID}", rtr.choreRESTHandler.CompleteChore())
+		r.Put("/incomplete/{choreID}", rtr.choreRESTHandler.IncompleteChore())
 	})
 
 	r.Route("/chores", func(r chi.Router) {

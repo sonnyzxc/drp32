@@ -33,6 +33,8 @@ type Chore struct {
 	DueDate       null.Time   `boil:"due_date" json:"due_date,omitempty" toml:"due_date" yaml:"due_date,omitempty"`
 	TimeCompleted null.Time   `boil:"time_completed" json:"time_completed,omitempty" toml:"time_completed" yaml:"time_completed,omitempty"`
 	ImgDir        null.String `boil:"img_dir" json:"img_dir,omitempty" toml:"img_dir" yaml:"img_dir,omitempty"`
+	Recurring     int         `boil:"recurring" json:"recurring" toml:"recurring" yaml:"recurring"`
+	Next          null.Int64  `boil:"next" json:"next,omitempty" toml:"next" yaml:"next,omitempty"`
 
 	R *choreR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L choreL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -48,6 +50,8 @@ var ChoreColumns = struct {
 	DueDate       string
 	TimeCompleted string
 	ImgDir        string
+	Recurring     string
+	Next          string
 }{
 	ChoreID:       "chore_id",
 	Description:   "description",
@@ -58,6 +62,8 @@ var ChoreColumns = struct {
 	DueDate:       "due_date",
 	TimeCompleted: "time_completed",
 	ImgDir:        "img_dir",
+	Recurring:     "recurring",
+	Next:          "next",
 }
 
 var ChoreTableColumns = struct {
@@ -70,6 +76,8 @@ var ChoreTableColumns = struct {
 	DueDate       string
 	TimeCompleted string
 	ImgDir        string
+	Recurring     string
+	Next          string
 }{
 	ChoreID:       "chores.chore_id",
 	Description:   "chores.description",
@@ -80,6 +88,8 @@ var ChoreTableColumns = struct {
 	DueDate:       "chores.due_date",
 	TimeCompleted: "chores.time_completed",
 	ImgDir:        "chores.img_dir",
+	Recurring:     "chores.recurring",
+	Next:          "chores.next",
 }
 
 // Generated where
@@ -288,6 +298,8 @@ var ChoreWhere = struct {
 	DueDate       whereHelpernull_Time
 	TimeCompleted whereHelpernull_Time
 	ImgDir        whereHelpernull_String
+	Recurring     whereHelperint
+	Next          whereHelpernull_Int64
 }{
 	ChoreID:       whereHelperint64{field: "\"chores\".\"chore_id\""},
 	Description:   whereHelperstring{field: "\"chores\".\"description\""},
@@ -298,6 +310,8 @@ var ChoreWhere = struct {
 	DueDate:       whereHelpernull_Time{field: "\"chores\".\"due_date\""},
 	TimeCompleted: whereHelpernull_Time{field: "\"chores\".\"time_completed\""},
 	ImgDir:        whereHelpernull_String{field: "\"chores\".\"img_dir\""},
+	Recurring:     whereHelperint{field: "\"chores\".\"recurring\""},
+	Next:          whereHelpernull_Int64{field: "\"chores\".\"next\""},
 }
 
 // ChoreRels is where relationship names are stored.
@@ -328,9 +342,9 @@ func (r *choreR) GetAssignedToUser() *User {
 type choreL struct{}
 
 var (
-	choreAllColumns            = []string{"chore_id", "description", "emoji", "points", "completed", "assigned_to", "due_date", "time_completed", "img_dir"}
-	choreColumnsWithoutDefault = []string{"description", "emoji", "points", "completed"}
-	choreColumnsWithDefault    = []string{"chore_id", "assigned_to", "due_date", "time_completed", "img_dir"}
+	choreAllColumns            = []string{"chore_id", "description", "emoji", "points", "completed", "assigned_to", "due_date", "time_completed", "img_dir", "recurring", "next"}
+	choreColumnsWithoutDefault = []string{"description", "emoji", "points", "completed", "recurring"}
+	choreColumnsWithDefault    = []string{"chore_id", "assigned_to", "due_date", "time_completed", "img_dir", "next"}
 	chorePrimaryKeyColumns     = []string{"chore_id"}
 	choreGeneratedColumns      = []string{}
 )

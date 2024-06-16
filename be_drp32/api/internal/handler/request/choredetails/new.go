@@ -8,4 +8,5 @@ type Request struct {
 	Points      int         `json:"points"`
 	AssignedTo  null.Int64  `json:"assigned-to,omitempty"`
 	DueDate     null.String `json:"due-date,omitempty"`
+	Recurring   null.Int    `json:"recurring,omitempty"`
 }

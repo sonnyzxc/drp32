@@ -15,6 +15,8 @@ type Chore struct {
 	DueDate       null.Time   `boil:"due_date" json:"due_date,omitempty" toml:"due_date" yaml:"due_date,omitempty"`
 	TimeCompleted null.Time   `boil:"time_completed" json:"time_completed,omitempty" toml:"time_completed" yaml:"time_completed,omitempty"`
 	ImgDir        null.String `boil:"img_dir" json:"img_dir,omitempty" toml:"img_dir" yaml:"img_dir,omitempty"`
+	Recurring     int         `boil:"recurring" json:"recurring" toml:"recurring" yaml:"recurring"`
+	Next          null.Int64  `boil:"next" json:"next,omitempty" toml:"next" yaml:"next,omitempty"`
 }
 
 type Chores []Chore
@@ -30,6 +32,8 @@ func (c Chore) Orm() *orm.Chore {
 		DueDate:       c.DueDate,
 		TimeCompleted: c.TimeCompleted,
 		ImgDir:        c.ImgDir,
+		Recurring:     c.Recurring,
+		Next:          c.Next,
 	}
 }
 
@@ -44,5 +48,7 @@ func ChoreModel(c *orm.Chore) Chore {
 		DueDate:       c.DueDate,
 		TimeCompleted: c.TimeCompleted,
 		ImgDir:        c.ImgDir,
+		Recurring:     c.Recurring,
+		Next:          c.Next,
 	}
 }
