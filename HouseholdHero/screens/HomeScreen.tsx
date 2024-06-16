@@ -87,13 +87,15 @@ const HomeScreen: React.FC = () => {
   };
 
   const combinedPoints = aggregatePoints();
-  const timelineData = completedTasks.map(task => ({
+  const timelineData = completedTasks
+  .sort((a, b) => a.completedDate.getTime() - b.completedDate.getTime()).reverse()
+  .map(task => ({
     key: `${task.id}`,
     emoji: task.emoji,
     taskName: task.text,
     day: task.completedDate.toLocaleDateString(),
     user: users.find(user => user.id === task.completedBy)?.name || 'Unknown'
-  })).reverse();
+  }));
 
   const handleAddTask = () => {
     const taskAddDuration = endTaskAddTimer();
