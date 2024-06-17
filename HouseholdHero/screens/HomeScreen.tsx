@@ -250,6 +250,7 @@ const HomeScreen: React.FC = () => {
         task={tasks.find(value => value.id === selectedTaskId)}
         users={users}
         imageUrl={selectedImageUrl}
+        onTaskMarkedIncomplete={() => setIsImageModalVisible(false)}
       />
       <PeriodicMessageSender />
     </SafeAreaView>

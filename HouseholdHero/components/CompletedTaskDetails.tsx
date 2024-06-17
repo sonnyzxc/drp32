@@ -9,9 +9,10 @@ interface CompletedTaskDetailsProps {
   task: Task | null;
   users: { id: number; name: string; isAdmin: boolean }[];
   imageUrl: string | null;
+  onTaskMarkedIncomplete: () => void;
 }
 
-const CompletedTaskDetails: React.FC<CompletedTaskDetailsProps> = ({ visible, onClose, task, users, imageUrl }) => {
+const CompletedTaskDetails: React.FC<CompletedTaskDetailsProps> = ({ visible, onClose, task, users, imageUrl, onTaskMarkedIncomplete, }) => {
   const { currentUser, markTaskAsIncomplete } = usePoints();
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -25,6 +26,7 @@ const CompletedTaskDetails: React.FC<CompletedTaskDetailsProps> = ({ visible, on
     if (selectedTask) {
       markTaskAsIncomplete(selectedTask);
       setSelectedTask(null);
+      onTaskMarkedIncomplete();
     }
     setIsConfirmVisible(false);
   };
