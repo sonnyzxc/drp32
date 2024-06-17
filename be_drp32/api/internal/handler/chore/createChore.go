@@ -29,9 +29,14 @@ func (h Handler) CreateChore() http.HandlerFunc {
 			dueDateNull = null.TimeFrom(dueDate)
 		}
 
+		recurring := 0
+		if request.Recurring.Valid {
+			recurring = request.Recurring.Int
+		}
+
 		var chore model.Chore
 		var err error
-		if chore, err = h.ctrl.CreateChore(r.Context(), request.Description, request.Emoji, request.Points, request.AssignedTo, dueDateNull); err != nil {
+		if chore, err = h.ctrl.CreateChore(r.Context(), request.Description, request.Emoji, request.Points, request.AssignedTo, dueDateNull, recurring); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 

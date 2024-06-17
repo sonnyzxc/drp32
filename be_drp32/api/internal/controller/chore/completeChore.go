@@ -19,17 +19,17 @@ import (
 	"time"
 )
 
-func (i impl) CompleteChore(ctx context.Context, choreID int64, userID int64, file multipart.File, fileHandler *multipart.FileHeader, present bool) (model.Chore, error) {
+func (i impl) CompleteChore(ctx context.Context, choreID int64, userID int64, file multipart.File, fileHandler *multipart.FileHeader, present bool) (model.Chores, error) {
 	chore, err := i.repo.Chore().GetChoreByID(context.Background(), choreID)
 
 	if errors.Is(err, choreRepo.ErrChoreIDNotFound) {
 		log.Printf(controller.LogErrMessage("CompleteChore", "chore not found", err))
-		return model.Chore{}, ErrChoreNotFound
+		return nil, ErrChoreNotFound
 	}
 
 	if err != nil {
 		log.Printf(controller.LogErrMessage("CompleteChore", "i dunno", err))
-		return model.Chore{}, err
+		return nil, err
 	}
 
 	chore.Completed = true
@@ -46,13 +46,13 @@ func (i impl) CompleteChore(ctx context.Context, choreID int64, userID int64, fi
 			sess, err := session.NewSession(&aws.Config{Region: aws.String("eu-west-2")})
 			if err != nil {
 				log.Printf(controller.LogErrMessage("CompleteChore", "creating an AWS session", err))
-				return model.Chore{}, err
+				return nil, err
 			}
 
 			_, err = sess.Config.Credentials.Get()
 			if err != nil {
 				log.Printf(controller.LogErrMessage("CompleteChore", "getting AWS credentials", err))
-				return model.Chore{}, err
+				return nil, err
 			}
 
 			svc := s3.New(sess)
@@ -66,7 +66,7 @@ func (i impl) CompleteChore(ctx context.Context, choreID int64, userID int64, fi
 
 			if err != nil {
 				log.Printf(controller.LogErrMessage("CompleteChore", "uploading object to S3", err))
-				return model.Chore{}, err
+				return nil, err
 			}
 
 			// Retrieve URL
@@ -78,10 +78,38 @@ func (i impl) CompleteChore(ctx context.Context, choreID int64, userID int64, fi
 			url, err = req.Presign(15 * time.Minute)
 			if err != nil {
 				log.Printf(controller.LogErrMessage("CompleteChore", "obtaining a presigned URL", err))
-				return model.Chore{}, err
+				return nil, err
 			}
 		}
 		chore.ImgDir = null.StringFrom(fileName)
+	}
+
+	recurringChore := model.Chore{ChoreID: -1}
+	if chore.Recurring != 0 && chore.DueDate.Valid {
+		if !chore.Next.Valid {
+			err = i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
+				var err error
+				recurringChore, err = txRepo.Chore().CreateChore(ctx, model.Chore{
+					Description:   chore.Description,
+					Emoji:         chore.Emoji,
+					Points:        chore.Points,
+					Completed:     false,
+					AssignedTo:    null.NewInt64(0, false),
+					DueDate:       null.TimeFrom(chore.DueDate.Time.Add(time.Hour * time.Duration(chore.Recurring*24))),
+					TimeCompleted: null.NewTime(time.Now(), false),
+					ImgDir:        null.NewString("", false),
+					Recurring:     chore.Recurring,
+					Next:          null.NewInt64(0, false),
+				})
+				return err
+			}, nil)
+		} else {
+			recurringChore, err = i.repo.Chore().GetChoreByID(context.Background(), chore.Next.Int64)
+		}
+		if err != nil {
+			return nil, err
+		}
+		chore.Next = null.Int64From(recurringChore.ChoreID)
 	}
 
 	var updatedChore model.Chore
@@ -91,6 +119,15 @@ func (i impl) CompleteChore(ctx context.Context, choreID int64, userID int64, fi
 		return err
 	}, nil)
 
+	if err != nil {
+		return nil, err
+	}
+
 	updatedChore.ImgDir = null.StringFrom(url)
-	return updatedChore, err
+
+	if recurringChore.ChoreID == -1 {
+		return model.Chores{updatedChore}, nil
+	}
+
+	return model.Chores{updatedChore, recurringChore}, nil
 }

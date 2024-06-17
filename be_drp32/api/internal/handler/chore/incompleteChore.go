@@ -8,20 +8,15 @@ import (
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/controller/model"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler"
 	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/realtimeupdates"
-	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/choreslist"
+	"github.com/sonnyzxc/drp/be_drp32/api/internal/handler/response/singlechore"
 	"net/http"
 	"strconv"
 )
 
-func (h Handler) CompleteChore() http.HandlerFunc {
+func (h Handler) IncompleteChore() http.HandlerFunc {
 	return handler.ErrorHandler(func(w http.ResponseWriter, r *http.Request) (error, int) {
 		choreIDString := chi.URLParam(r, "choreID")
 		if choreIDString == "" {
-			return errors.New("bad request"), http.StatusBadRequest
-		}
-
-		userIDString := chi.URLParam(r, "userID")
-		if userIDString == "" {
 			return errors.New("bad request"), http.StatusBadRequest
 		}
 
@@ -30,30 +25,13 @@ func (h Handler) CompleteChore() http.HandlerFunc {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 
-		userID, err := strconv.ParseInt(userIDString, 10, 64)
-		if err != nil {
-			return errors.New("something went wrong"), http.StatusInternalServerError
-		}
-
-		f, fh, err := r.FormFile("file")
-
-		present := false
-		if err != nil {
-			if !(errors.Is(err, http.ErrMissingFile) || errors.Is(err, http.ErrNotMultipart)) {
-				return err, http.StatusInternalServerError
-			}
-		} else {
-			present = true
-			defer f.Close()
-		}
-
-		var chores model.Chores
-		if chores, err = h.ctrl.CompleteChore(r.Context(), choreID, userID, f, fh, present); err != nil {
+		var chore model.Chore
+		if chore, err = h.ctrl.IncompleteChore(r.Context(), choreID); err != nil {
 			return errors.New("something went wrong"), http.StatusInternalServerError
 		}
 
 		// custom encoding because we don't want escaped HTML for links
-		resp := choreslist.New(chores, http.StatusCreated)
+		resp := singlechore.New(chore, http.StatusCreated)
 		buf := &bytes.Buffer{}
 		enc := json.NewEncoder(buf)
 		enc.SetEscapeHTML(false)
